@@ -1,0 +1,16 @@
+{
+  "name": "SwingMaster AI",
+  "short_name": "SwingMaster",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "description": "Intelligent Swing Trading Screener",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Stock_market_chart_%28blue%29.svg/512px-Stock_market_chart_%28blue%29.svg.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
