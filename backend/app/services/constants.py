@@ -1,28 +1,25 @@
 # backend/app/services/constants.py
 
-# 1. INDEKS LQ45 (Saham dengan Likuiditas Tertinggi & Kapitalisasi Pasar Besar)
-INDEX_LQ45 = [
-    "BBCA", "BBRI", "BMRI", "BBNI", "TLKM", 
-    "ASII", "AMRT", "UNVR", "GOTO", "ANTM", 
-    "PGAS", "PTBA", "ADRO", "KLBF", "MAPI", 
-    "CPIN", "ICBP", "INDF", "INCO", "MEDC", 
-    "AKRA", "BRIS", "EXCL", "JSMR", "CTRA", 
-    "SMGR", "TOWR", "EMTK", "SCMA", "ERAA",
-    "INKP", "TKIM", "SMRA", "BSDE", "UNTR"
-]
+import os
 
-# 2. INDEKS KOMPAS 100 (Gabungan LQ45 + Saham Mid-Cap Potensial)
-INDEX_KOMPAS100 = INDEX_LQ45 + [
-    "MIDI", "MMLP", "ERAL", "WOOD", "TBLA", 
-    "ACES", "MYOR", "ROTI", "ULTJ", "GJTL", 
-    "BIRD", "SSIA", "PTPP", "WIKA", "ADHI", 
-    "PWON", "BEST", "MAPA", "HEAL", "MIKA", 
-    "SILO", "SAME", "PNLF", "PNBN", "BDMN", 
-    "BJBR", "BJTM", "BBTN", "AALI", "LSIP", 
-    "DSNG", "TAPG", "MAIN", "JPFA", "AUTO",
-    "DRMA", "SMSM", "IMAS", "MIDI", "ACST",
-    "BUKA", "SCNP", "AVIA", "MARK", "BSSR"
-]
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+def load_index_from_file(filename: str) -> list[str]:
+    filepath = os.path.join(BACKEND_DIR, filename)
+    if not os.path.exists(filepath):
+        return []
+    with open(filepath, 'r', encoding='utf-8') as f:
+        return [line.strip().upper() for line in f if line.strip()]
+
+# 1. INDEKS LQ45
+INDEX_LQ45 = load_index_from_file("LQ45.txt")
+
+# 2. INDEKS KOMPAS 100
+INDEX_KOMPAS100 = load_index_from_file("KOMPAS100.txt")
+
+# 3. INDEKS ISSI (Indeks Saham Syariah Indonesia)
+INDEX_ISSI = load_index_from_file("ISSI.txt")
+
 
 # 3. BONUS: SWING GEMS WATCHLIST (Saham rentang Rp 200 - Rp 1.500 yang volatilitasnya asyik buat trading)
 SWING_GEMS = [
@@ -38,6 +35,8 @@ def get_tickers_by_index(index_name: str) -> list[str]:
         return INDEX_LQ45
     elif name == "kompas100":
         return INDEX_KOMPAS100
+    elif name == "issi":
+        return INDEX_ISSI
     elif name == "swing_gems":
         return SWING_GEMS
     else:

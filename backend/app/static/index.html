@@ -363,6 +363,7 @@
                         class="flex-1 w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-darkborder text-gray-900 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="lq45">LQ45</option>
                         <option value="kompas100">Kompas 100</option>
+                        <option value="issi">ISSI</option>
                         <option value="swing_gems">Swing Gems</option>
                     </select>
                     <button id="btnRunIndex"
@@ -1168,6 +1169,10 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
+            const dashSnap = JSON.parse(localStorage.getItem("last_dashboard_snapshot") || "{}");
+            const activePositions = dashSnap.active_positions || [];
+            const watchlistsSnap = JSON.parse(localStorage.getItem("last_watchlists_snapshot") || "[]");
+
             if (!dataArray || dataArray.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500">Tidak ada data saham yang lolos filter.</td></tr>';
                 return;
@@ -1181,10 +1186,24 @@
                 const ai = item.ai_analysis || {};
                 const price = item.filters?.price?.value || 0;
 
+                const isActive = activePositions.some(p => p.ticker === item.ticker);
+                const isWatchlist = watchlistsSnap.some(w => w.ticker === item.ticker);
+                
+                let tagsHTML = '';
+                if (isActive) {
+                    tagsHTML += `<span class="inline-flex items-center justify-center w-5 h-5 ml-2 text-[10px] font-bold text-white bg-blue-500 rounded-full shadow-sm" title="Active Position">A</span>`;
+                }
+                if (isWatchlist) {
+                    tagsHTML += `<span class="inline-flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-gray-800 dark:text-gray-900 bg-yellow-400 rounded-full shadow-sm" title="In Watchlist">W</span>`;
+                }
+
                 tr.innerHTML = `
                     <td class="p-4 align-top">
-                        <div class="font-bold text-blue-600 dark:text-blue-400 text-lg search-text">${item.ticker}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 search-text">${item.company_name}</div>
+                        <div class="flex items-center">
+                            <span class="font-bold text-blue-600 dark:text-blue-400 text-lg search-text">${item.ticker}</span>
+                            ${tagsHTML}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 search-text mt-1">${item.company_name}</div>
                     </td>
                     <td class="p-4 font-medium align-top">Rp ${price.toLocaleString('id-ID')}</td>
                     <td class="p-4 search-text align-top">
@@ -2023,6 +2042,7 @@
                 const res = await fetch(`/api/v1/portfolios/${activePortfolio.id}/watchlists`);
                 const data = await res.json();
                 if (data.status === 'success') {
+                    localStorage.setItem("last_watchlists_snapshot", JSON.stringify(data.watchlists));
                     renderWatchlists(data.watchlists);
                 }
             } catch (e) {
