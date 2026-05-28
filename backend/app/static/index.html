@@ -8,6 +8,7 @@
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/js/lightweight-charts.js?v=2"></script>
     <script>
         tailwind.config = {
@@ -562,6 +563,34 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- AI Trading Coach Panel -->
+        <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span>🤖</span> AI Trading Coach
+                </h3>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select id="aiCoachPeriod" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:w-auto p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                        <option value="7">7 Hari Terakhir</option>
+                        <option value="30" selected>30 Hari Terakhir</option>
+                        <option value="90">3 Bulan Terakhir</option>
+                        <option value="">Semua Waktu (All Time)</option>
+                    </select>
+                    <button onclick="analyzeJournal()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition shadow-sm whitespace-nowrap">
+                        Analisis Jurnalku
+                    </button>
+                </div>
+            </div>
+            
+            <div id="aiCoachResult" class="hidden bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700 prose dark:prose-invert max-w-none text-sm leading-relaxed">
+                <!-- Injected via marked.js -->
+            </div>
+            <div id="aiCoachLoading" class="hidden flex flex-col items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Coach AI sedang mengevaluasi trade kamu...</p>
             </div>
         </div>
 
@@ -2372,6 +2401,50 @@
         function exportJournalCSV() {
             if (!activePortfolio) return;
             window.location.href = `/api/v1/portfolios/${activePortfolio.id}/journals/export`;
+        }
+
+        async function analyzeJournal() {
+            if (!activePortfolio) return;
+            
+            const period = document.getElementById('aiCoachPeriod').value;
+            const btn = document.querySelector('button[onclick="analyzeJournal()"]');
+            const resultDiv = document.getElementById('aiCoachResult');
+            const loadingDiv = document.getElementById('aiCoachLoading');
+            
+            // UI State loading
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            resultDiv.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+            
+            try {
+                const payload = {};
+                if (period !== "") {
+                    payload.days_ago = parseInt(period);
+                }
+                
+                const res = await apiFetch(`/api/v1/portfolios/${activePortfolio.id}/journals/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || data.detail || 'Gagal menganalisis jurnal');
+                
+                if (data.status === 'success' && data.analysis) {
+                    resultDiv.innerHTML = marked.parse(data.analysis);
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    throw new Error(data.message || 'Gagal menganalisis jurnal');
+                }
+            } catch (err) {
+                alert("AI Coach Error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                loadingDiv.classList.add('hidden');
+            }
         }
 
         // ================= MODUL 5: PROFILE & SETTINGS =================

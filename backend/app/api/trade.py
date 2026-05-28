@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import sqlite3
 from app.services.yfinance_service import get_db_connection
+from app.services import ai_service
+from typing import Optional
 
 router = APIRouter(prefix="/api/v1/portfolios", tags=["trade"])
 

@@ -231,3 +231,34 @@ def get_ai_analysis_batch(stock_data_list: list[dict]) -> dict:
                 "alasan_analisis": f"Error: {str(e)}"
             })
         return {"results": error_results}
+
+async def analyze_trading_journal(journal_data_str: str) -> str:
+    """Menganalisis data jurnal trading dan memberikan evaluasi sebagai pelatih."""
+    if not settings.GEMINI_API_KEY:
+        return "⚠️ API Key Gemini belum dikonfigurasi. AI Coach tidak bisa diakses."
+        
+    try:
+        # Prompt sistem untuk AI
+        system_instruction = "Kamu adalah pelatih trading profesional (Hedge Fund Manager) spesialis Swing Trading. Analisis data riwayat jurnal trading yang diberikan. Berikan evaluasi objektif, jujur, dan blak-blakan. Kritik kesalahan yang sering muncul (misal SL bocor, R negatif besar) dan berikan saran actionable untuk memperbaiki Win Rate dan Expectancy. Gunakan bahasa Indonesia yang santai tapi profesional. Format output harus Markdown dengan heading, bullet points, dan mungkin sedikit emoji."
+        
+        # Inisialisasi client gemini baru dengan system instruction khusus ini
+        coach_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        
+        prompt = f"Berikut adalah riwayat transaksi trading saya (dalam bentuk teks/CSV):\n\n<JOURNAL_DATA>\n{journal_data_str}\n</JOURNAL_DATA>\n\nTolong analisis performa saya dan berikan rekomendasi perbaikannya."
+        
+        # Kita pakai model yang ringan & cepat
+        model_name = "gemini-2.5-flash"
+        
+        logger.info(f"[OUTBOUND GEMINI] Memanggil AI Coach untuk analisis jurnal...")
+        response = coach_client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.7,
+            ),
+        )
+        return response.text
+    except Exception as e:
+        logger.error(f"[OUTBOUND GEMINI ERROR] Failed to generate journal analysis: {e}")
+        return f"⚠️ Terjadi kesalahan saat memanggil AI Coach: {str(e)}"
