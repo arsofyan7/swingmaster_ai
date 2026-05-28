@@ -4,11 +4,13 @@ import numpy as np
 import time
 import sqlite3
 import datetime
-import hashlib
 import random
 import requests
+from passlib.context import CryptContext
 from app.core.logger import logger
 from app.core.config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 session = requests.Session()
 session.headers.update({
@@ -48,7 +50,7 @@ def calculate_accumulation_indicators(df: pd.DataFrame) -> pd.DataFrame:
     
     # C. METRIK DIVERGENSI SMART MONEY (Bobot Maks: 30 Poin)
     # Mencari anomali: Harga tertekan turun/sideways, TAPI Volume Flow (OBV) terakumulasi naik
-    price_return = df['close'].pct_change(periods=14).fillna(0)
+    price_return = df['close'].pct_change(periods=14).replace([np.inf, -np.inf], 0).fillna(0)
     obv_return = df['OBV'].pct_change(periods=14).replace([np.inf, -np.inf], 0).fillna(0)
     
     # Logika Skoring Divergensi:
@@ -197,7 +199,7 @@ def get_db_connection():
     cursor = conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM users")
     if cursor.fetchone()[0] == 0:
-        hashed_pw = hashlib.sha256("admin123".encode()).hexdigest()
+        hashed_pw = pwd_context.hash("admin123")
         cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", ("admin", "admin@swing.com", hashed_pw))
         user_id = cursor.lastrowid
         cursor.execute("INSERT INTO portfolios (user_id, name) VALUES (?, ?)", (user_id, "Default Portfolio"))

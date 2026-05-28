@@ -8,7 +8,7 @@
   "description": "Intelligent Swing Trading Screener",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Stock_market_chart_%28blue%29.svg/512px-Stock_market_chart_%28blue%29.svg.png",
+      "src": "/static/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }

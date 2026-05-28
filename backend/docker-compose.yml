@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: swingmaster_backend
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8000:8000" # Expose only to localhost for Reverse Proxy
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    volumes:
+      - ./market_data.db:/app/market_data.db

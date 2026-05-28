@@ -511,6 +511,60 @@
                 <span>📥</span> Export to Excel (CSV)
             </button>
         </div>
+
+        <!-- Journal Summary Dashboard -->
+        <div id="journalSummaryContainer" class="hidden mb-6 space-y-4">
+            <!-- Top Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">Total PnL</p>
+                    <p id="summaryTotalPnl" class="text-lg font-bold text-gray-900 dark:text-white">Rp 0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">Total R-Multiple</p>
+                    <p id="summaryTotalR" class="text-lg font-bold text-gray-900 dark:text-white">0.0 R</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">Win Rate</p>
+                    <p id="summaryWinRate" class="text-lg font-bold text-green-600 dark:text-green-400">0%</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">Total Trades</p>
+                    <p id="summaryTotalTrades" class="text-lg font-bold text-gray-900 dark:text-white">0</p>
+                </div>
+            </div>
+
+            <!-- Chart & Ticker Table -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Pie Chart -->
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder flex flex-col items-center justify-center min-h-[250px]">
+                    <h3 class="text-sm font-bold w-full text-left mb-2 text-gray-800 dark:text-gray-200">Win vs Loss</h3>
+                    <div class="relative w-full max-w-[200px] aspect-square">
+                        <canvas id="winLossChart"></canvas>
+                    </div>
+                </div>
+                <!-- Ticker Table -->
+                <div class="md:col-span-2 bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-200 dark:border-darkborder overflow-hidden flex flex-col h-[282px]">
+                    <div class="p-3 border-b border-gray-200 dark:border-darkborder font-bold text-sm bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-200 shrink-0">Performance By Ticker</div>
+                    <div class="overflow-y-auto flex-1">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="sticky top-0 bg-gray-100 dark:bg-gray-800 shadow-sm z-10">
+                                <tr class="text-gray-600 dark:text-gray-400 text-xs">
+                                    <th class="p-2 font-semibold pl-3">Ticker</th>
+                                    <th class="p-2 font-semibold text-center">Trades</th>
+                                    <th class="p-2 font-semibold text-center">Wins</th>
+                                    <th class="p-2 font-semibold text-right pr-3">Winrate</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryTickerTable" class="divide-y divide-gray-100 dark:divide-darkborder/50">
+                                <!-- JS injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div
             class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-200 dark:border-darkborder overflow-hidden">
             <div class="overflow-x-auto">
@@ -834,6 +888,16 @@
         });
 
         // --- App Routing & Auth ---
+        // --- API FETCH WRAPPER ---
+        async function apiFetch(url, options = {}) {
+            const token = localStorage.getItem('access_token');
+            if (!options.headers) options.headers = {};
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return fetch(url, options);
+        }
+
         let activeUser = null;
         let activePortfolio = null;
         let portfolios = [];
@@ -878,6 +942,7 @@
                 if (!res.ok) throw new Error(data.detail);
 
                 localStorage.setItem("active_user", JSON.stringify(data.user));
+                localStorage.setItem("access_token", data.access_token);
                 checkAuth();
             } catch (e) {
                 alert(e.message);
@@ -900,6 +965,7 @@
                 if (!res.ok) throw new Error(data.detail);
 
                 localStorage.setItem("active_user", JSON.stringify(data.user));
+                localStorage.setItem("access_token", data.access_token);
                 checkAuth();
             } catch (err) {
                 alert(err.message);
@@ -909,6 +975,7 @@
         function handleLogout() {
             localStorage.removeItem("active_user");
             localStorage.removeItem("active_portfolio");
+            localStorage.removeItem("access_token");
             activeUser = null;
             activePortfolio = null;
             checkAuth();
@@ -1132,7 +1199,7 @@
             if (body) options.body = JSON.stringify(body);
 
             try {
-                const response = await fetch(url, options);
+                const response = await apiFetch(url, options);
                 const data = await response.json();
 
                 if (!response.ok || data.status === 'error') {
@@ -2141,15 +2208,41 @@
             }
         }
 
+        let winLossChartInstance = null;
+
         function renderJournals(journals) {
             const tbody = document.getElementById('journalTable');
             tbody.innerHTML = '';
+            
+            const summaryContainer = document.getElementById('journalSummaryContainer');
+
             if (!journals || journals.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada riwayat transaksi di jurnal.</td></tr>';
+                if (summaryContainer) summaryContainer.classList.add('hidden');
                 return;
             }
 
+            if (summaryContainer) summaryContainer.classList.remove('hidden');
+
+            let totalPnl = 0;
+            let totalR = 0;
+            let wins = 0;
+            let losses = 0;
+            let tickerStats = {};
+
             journals.forEach(j => {
+                totalPnl += j.pnl_amount;
+                totalR += j.r_multiple || 0;
+                
+                if (j.pnl_amount > 0) wins++;
+                else losses++;
+
+                if (!tickerStats[j.ticker]) {
+                    tickerStats[j.ticker] = { trades: 0, wins: 0 };
+                }
+                tickerStats[j.ticker].trades++;
+                if (j.pnl_amount > 0) tickerStats[j.ticker].wins++;
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition border-b border-gray-100 dark:border-darkborder";
 
@@ -2187,6 +2280,93 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            // Update Summary DOM
+            const totalTrades = wins + losses;
+            const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+            
+            const pnlColorClass = totalPnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+            const rColorClass = totalR >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+
+            const elTotalPnl = document.getElementById('summaryTotalPnl');
+            if (elTotalPnl) {
+                elTotalPnl.className = `text-lg font-bold ${pnlColorClass}`;
+                elTotalPnl.innerText = `Rp ${totalPnl.toLocaleString('id-ID')}`;
+            }
+
+            const elTotalR = document.getElementById('summaryTotalR');
+            if (elTotalR) {
+                elTotalR.className = `text-lg font-bold ${rColorClass}`;
+                elTotalR.innerText = `${totalR.toFixed(2)} R`;
+            }
+
+            const elWinRate = document.getElementById('summaryWinRate');
+            if (elWinRate) {
+                elWinRate.innerText = `${winRate}%`;
+            }
+
+            const elTotalTrades = document.getElementById('summaryTotalTrades');
+            if (elTotalTrades) {
+                elTotalTrades.innerText = totalTrades;
+            }
+
+            // Update Pie Chart
+            const ctx = document.getElementById('winLossChart');
+            if (ctx) {
+                if (winLossChartInstance) {
+                    winLossChartInstance.destroy();
+                }
+                winLossChartInstance = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Win', 'Loss'],
+                        datasets: [{
+                            data: [wins, losses],
+                            backgroundColor: ['#22c55e', '#ef4444'], // green-500, red-500
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#475569',
+                                    usePointStyle: true,
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Render Ticker Table
+            const tickerTbody = document.getElementById('summaryTickerTable');
+            if (tickerTbody) {
+                tickerTbody.innerHTML = '';
+                
+                // Sort tickers by number of trades descending
+                const sortedTickers = Object.keys(tickerStats).sort((a, b) => tickerStats[b].trades - tickerStats[a].trades);
+                
+                sortedTickers.forEach(ticker => {
+                    const stats = tickerStats[ticker];
+                    const tWinRate = stats.trades > 0 ? ((stats.wins / stats.trades) * 100).toFixed(1) : 0;
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 dark:hover:bg-gray-800/30 transition border-b border-gray-100 dark:border-darkborder/50";
+                    tr.innerHTML = `
+                        <td class="p-2 pl-3 font-bold text-blue-600 dark:text-blue-400 text-xs hover:underline cursor-pointer" onclick="fetchAndOpenChart('${ticker}')">${ticker}</td>
+                        <td class="p-2 text-center text-xs text-gray-800 dark:text-gray-300">${stats.trades}</td>
+                        <td class="p-2 text-center text-xs text-green-600 dark:text-green-400 font-semibold">${stats.wins}</td>
+                        <td class="p-2 text-right pr-3 text-xs font-semibold text-gray-800 dark:text-gray-300">${tWinRate}%</td>
+                    `;
+                    tickerTbody.appendChild(tr);
+                });
+            }
         }
 
         function exportJournalCSV() {
@@ -2257,7 +2437,7 @@
 
         async function loadHistoryDates() {
             try {
-                const res = await fetch('/api/v1/history/dates');
+                const res = await apiFetch('/api/v1/history/dates');
                 const data = await res.json();
                 if (data.status === 'success') {
                     availableHistoryDates = data.data; // array of "YYYY-MM-DD"

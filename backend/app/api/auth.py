@@ -1,10 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 import sqlite3
-import hashlib
+import jwt
+from datetime import datetime, timedelta
+from passlib.context import CryptContext
 from app.services.yfinance_service import get_db_connection
+from app.core.config import settings
 
 router = APIRouter(prefix="/api/v1", tags=["auth"])
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class RegisterRequest(BaseModel):
     username: str
@@ -23,10 +27,23 @@ class PortfolioSettingsRequest(BaseModel):
     risk_per_trade_pct: float
 
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(hours=settings.JWT_EXPIRATION_HOURS)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    return encoded_jwt
+
+from app.core.rate_limit import limiter
 
 @router.post("/auth/register")
-def register_user(payload: RegisterRequest):
+@limiter.limit("3/minute")
+def register_user(request: Request, payload: RegisterRequest):
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -49,23 +66,30 @@ def register_user(payload: RegisterRequest):
         raise HTTPException(status_code=400, detail="Username atau email sudah terdaftar.")
     
     conn.close()
-    return {"status": "success", "user": {"id": user_id, "username": payload.username, "email": payload.email}}
+    
+    access_token = create_access_token(data={"sub": payload.username, "id": user_id})
+    return {"status": "success", "user": {"id": user_id, "username": payload.username, "email": payload.email}, "access_token": access_token}
 
 @router.post("/auth/login")
-def login_user(payload: LoginRequest):
+@limiter.limit("5/minute")
+def login_user(request: Request, payload: LoginRequest):
     conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
-    hashed_pw = hash_password(payload.password)
-    cursor.execute("SELECT id, username, email FROM users WHERE username = ? AND password = ?", (payload.username, hashed_pw))
+    cursor.execute("SELECT id, username, email, password FROM users WHERE username = ?", (payload.username,))
     user = cursor.fetchone()
     conn.close()
     
-    if not user:
+    if not user or not verify_password(payload.password, user['password']):
         raise HTTPException(status_code=401, detail="Username atau password salah.")
         
-    return {"status": "success", "user": dict(user)}
+    user_dict = dict(user)
+    del user_dict['password']
+    
+    access_token = create_access_token(data={"sub": user_dict['username'], "id": user_dict['id']})
+    
+    return {"status": "success", "user": user_dict, "access_token": access_token}
 
 @router.get("/users/{user_id}/portfolios")
 def get_user_portfolios(user_id: int):

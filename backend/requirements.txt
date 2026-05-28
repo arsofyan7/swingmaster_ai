@@ -6,3 +6,6 @@ google-genai
 pydantic-settings
 apscheduler
 httpx
+passlib[bcrypt]
+PyJWT
+slowapi

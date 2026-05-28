@@ -1,7 +1,8 @@
 import time
 from datetime import date
 from fastapi import APIRouter, HTTPException, Path
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+import re
 from app.services.yfinance_service import analyze_stock, smart_pre_filter
 from app.services.ai_service import get_ai_analysis_batch, get_cached_ai_analysis, save_ai_analysis_to_cache
 from app.services.constants import get_tickers_by_index
@@ -10,6 +11,15 @@ router = APIRouter(prefix="/api/v1/stock", tags=["Stock Screening"])
 
 class BatchScreenRequest(BaseModel):
     tickers: list[str]
+
+    @field_validator('tickers')
+    def sanitize_tickers(cls, v):
+        sanitized = []
+        for t in v:
+            t_clean = re.sub(r'[^a-zA-Z0-9]', '', t).upper().strip()
+            if t_clean:
+                sanitized.append(t_clean)
+        return sanitized
 
 def process_batch_ai(finalists: list[dict]) -> list[dict]:
     today_str = date.today().strftime('%Y-%m-%d')
@@ -112,6 +122,8 @@ def process_batch_ai(finalists: list[dict]) -> list[dict]:
 
 @router.get("/index/{index_name}")
 def screen_index(index_name: str = Path(..., description="Nama indeks: lq45, kompas100, swing_gems")):
+    index_name = re.sub(r'[^a-zA-Z0-9_]', '', index_name).lower().strip()
+    
     # 1. Ambil list ticker berdasarkan indeks
     tickers = get_tickers_by_index(index_name)
     if not tickers:
@@ -137,6 +149,10 @@ def screen_batch_stocks(payload: BatchScreenRequest):
 
 @router.get("/{ticker}")
 def get_single_stock(ticker: str, ai: bool = True):
+    ticker = re.sub(r'[^a-zA-Z0-9]', '', ticker).upper().strip()
+    if not ticker:
+        raise HTTPException(status_code=400, detail="Ticker tidak valid")
+        
     # 1. Ambil data mentah dari SQLite / Google Hub
     result = analyze_stock(ticker)
     if result.get("status") == "error":
