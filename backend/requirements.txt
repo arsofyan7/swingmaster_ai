@@ -6,6 +6,7 @@ google-genai
 pydantic-settings
 apscheduler
 httpx
-passlib[bcrypt]
+passlib
+bcrypt==3.2.0
 PyJWT
 slowapi
