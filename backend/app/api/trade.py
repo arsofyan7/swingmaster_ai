@@ -254,3 +254,33 @@ def export_journals(portfolio_id: int):
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=trade_journal_portfolio_{portfolio_id}.csv"}
     )
+
+class AnalyzeJournalRequest(BaseModel):
+    days_ago: Optional[int] = None
+
+@router.post("/{portfolio_id}/journals/analyze")
+async def analyze_journal(portfolio_id: int, payload: AnalyzeJournalRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if payload.days_ago:
+        cursor.execute("SELECT ticker, buy_price, sell_price, pnl_percentage, r_multiple, status, notes FROM trade_journals WHERE portfolio_id = ? AND close_date >= date('now', ?)", (portfolio_id, f"-{payload.days_ago} days"))
+    else:
+        cursor.execute("SELECT ticker, buy_price, sell_price, pnl_percentage, r_multiple, status, notes FROM trade_journals WHERE portfolio_id = ?", (portfolio_id,))
+        
+    rows = cursor.fetchall()
+    conn.close()
+    
+    if not rows:
+        return {"status": "error", "message": "Tidak ada data jurnal untuk rentang waktu ini."}
+        
+    # Format the rows to string
+    journal_text = "Ticker | Buy | Sell | PnL(%) | R-Mult | Status | Notes\n"
+    journal_text += "-" * 70 + "\n"
+    for r in rows:
+        journal_text += f"{r[0]} | {r[1]} | {r[2]} | {r[3]:.2f}% | {r[4]} | {r[5]} | {r[6]}\n"
+        
+    # Call AI Service
+    ai_response = await ai_service.analyze_trading_journal(journal_text)
+    
+    return {"status": "success", "analysis": ai_response}
