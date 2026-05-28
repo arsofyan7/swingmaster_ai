@@ -6,6 +6,7 @@ from google.genai import types
 from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.services.yfinance_service import get_db_connection
+from app.core.logger import logger
 
 class AIAnalysisSchema(BaseModel):
     ticker: str = Field(description="Ticker saham yang dianalisis")
@@ -66,7 +67,48 @@ def save_ai_analysis_to_cache(analysis_result: dict, date_str: str):
     except Exception as e:
         print(f"Error saving AI cache for {analysis_result.get('ticker')}: {e}")
 
-from app.core.logger import logger
+def _call_ai_with_fallback(prompt: str, config: types.GenerateContentConfig) -> str:
+    """Fungsi internal untuk memanggil AI dengan strategi fallback multi-model"""
+    api_key = settings.GEMINI_API_KEY
+    if not api_key or api_key == "YOUR_API_KEY_HERE":
+        raise Exception("API Key Gemini belum dikonfigurasi.")
+        
+    client = genai.Client(api_key=api_key)
+    
+    # ⚙️ STRATEGI BERLAPIS: FALLBACK ENGINE LIST
+    models_to_try = [
+        'gemini-3.5-flash',  # Prioritas Utama
+        'gemini-2.5-flash',  # Cadangan Kesatu
+        'gemma-4-31b-it'     # Benteng Terakhir
+    ]
+    
+    response = None
+    last_error = None
+    
+    # Mulai operasi gerilya mencari model yang siap tempur
+    for current_model in models_to_try:
+        try:
+            logger.info(f"[OUTBOUND AI] Menembak model: {current_model}...")
+            
+            response = client.models.generate_content(
+                model=current_model,
+                contents=prompt,
+                config=config,
+            )
+            # Jika sukses mendarat tanpa throw exception, kita kunci dan keluar dari loop failover!
+            logger.info(f"✅ [OUTBOUND AI RES] Sukses diproses oleh {current_model}!")
+            break
+            
+        except Exception as model_error:
+            last_error = model_error
+            logger.warn(f"⚠️ [OUTBOUND AI WARNING] Model {current_model} mogok/limit. Detail: {model_error}. Mencari jalur cadangan...")
+            continue # Lempar ke iterasi berikutnya (pindah model)
+    
+    # Jika semua amunisi model habis tapi tetep eror, lempar ke exception utama
+    if not response:
+        raise Exception(f"Seluruh rantai model failover lumpuh! Eror terakhir: {last_error}")
+
+    return response.text
 
 def get_ai_analysis_batch(stock_data_list: list[dict]) -> dict:
     if not stock_data_list:
@@ -96,8 +138,6 @@ def get_ai_analysis_batch(stock_data_list: list[dict]) -> dict:
         return {"results": mockup_results}
 
     try:
-        client = genai.Client(api_key=api_key)
-        
         # Buat string data dari list
         data_text = ""
         for s in stock_data_list:
@@ -175,44 +215,15 @@ def get_ai_analysis_batch(stock_data_list: list[dict]) -> dict:
 
         logger.info(f"[OUTBOUND GEMINI] Requesting batch analysis for {len(stock_data_list)} tickers | Payload length: {len(prompt)} chars")
 
-        # ⚙️ STRATEGI BERLAPIS: FALLBACK ENGINE LIST
-        models_to_try = [
-            'gemini-3.5-flash',  # Prioritas Utama
-            'gemini-2.5-flash',  # Cadangan Kesatu
-            'gemma-4-31b-it'     # Benteng Terakhir
-        ]
+        config = types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=BatchAIAnalysisSchema,
+            temperature=0.1
+        )
         
-        response = None
-        last_error = None
+        response_text = _call_ai_with_fallback(prompt, config)
+        return json.loads(response_text)
         
-        # Mulai operasi gerilya mencari model yang siap tempur
-        for current_model in models_to_try:
-            try:
-                logger.info(f"[OUTBOUND AI] Menembak model: {current_model} untuk {len(stock_data_list)} emiten...")
-                
-                response = client.models.generate_content(
-                    model=current_model,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        response_schema=BatchAIAnalysisSchema,
-                        temperature=0.1
-                    ),
-                )
-                # Jika sukses mendarat tanpa throw exception, kita kunci dan keluar dari loop failover!
-                logger.info(f"✅ [OUTBOUND AI RES] Sukses diproses oleh {current_model}!")
-                break
-                
-            except Exception as model_error:
-                last_error = model_error
-                logger.warn(f"⚠️ [OUTBOUND AI WARNING] Model {current_model} mogok/limit. Detail: {model_error}. Mencari jalur cadangan...")
-                continue # Lempar ke iterasi berikutnya (pindah model)
-        
-        # Jika semua amunisi model habis tapi tetep eror, lempar ke exception utama
-        if not response:
-            raise Exception(f"Seluruh rantai model failover lumpuh! Eror terakhir: {last_error}")
-
-        return json.loads(response.text)
     except Exception as e:
         logger.error(f"[OUTBOUND GEMINI ERROR] Failed to fetch batch analysis: {e}")
         # Kembalikan struktur error untuk setiap ticker
@@ -234,31 +245,22 @@ def get_ai_analysis_batch(stock_data_list: list[dict]) -> dict:
 
 async def analyze_trading_journal(journal_data_str: str) -> str:
     """Menganalisis data jurnal trading dan memberikan evaluasi sebagai pelatih."""
-    if not settings.GEMINI_API_KEY:
-        return "⚠️ API Key Gemini belum dikonfigurasi. AI Coach tidak bisa diakses."
-        
     try:
         # Prompt sistem untuk AI
-        system_instruction = "Kamu adalah pelatih trading profesional (Hedge Fund Manager) spesialis Swing Trading. Analisis data riwayat jurnal trading yang diberikan. Berikan evaluasi objektif, jujur, dan blak-blakan. Kritik kesalahan yang sering muncul (misal SL bocor, R negatif besar) dan berikan saran actionable untuk memperbaiki Win Rate dan Expectancy. Gunakan bahasa Indonesia yang santai tapi profesional. Format output harus Markdown dengan heading, bullet points, dan mungkin sedikit emoji."
-        
-        # Inisialisasi client gemini baru dengan system instruction khusus ini
-        coach_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        system_instruction = "Kamu adalah pelatih trading profesional (Hedge Fund Manager) spesialis Swing Trading. Analisis data riwayat jurnal trading yang diberikan. Berikan evaluasi objektif, jujur, dan blak-blakan. Kritik kesalahan yang sering muncul (misal SL bocor, R negatif besar) dan berikan saran actionable untuk memperbaiki Win Rate dan Expectancy. Gunakan bahasa Indonesia yang santai tapi profesional. Format output harus Markdown dengan heading, bullet points, dan mungkin sedikit emoji. Hasil analisis jangan bertele-tele, to the point tapi buat sangat mengena dan impactful."
         
         prompt = f"Berikut adalah riwayat transaksi trading saya (dalam bentuk teks/CSV):\n\n<JOURNAL_DATA>\n{journal_data_str}\n</JOURNAL_DATA>\n\nTolong analisis performa saya dan berikan rekomendasi perbaikannya."
         
-        # Kita pakai model yang ringan & cepat
-        model_name = "gemini-2.5-flash"
-        
         logger.info(f"[OUTBOUND GEMINI] Memanggil AI Coach untuk analisis jurnal...")
-        response = coach_client.models.generate_content(
-            model=model_name,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.7,
-            ),
+        
+        config = types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            temperature=0.7,
         )
-        return response.text
+        
+        response_text = _call_ai_with_fallback(prompt, config)
+        return response_text
+        
     except Exception as e:
         logger.error(f"[OUTBOUND GEMINI ERROR] Failed to generate journal analysis: {e}")
         return f"⚠️ Terjadi kesalahan saat memanggil AI Coach: {str(e)}"
