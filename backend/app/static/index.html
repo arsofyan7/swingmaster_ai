@@ -486,9 +486,29 @@
 
     <!-- Alerts View -->
     <main id="view-alerts" class="hidden max-w-7xl mx-auto p-3 sm:p-6 w-full pb-20 md:pb-6">
-        <div class="mb-6 flex justify-between items-center">
+        <div class="mb-4 flex justify-between items-center">
             <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500"><i class="fas fa-fire mr-2 text-red-500"></i> Daily Trading Alerts</h2>
             <button onclick="fetchAlerts()" class="text-gray-500 hover:text-blue-500 dark:text-gray-400 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+        </div>
+
+        <!-- Alerts Sub-Tabs -->
+        <div class="flex border-b border-gray-200 dark:border-darkborder mb-6">
+            <button id="alert-tab-today" onclick="switchAlertTab('today')" class="px-4 py-2 font-medium text-sm text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400 transition">Hari Ini (Live)</button>
+            <button id="alert-tab-history" onclick="switchAlertTab('history')" class="px-4 py-2 font-medium text-sm text-gray-500 hover:text-gray-700 border-b-2 border-transparent dark:text-gray-400 dark:hover:text-gray-300 transition">Riwayat Alert</button>
+        </div>
+
+        <!-- History Selector (Hidden by default) -->
+        <div id="alert-history-selector" class="hidden mb-6 bg-white dark:bg-darkcard rounded-xl p-4 shadow-sm border border-gray-200 dark:border-darkborder">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-gray-800 dark:text-gray-200">Pilih Tanggal Riwayat</h3>
+                <div class="flex space-x-2">
+                    <button onclick="changeAlertHistoryMonth(-1)" class="p-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i></button>
+                    <span id="alertHistoryMonthLabel" class="font-bold min-w-[120px] text-center flex items-center justify-center dark:text-gray-200">Bulan Tahun</span>
+                    <button onclick="changeAlertHistoryMonth(1)" class="p-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fas fa-chevron-right text-gray-600 dark:text-gray-400"></i></button>
+                </div>
+            </div>
+            <div id="alert-calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 text-center" id="selectedAlertDateInfo"></div>
         </div>
 
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-200 dark:border-darkborder overflow-hidden mb-8">
@@ -2697,12 +2717,14 @@
             }
         }
 
-        async function fetchAlerts() {
+        async function fetchAlerts(date = null) {
             try {
-                const res = await fetch('/alerts/');
+                let url = '/alerts/';
+                if (date) url += `?date=${date}`;
+                const res = await fetch(url);
                 const data = await res.json();
                 if (data.status === 'success') {
-                    renderAlertsTable(data.data);
+                    renderAlertsTable(data.data, date);
                 } else {
                     console.error("Failed to fetch alerts:", data.message);
                 }
@@ -2711,12 +2733,13 @@
             }
         }
 
-        function renderAlertsTable(alerts) {
+        function renderAlertsTable(alerts, date = null) {
             const tbody = document.getElementById('alertsTableBody');
             tbody.innerHTML = '';
             
             if (alerts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Belum ada alert yang ter-trigger hari ini.</td></tr>`;
+                const msg = date ? `Belum ada alert yang ter-trigger pada ${date}.` : `Belum ada alert yang ter-trigger hari ini.`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">${msg}</td></tr>`;
                 return;
             }
 
@@ -2747,6 +2770,101 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // --- Alert History Logic ---
+        let availableAlertDates = [];
+        let currentAlertDate = new Date();
+
+        function switchAlertTab(tab) {
+            const btnToday = document.getElementById('alert-tab-today');
+            const btnHistory = document.getElementById('alert-tab-history');
+            const historySelector = document.getElementById('alert-history-selector');
+
+            if (tab === 'today') {
+                btnToday.classList.add('border-blue-600', 'text-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+                btnToday.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                btnHistory.classList.remove('border-blue-600', 'text-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+                btnHistory.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                historySelector.classList.add('hidden');
+                document.getElementById('selectedAlertDateInfo').textContent = '';
+                fetchAlerts(); // Fetch today
+            } else {
+                btnHistory.classList.add('border-blue-600', 'text-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+                btnHistory.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                btnToday.classList.remove('border-blue-600', 'text-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+                btnToday.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                historySelector.classList.remove('hidden');
+                loadAlertHistoryDates();
+            }
+        }
+
+        async function loadAlertHistoryDates() {
+            try {
+                const res = await fetch('/alerts/dates');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    availableAlertDates = data.data;
+                    renderAlertHistoryCalendar();
+                }
+            } catch (e) {
+                console.error("Failed to load alert dates", e);
+            }
+        }
+
+        function changeAlertHistoryMonth(offset) {
+            currentAlertDate.setMonth(currentAlertDate.getMonth() + offset);
+            renderAlertHistoryCalendar();
+        }
+
+        function renderAlertHistoryCalendar() {
+            const grid = document.getElementById('alert-calendar-grid');
+            const label = document.getElementById('alertHistoryMonthLabel');
+            if(!grid || !label) return;
+
+            grid.innerHTML = '';
+            
+            const year = currentAlertDate.getFullYear();
+            const month = currentAlertDate.getMonth();
+            
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            label.textContent = `${monthNames[month]} ${year}`;
+
+            const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            daysOfWeek.forEach(d => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'font-bold text-gray-500 text-xs py-1';
+                dayEl.textContent = d;
+                grid.appendChild(dayEl);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasData = availableAlertDates.includes(dateStr);
+                
+                const dayBtn = document.createElement('button');
+                dayBtn.className = `p-2 rounded-full w-8 h-8 flex flex-col items-center justify-center mx-auto transition ${hasData ? 'cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-900 dark:text-gray-100 font-bold' : 'cursor-default text-gray-400 dark:text-gray-600'}`;
+                
+                dayBtn.innerHTML = `<span>${day}</span>`;
+                
+                if (hasData) {
+                    dayBtn.innerHTML += `<div class="w-1 h-1 bg-red-500 rounded-full mt-0.5"></div>`;
+                    dayBtn.onclick = () => {
+                        document.getElementById('selectedAlertDateInfo').textContent = `Menampilkan data tanggal: ${dateStr}`;
+                        fetchAlerts(dateStr);
+                    };
+                }
+
+                grid.appendChild(dayBtn);
+            }
         }
     </script>
 </body>
