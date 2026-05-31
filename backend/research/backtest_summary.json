@@ -1,0 +1,17 @@
+{
+    "metadata_simulasi": {
+        "deskripsi": "Simulasi Uang Nyata V8 (Hold 21 Hari, Trailing Stop BEP)",
+        "modal_awal_rp": 10000000,
+        "alokasi_per_peluru_rp": 1000000
+    },
+    "hasil_keseluruhan": {
+        "total_trade_dieksekusi": 4952,
+        "total_win": 1553,
+        "total_loss": 2277,
+        "total_bep_risk_free": 1122,
+        "win_rate_pct": 31.36,
+        "total_profit_bersih_rp": 6788461,
+        "saldo_akhir_rp": 16788461,
+        "roi_keseluruhan_pct": 67.88
+    }
+}

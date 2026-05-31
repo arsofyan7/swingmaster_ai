@@ -1,0 +1,38 @@
+{
+    "metadata": {
+        "deskripsi": "Backtest Strategi SwingMaster",
+        "holding_period": "14 Hari Bursa"
+    },
+    "hasil_berdasarkan_rezim_pasar": {
+        "IHSG_Fase_Uptrend": {
+            "keterangan": "Statistik Strategi Bottom Reversal MACD saat IHSG Uptrend",
+            "strategi": {
+                "Bottom_Reversal_MACD": {
+                    "total_trade": 7708,
+                    "win_rate_pct": 38.45,
+                    "rata_rata_pnl_14hari_pct": 1.83
+                }
+            }
+        },
+        "IHSG_Fase_Sideways": {
+            "keterangan": "Statistik Strategi Bottom Reversal MACD saat IHSG Sideways",
+            "strategi": {
+                "Bottom_Reversal_MACD": {
+                    "total_trade": 2099,
+                    "win_rate_pct": 28.73,
+                    "rata_rata_pnl_14hari_pct": -2.38
+                }
+            }
+        },
+        "IHSG_Fase_Downtrend": {
+            "keterangan": "Statistik Strategi Bottom Reversal MACD saat IHSG Downtrend",
+            "strategi": {
+                "Bottom_Reversal_MACD": {
+                    "total_trade": 5447,
+                    "win_rate_pct": 42.1,
+                    "rata_rata_pnl_14hari_pct": 1.91
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,4691 @@
+[
+    {
+        "ticker": "TOTL",
+        "total_trade": 36,
+        "win": 22,
+        "loss": 9,
+        "risk_free_bep": 5,
+        "win_rate_pct": 61.11,
+        "total_cuan_rupiah": 1566216
+    },
+    {
+        "ticker": "EXCL",
+        "total_trade": 27,
+        "win": 17,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 62.96,
+        "total_cuan_rupiah": 1140038
+    },
+    {
+        "ticker": "TSPC",
+        "total_trade": 24,
+        "win": 15,
+        "loss": 5,
+        "risk_free_bep": 4,
+        "win_rate_pct": 62.5,
+        "total_cuan_rupiah": 1087563
+    },
+    {
+        "ticker": "PGAS",
+        "total_trade": 36,
+        "win": 19,
+        "loss": 9,
+        "risk_free_bep": 8,
+        "win_rate_pct": 52.78,
+        "total_cuan_rupiah": 1033013
+    },
+    {
+        "ticker": "SILO",
+        "total_trade": 31,
+        "win": 14,
+        "loss": 2,
+        "risk_free_bep": 15,
+        "win_rate_pct": 45.16,
+        "total_cuan_rupiah": 962863
+    },
+    {
+        "ticker": "KEEN",
+        "total_trade": 21,
+        "win": 13,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 61.9,
+        "total_cuan_rupiah": 823623
+    },
+    {
+        "ticker": "HRUM",
+        "total_trade": 13,
+        "win": 10,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 76.92,
+        "total_cuan_rupiah": 820016
+    },
+    {
+        "ticker": "SCCO",
+        "total_trade": 26,
+        "win": 12,
+        "loss": 3,
+        "risk_free_bep": 11,
+        "win_rate_pct": 46.15,
+        "total_cuan_rupiah": 783197
+    },
+    {
+        "ticker": "KEJU",
+        "total_trade": 20,
+        "win": 12,
+        "loss": 7,
+        "risk_free_bep": 1,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 779999
+    },
+    {
+        "ticker": "JTPE",
+        "total_trade": 12,
+        "win": 9,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 719999
+    },
+    {
+        "ticker": "CITA",
+        "total_trade": 13,
+        "win": 9,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 69.23,
+        "total_cuan_rupiah": 666966
+    },
+    {
+        "ticker": "ARKO",
+        "total_trade": 9,
+        "win": 7,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 77.78,
+        "total_cuan_rupiah": 640000
+    },
+    {
+        "ticker": "BNGA",
+        "total_trade": 40,
+        "win": 20,
+        "loss": 14,
+        "risk_free_bep": 6,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 623594
+    },
+    {
+        "ticker": "TOTO",
+        "total_trade": 16,
+        "win": 9,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 56.25,
+        "total_cuan_rupiah": 612188
+    },
+    {
+        "ticker": "SUNI",
+        "total_trade": 14,
+        "win": 10,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 71.43,
+        "total_cuan_rupiah": 610196
+    },
+    {
+        "ticker": "BEEF",
+        "total_trade": 12,
+        "win": 7,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 58.33,
+        "total_cuan_rupiah": 580000
+    },
+    {
+        "ticker": "TINS",
+        "total_trade": 12,
+        "win": 7,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 58.33,
+        "total_cuan_rupiah": 580000
+    },
+    {
+        "ticker": "BRMS",
+        "total_trade": 14,
+        "win": 7,
+        "loss": 2,
+        "risk_free_bep": 5,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 579999
+    },
+    {
+        "ticker": "BSSR",
+        "total_trade": 15,
+        "win": 9,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 567610
+    },
+    {
+        "ticker": "ATIC",
+        "total_trade": 18,
+        "win": 8,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 44.44,
+        "total_cuan_rupiah": 564905
+    },
+    {
+        "ticker": "LPLI",
+        "total_trade": 14,
+        "win": 8,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 57.14,
+        "total_cuan_rupiah": 559999
+    },
+    {
+        "ticker": "IPCM",
+        "total_trade": 20,
+        "win": 10,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 554499
+    },
+    {
+        "ticker": "DOID",
+        "total_trade": 11,
+        "win": 8,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 72.73,
+        "total_cuan_rupiah": 550554
+    },
+    {
+        "ticker": "AMAG",
+        "total_trade": 17,
+        "win": 10,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 58.82,
+        "total_cuan_rupiah": 528174
+    },
+    {
+        "ticker": "AUTO",
+        "total_trade": 23,
+        "win": 9,
+        "loss": 5,
+        "risk_free_bep": 9,
+        "win_rate_pct": 39.13,
+        "total_cuan_rupiah": 517121
+    },
+    {
+        "ticker": "BBNI",
+        "total_trade": 16,
+        "win": 12,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 509366
+    },
+    {
+        "ticker": "NEST",
+        "total_trade": 5,
+        "win": 5,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 500000
+    },
+    {
+        "ticker": "SIMP",
+        "total_trade": 23,
+        "win": 11,
+        "loss": 10,
+        "risk_free_bep": 2,
+        "win_rate_pct": 47.83,
+        "total_cuan_rupiah": 495052
+    },
+    {
+        "ticker": "BDKR",
+        "total_trade": 10,
+        "win": 7,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 70.0,
+        "total_cuan_rupiah": 489523
+    },
+    {
+        "ticker": "HRTA",
+        "total_trade": 16,
+        "win": 7,
+        "loss": 2,
+        "risk_free_bep": 7,
+        "win_rate_pct": 43.75,
+        "total_cuan_rupiah": 485050
+    },
+    {
+        "ticker": "PDPP",
+        "total_trade": 11,
+        "win": 6,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 54.55,
+        "total_cuan_rupiah": 479999
+    },
+    {
+        "ticker": "SKLT",
+        "total_trade": 12,
+        "win": 6,
+        "loss": 2,
+        "risk_free_bep": 4,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 479999
+    },
+    {
+        "ticker": "AKRA",
+        "total_trade": 13,
+        "win": 6,
+        "loss": 3,
+        "risk_free_bep": 4,
+        "win_rate_pct": 46.15,
+        "total_cuan_rupiah": 472063
+    },
+    {
+        "ticker": "ACES",
+        "total_trade": 18,
+        "win": 7,
+        "loss": 4,
+        "risk_free_bep": 7,
+        "win_rate_pct": 38.89,
+        "total_cuan_rupiah": 459999
+    },
+    {
+        "ticker": "CASS",
+        "total_trade": 27,
+        "win": 10,
+        "loss": 9,
+        "risk_free_bep": 8,
+        "win_rate_pct": 37.04,
+        "total_cuan_rupiah": 459999
+    },
+    {
+        "ticker": "KDSI",
+        "total_trade": 26,
+        "win": 11,
+        "loss": 8,
+        "risk_free_bep": 7,
+        "win_rate_pct": 42.31,
+        "total_cuan_rupiah": 447676
+    },
+    {
+        "ticker": "PSAB",
+        "total_trade": 9,
+        "win": 5,
+        "loss": 1,
+        "risk_free_bep": 3,
+        "win_rate_pct": 55.56,
+        "total_cuan_rupiah": 440000
+    },
+    {
+        "ticker": "ASSA",
+        "total_trade": 15,
+        "win": 8,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 53.33,
+        "total_cuan_rupiah": 439999
+    },
+    {
+        "ticker": "ELPI",
+        "total_trade": 13,
+        "win": 8,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 61.54,
+        "total_cuan_rupiah": 434488
+    },
+    {
+        "ticker": "GHON",
+        "total_trade": 27,
+        "win": 13,
+        "loss": 12,
+        "risk_free_bep": 2,
+        "win_rate_pct": 48.15,
+        "total_cuan_rupiah": 420945
+    },
+    {
+        "ticker": "MAPA",
+        "total_trade": 24,
+        "win": 9,
+        "loss": 9,
+        "risk_free_bep": 6,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 406301
+    },
+    {
+        "ticker": "BUKA",
+        "total_trade": 4,
+        "win": 4,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 400000
+    },
+    {
+        "ticker": "SINI",
+        "total_trade": 6,
+        "win": 4,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 400000
+    },
+    {
+        "ticker": "PTIS",
+        "total_trade": 17,
+        "win": 9,
+        "loss": 7,
+        "risk_free_bep": 1,
+        "win_rate_pct": 52.94,
+        "total_cuan_rupiah": 389852
+    },
+    {
+        "ticker": "SRAJ",
+        "total_trade": 7,
+        "win": 6,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 85.71,
+        "total_cuan_rupiah": 388739
+    },
+    {
+        "ticker": "PBID",
+        "total_trade": 18,
+        "win": 11,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 61.11,
+        "total_cuan_rupiah": 384234
+    },
+    {
+        "ticker": "GTBO",
+        "total_trade": 11,
+        "win": 5,
+        "loss": 2,
+        "risk_free_bep": 4,
+        "win_rate_pct": 45.45,
+        "total_cuan_rupiah": 379999
+    },
+    {
+        "ticker": "JPFA",
+        "total_trade": 17,
+        "win": 8,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 47.06,
+        "total_cuan_rupiah": 379999
+    },
+    {
+        "ticker": "KRAS",
+        "total_trade": 10,
+        "win": 5,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 379999
+    },
+    {
+        "ticker": "DNET",
+        "total_trade": 25,
+        "win": 15,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 377818
+    },
+    {
+        "ticker": "INPP",
+        "total_trade": 13,
+        "win": 7,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 53.85,
+        "total_cuan_rupiah": 366993
+    },
+    {
+        "ticker": "WINS",
+        "total_trade": 11,
+        "win": 5,
+        "loss": 1,
+        "risk_free_bep": 5,
+        "win_rate_pct": 45.45,
+        "total_cuan_rupiah": 363041
+    },
+    {
+        "ticker": "AGRO",
+        "total_trade": 13,
+        "win": 6,
+        "loss": 4,
+        "risk_free_bep": 3,
+        "win_rate_pct": 46.15,
+        "total_cuan_rupiah": 359999
+    },
+    {
+        "ticker": "IGAR",
+        "total_trade": 19,
+        "win": 10,
+        "loss": 4,
+        "risk_free_bep": 5,
+        "win_rate_pct": 52.63,
+        "total_cuan_rupiah": 356723
+    },
+    {
+        "ticker": "MYOR",
+        "total_trade": 12,
+        "win": 6,
+        "loss": 1,
+        "risk_free_bep": 5,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 356131
+    },
+    {
+        "ticker": "PANI",
+        "total_trade": 5,
+        "win": 4,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 80.0,
+        "total_cuan_rupiah": 340000
+    },
+    {
+        "ticker": "TNCA",
+        "total_trade": 5,
+        "win": 4,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 80.0,
+        "total_cuan_rupiah": 340000
+    },
+    {
+        "ticker": "JSPT",
+        "total_trade": 6,
+        "win": 4,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 339999
+    },
+    {
+        "ticker": "INCI",
+        "total_trade": 32,
+        "win": 9,
+        "loss": 10,
+        "risk_free_bep": 13,
+        "win_rate_pct": 28.12,
+        "total_cuan_rupiah": 330176
+    },
+    {
+        "ticker": "ABMM",
+        "total_trade": 19,
+        "win": 7,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 36.84,
+        "total_cuan_rupiah": 327468
+    },
+    {
+        "ticker": "RAJA",
+        "total_trade": 15,
+        "win": 5,
+        "loss": 3,
+        "risk_free_bep": 7,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 319999
+    },
+    {
+        "ticker": "BOLT",
+        "total_trade": 7,
+        "win": 5,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 71.43,
+        "total_cuan_rupiah": 317755
+    },
+    {
+        "ticker": "BNLI",
+        "total_trade": 13,
+        "win": 4,
+        "loss": 3,
+        "risk_free_bep": 6,
+        "win_rate_pct": 30.77,
+        "total_cuan_rupiah": 314758
+    },
+    {
+        "ticker": "BOLA",
+        "total_trade": 3,
+        "win": 3,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 300000
+    },
+    {
+        "ticker": "ERAL",
+        "total_trade": 3,
+        "win": 3,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 300000
+    },
+    {
+        "ticker": "IMPC",
+        "total_trade": 6,
+        "win": 3,
+        "loss": 0,
+        "risk_free_bep": 3,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 300000
+    },
+    {
+        "ticker": "UNIQ",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 300000
+    },
+    {
+        "ticker": "ISSP",
+        "total_trade": 21,
+        "win": 8,
+        "loss": 7,
+        "risk_free_bep": 6,
+        "win_rate_pct": 38.1,
+        "total_cuan_rupiah": 295126
+    },
+    {
+        "ticker": "TRIM",
+        "total_trade": 20,
+        "win": 10,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 284405
+    },
+    {
+        "ticker": "CYBR",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 280000
+    },
+    {
+        "ticker": "NCKL",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 280000
+    },
+    {
+        "ticker": "BPFI",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 279999
+    },
+    {
+        "ticker": "IDPR",
+        "total_trade": 6,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 279999
+    },
+    {
+        "ticker": "KKGI",
+        "total_trade": 6,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 279999
+    },
+    {
+        "ticker": "PEVE",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 5,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": 279999
+    },
+    {
+        "ticker": "SCMA",
+        "total_trade": 7,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 57.14,
+        "total_cuan_rupiah": 279999
+    },
+    {
+        "ticker": "BRIS",
+        "total_trade": 20,
+        "win": 7,
+        "loss": 8,
+        "risk_free_bep": 5,
+        "win_rate_pct": 35.0,
+        "total_cuan_rupiah": 272718
+    },
+    {
+        "ticker": "KING",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 3,
+        "risk_free_bep": 4,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": 270566
+    },
+    {
+        "ticker": "DPNS",
+        "total_trade": 10,
+        "win": 6,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 270195
+    },
+    {
+        "ticker": "LPIN",
+        "total_trade": 15,
+        "win": 7,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 46.67,
+        "total_cuan_rupiah": 268248
+    },
+    {
+        "ticker": "CLEO",
+        "total_trade": 18,
+        "win": 6,
+        "loss": 6,
+        "risk_free_bep": 6,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 266974
+    },
+    {
+        "ticker": "MDLA",
+        "total_trade": 12,
+        "win": 5,
+        "loss": 3,
+        "risk_free_bep": 4,
+        "win_rate_pct": 41.67,
+        "total_cuan_rupiah": 261322
+    },
+    {
+        "ticker": "IMAS",
+        "total_trade": 13,
+        "win": 5,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 38.46,
+        "total_cuan_rupiah": 260000
+    },
+    {
+        "ticker": "SOHO",
+        "total_trade": 23,
+        "win": 10,
+        "loss": 9,
+        "risk_free_bep": 4,
+        "win_rate_pct": 43.48,
+        "total_cuan_rupiah": 256478
+    },
+    {
+        "ticker": "ALDO",
+        "total_trade": 18,
+        "win": 5,
+        "loss": 5,
+        "risk_free_bep": 8,
+        "win_rate_pct": 27.78,
+        "total_cuan_rupiah": 251935
+    },
+    {
+        "ticker": "SATU",
+        "total_trade": 23,
+        "win": 11,
+        "loss": 3,
+        "risk_free_bep": 9,
+        "win_rate_pct": 47.83,
+        "total_cuan_rupiah": 251222
+    },
+    {
+        "ticker": "CTRA",
+        "total_trade": 34,
+        "win": 9,
+        "loss": 9,
+        "risk_free_bep": 16,
+        "win_rate_pct": 26.47,
+        "total_cuan_rupiah": 250948
+    },
+    {
+        "ticker": "BANK",
+        "total_trade": 7,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 3,
+        "win_rate_pct": 42.86,
+        "total_cuan_rupiah": 240000
+    },
+    {
+        "ticker": "DGWG",
+        "total_trade": 4,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "ESTA",
+        "total_trade": 4,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "NIKL",
+        "total_trade": 9,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 5,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "OILS",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "PNBN",
+        "total_trade": 13,
+        "win": 6,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 46.15,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "PYFA",
+        "total_trade": 4,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "TPIA",
+        "total_trade": 4,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 75.0,
+        "total_cuan_rupiah": 239999
+    },
+    {
+        "ticker": "CRAB",
+        "total_trade": 7,
+        "win": 5,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 71.43,
+        "total_cuan_rupiah": 238474
+    },
+    {
+        "ticker": "TUGU",
+        "total_trade": 18,
+        "win": 8,
+        "loss": 8,
+        "risk_free_bep": 2,
+        "win_rate_pct": 44.44,
+        "total_cuan_rupiah": 237203
+    },
+    {
+        "ticker": "BIKE",
+        "total_trade": 12,
+        "win": 5,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 41.67,
+        "total_cuan_rupiah": 226942
+    },
+    {
+        "ticker": "SKBM",
+        "total_trade": 20,
+        "win": 7,
+        "loss": 8,
+        "risk_free_bep": 5,
+        "win_rate_pct": 35.0,
+        "total_cuan_rupiah": 219999
+    },
+    {
+        "ticker": "ASBI",
+        "total_trade": 19,
+        "win": 5,
+        "loss": 4,
+        "risk_free_bep": 10,
+        "win_rate_pct": 26.32,
+        "total_cuan_rupiah": 203478
+    },
+    {
+        "ticker": "PACK",
+        "total_trade": 5,
+        "win": 2,
+        "loss": 0,
+        "risk_free_bep": 3,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 200000
+    },
+    {
+        "ticker": "RMKO",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 0,
+        "risk_free_bep": 4,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 200000
+    },
+    {
+        "ticker": "TAPG",
+        "total_trade": 14,
+        "win": 5,
+        "loss": 5,
+        "risk_free_bep": 4,
+        "win_rate_pct": 35.71,
+        "total_cuan_rupiah": 199999
+    },
+    {
+        "ticker": "MMLP",
+        "total_trade": 17,
+        "win": 12,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 70.59,
+        "total_cuan_rupiah": 198230
+    },
+    {
+        "ticker": "CHIP",
+        "total_trade": 7,
+        "win": 4,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 57.14,
+        "total_cuan_rupiah": 197659
+    },
+    {
+        "ticker": "MLIA",
+        "total_trade": 7,
+        "win": 4,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 57.14,
+        "total_cuan_rupiah": 197389
+    },
+    {
+        "ticker": "INDS",
+        "total_trade": 13,
+        "win": 4,
+        "loss": 6,
+        "risk_free_bep": 3,
+        "win_rate_pct": 30.77,
+        "total_cuan_rupiah": 186216
+    },
+    {
+        "ticker": "ASDM",
+        "total_trade": 18,
+        "win": 7,
+        "loss": 7,
+        "risk_free_bep": 4,
+        "win_rate_pct": 38.89,
+        "total_cuan_rupiah": 185263
+    },
+    {
+        "ticker": "DSSA",
+        "total_trade": 6,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "GEMA",
+        "total_trade": 6,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "KOBX",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "PSGO",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "PTBA",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "RELI",
+        "total_trade": 14,
+        "win": 6,
+        "loss": 7,
+        "risk_free_bep": 1,
+        "win_rate_pct": 42.86,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "SMDM",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "TBLA",
+        "total_trade": 6,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "WIIM",
+        "total_trade": 5,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 60.0,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "YULE",
+        "total_trade": 7,
+        "win": 3,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 42.86,
+        "total_cuan_rupiah": 179999
+    },
+    {
+        "ticker": "GOOD",
+        "total_trade": 3,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 173821
+    },
+    {
+        "ticker": "TLDN",
+        "total_trade": 24,
+        "win": 10,
+        "loss": 8,
+        "risk_free_bep": 6,
+        "win_rate_pct": 41.67,
+        "total_cuan_rupiah": 170341
+    },
+    {
+        "ticker": "ADRO",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 159999
+    },
+    {
+        "ticker": "NOBU",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 3,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": 159999
+    },
+    {
+        "ticker": "BINA",
+        "total_trade": 35,
+        "win": 16,
+        "loss": 11,
+        "risk_free_bep": 8,
+        "win_rate_pct": 45.71,
+        "total_cuan_rupiah": 151788
+    },
+    {
+        "ticker": "SFAN",
+        "total_trade": 32,
+        "win": 9,
+        "loss": 14,
+        "risk_free_bep": 9,
+        "win_rate_pct": 28.12,
+        "total_cuan_rupiah": 140954
+    },
+    {
+        "ticker": "DAAZ",
+        "total_trade": 4,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 140000
+    },
+    {
+        "ticker": "ADMR",
+        "total_trade": 20,
+        "win": 8,
+        "loss": 11,
+        "risk_free_bep": 1,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "AMMS",
+        "total_trade": 3,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "DEWA",
+        "total_trade": 3,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "DGNS",
+        "total_trade": 4,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "PGEO",
+        "total_trade": 13,
+        "win": 5,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 38.46,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "SHIP",
+        "total_trade": 4,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "SOFA",
+        "total_trade": 3,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 139999
+    },
+    {
+        "ticker": "BOGA",
+        "total_trade": 7,
+        "win": 4,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 57.14,
+        "total_cuan_rupiah": 139967
+    },
+    {
+        "ticker": "MYOH",
+        "total_trade": 12,
+        "win": 5,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 41.67,
+        "total_cuan_rupiah": 139129
+    },
+    {
+        "ticker": "SKRN",
+        "total_trade": 10,
+        "win": 5,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 136086
+    },
+    {
+        "ticker": "TPMA",
+        "total_trade": 24,
+        "win": 7,
+        "loss": 8,
+        "risk_free_bep": 9,
+        "win_rate_pct": 29.17,
+        "total_cuan_rupiah": 128330
+    },
+    {
+        "ticker": "MOLI",
+        "total_trade": 15,
+        "win": 5,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 128165
+    },
+    {
+        "ticker": "AMRT",
+        "total_trade": 20,
+        "win": 10,
+        "loss": 10,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 126141
+    },
+    {
+        "ticker": "CEKA",
+        "total_trade": 12,
+        "win": 8,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 122455
+    },
+    {
+        "ticker": "UFOE",
+        "total_trade": 5,
+        "win": 2,
+        "loss": 0,
+        "risk_free_bep": 3,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 122079
+    },
+    {
+        "ticker": "IKBI",
+        "total_trade": 20,
+        "win": 6,
+        "loss": 8,
+        "risk_free_bep": 6,
+        "win_rate_pct": 30.0,
+        "total_cuan_rupiah": 119999
+    },
+    {
+        "ticker": "POLU",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 119999
+    },
+    {
+        "ticker": "PJAA",
+        "total_trade": 5,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 114747
+    },
+    {
+        "ticker": "CASA",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 113693
+    },
+    {
+        "ticker": "MTLA",
+        "total_trade": 29,
+        "win": 8,
+        "loss": 9,
+        "risk_free_bep": 12,
+        "win_rate_pct": 27.59,
+        "total_cuan_rupiah": 109238
+    },
+    {
+        "ticker": "SMMT",
+        "total_trade": 17,
+        "win": 7,
+        "loss": 8,
+        "risk_free_bep": 2,
+        "win_rate_pct": 41.18,
+        "total_cuan_rupiah": 108641
+    },
+    {
+        "ticker": "SMAR",
+        "total_trade": 2,
+        "win": 2,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 107518
+    },
+    {
+        "ticker": "ASII",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "ASJT",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "GRIA",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "HERO",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "KARW",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "KJEN",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "MPXL",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "NIRO",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "OKAS",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "PICO",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "PTMP",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "SONA",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "TRUK",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "VINS",
+        "total_trade": 1,
+        "win": 1,
+        "loss": 0,
+        "risk_free_bep": 0,
+        "win_rate_pct": 100.0,
+        "total_cuan_rupiah": 100000
+    },
+    {
+        "ticker": "HAIS",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": 99999
+    },
+    {
+        "ticker": "LPCK",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": 99999
+    },
+    {
+        "ticker": "MBSS",
+        "total_trade": 12,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 99999
+    },
+    {
+        "ticker": "PBSA",
+        "total_trade": 10,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 99999
+    },
+    {
+        "ticker": "PORT",
+        "total_trade": 16,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 7,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 99999
+    },
+    {
+        "ticker": "SGRO",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 89218
+    },
+    {
+        "ticker": "RISE",
+        "total_trade": 3,
+        "win": 2,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 66.67,
+        "total_cuan_rupiah": 84705
+    },
+    {
+        "ticker": "SAME",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": 80000
+    },
+    {
+        "ticker": "GOLD",
+        "total_trade": 17,
+        "win": 5,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 29.41,
+        "total_cuan_rupiah": 79999
+    },
+    {
+        "ticker": "INTD",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": 79999
+    },
+    {
+        "ticker": "LPGI",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 79999
+    },
+    {
+        "ticker": "OASA",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 79999
+    },
+    {
+        "ticker": "RONY",
+        "total_trade": 4,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 79999
+    },
+    {
+        "ticker": "MTMH",
+        "total_trade": 12,
+        "win": 4,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 79079
+    },
+    {
+        "ticker": "ULTJ",
+        "total_trade": 15,
+        "win": 5,
+        "loss": 6,
+        "risk_free_bep": 4,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 77931
+    },
+    {
+        "ticker": "FORE",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 73271
+    },
+    {
+        "ticker": "ANJT",
+        "total_trade": 16,
+        "win": 7,
+        "loss": 6,
+        "risk_free_bep": 3,
+        "win_rate_pct": 43.75,
+        "total_cuan_rupiah": 64107
+    },
+    {
+        "ticker": "HATM",
+        "total_trade": 5,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 61949
+    },
+    {
+        "ticker": "AKSI",
+        "total_trade": 9,
+        "win": 3,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 59999
+    },
+    {
+        "ticker": "DSNG",
+        "total_trade": 12,
+        "win": 3,
+        "loss": 4,
+        "risk_free_bep": 5,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 59999
+    },
+    {
+        "ticker": "MAIN",
+        "total_trade": 23,
+        "win": 6,
+        "loss": 9,
+        "risk_free_bep": 8,
+        "win_rate_pct": 26.09,
+        "total_cuan_rupiah": 59999
+    },
+    {
+        "ticker": "NELY",
+        "total_trade": 11,
+        "win": 3,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 27.27,
+        "total_cuan_rupiah": 59999
+    },
+    {
+        "ticker": "VOKS",
+        "total_trade": 11,
+        "win": 3,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 27.27,
+        "total_cuan_rupiah": 59999
+    },
+    {
+        "ticker": "NRCA",
+        "total_trade": 30,
+        "win": 10,
+        "loss": 9,
+        "risk_free_bep": 11,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 59837
+    },
+    {
+        "ticker": "MORA",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": 52752
+    },
+    {
+        "ticker": "LINK",
+        "total_trade": 10,
+        "win": 4,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 40845
+    },
+    {
+        "ticker": "COIN",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 40000
+    },
+    {
+        "ticker": "DKFT",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 40000
+    },
+    {
+        "ticker": "JRPT",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 40000
+    },
+    {
+        "ticker": "KSIX",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 40000
+    },
+    {
+        "ticker": "AWAN",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "AXIO",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "INRU",
+        "total_trade": 12,
+        "win": 4,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "KBLV",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "KIJA",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "MHKI",
+        "total_trade": 2,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "SAFE",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "SGER",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "TFAS",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 39999
+    },
+    {
+        "ticker": "AGII",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": 34604
+    },
+    {
+        "ticker": "KINO",
+        "total_trade": 10,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 30.0,
+        "total_cuan_rupiah": 33770
+    },
+    {
+        "ticker": "PZZA",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": 31827
+    },
+    {
+        "ticker": "BUAH",
+        "total_trade": 11,
+        "win": 5,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 45.45,
+        "total_cuan_rupiah": 27441
+    },
+    {
+        "ticker": "MTEL",
+        "total_trade": 13,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 5,
+        "win_rate_pct": 30.77,
+        "total_cuan_rupiah": 26058
+    },
+    {
+        "ticker": "AGAR",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "BFIN",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "BMAS",
+        "total_trade": 8,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "GPSO",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "GULA",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "GZCO",
+        "total_trade": 5,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 40.0,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "JARR",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 19999
+    },
+    {
+        "ticker": "MEGA",
+        "total_trade": 11,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 27.27,
+        "total_cuan_rupiah": 16719
+    },
+    {
+        "ticker": "SAMF",
+        "total_trade": 12,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 1886
+    },
+    {
+        "ticker": "MASB",
+        "total_trade": 8,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": 451
+    },
+    {
+        "ticker": "AIMS",
+        "total_trade": 9,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "BINO",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "CAKK",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "ECII",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "EURO",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "GGRP",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "IFSH",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "IKPM",
+        "total_trade": 13,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 5,
+        "win_rate_pct": 23.08,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "ISAT",
+        "total_trade": 21,
+        "win": 6,
+        "loss": 10,
+        "risk_free_bep": 5,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "PANS",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "PTPS",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 4,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "SSMS",
+        "total_trade": 9,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "STRK",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "TOBA",
+        "total_trade": 10,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 30.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "URBN",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "VICO",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 0,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "WIFI",
+        "total_trade": 9,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": 0
+    },
+    {
+        "ticker": "SOSS",
+        "total_trade": 8,
+        "win": 3,
+        "loss": 1,
+        "risk_free_bep": 4,
+        "win_rate_pct": 37.5,
+        "total_cuan_rupiah": -7368
+    },
+    {
+        "ticker": "CMRY",
+        "total_trade": 13,
+        "win": 4,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 30.77,
+        "total_cuan_rupiah": -12664
+    },
+    {
+        "ticker": "GTRA",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -19999
+    },
+    {
+        "ticker": "APII",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "BALI",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "CDIA",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "FILM",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "ITMA",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 4,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "KBLM",
+        "total_trade": 24,
+        "win": 5,
+        "loss": 8,
+        "risk_free_bep": 11,
+        "win_rate_pct": 20.83,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "KOKA",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "MAHA",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "MBMA",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "NICL",
+        "total_trade": 16,
+        "win": 4,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "OMRE",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "PANR",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "PGJO",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "PGUN",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "TIFA",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -20000
+    },
+    {
+        "ticker": "WOMF",
+        "total_trade": 7,
+        "win": 3,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 42.86,
+        "total_cuan_rupiah": -20589
+    },
+    {
+        "ticker": "OMED",
+        "total_trade": 9,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 5,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -22826
+    },
+    {
+        "ticker": "SMDR",
+        "total_trade": 14,
+        "win": 4,
+        "loss": 6,
+        "risk_free_bep": 4,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -23153
+    },
+    {
+        "ticker": "EKAD",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -25423
+    },
+    {
+        "ticker": "BJTM",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -27260
+    },
+    {
+        "ticker": "MICE",
+        "total_trade": 15,
+        "win": 5,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -34063
+    },
+    {
+        "ticker": "POWR",
+        "total_trade": 17,
+        "win": 3,
+        "loss": 12,
+        "risk_free_bep": 2,
+        "win_rate_pct": 17.65,
+        "total_cuan_rupiah": -38241
+    },
+    {
+        "ticker": "PDES",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -39999
+    },
+    {
+        "ticker": "AMIN",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "BBYB",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 3,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "INCO",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "INDO",
+        "total_trade": 7,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "PALM",
+        "total_trade": 6,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "TCID",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 5,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -40000
+    },
+    {
+        "ticker": "BAYU",
+        "total_trade": 36,
+        "win": 19,
+        "loss": 11,
+        "risk_free_bep": 6,
+        "win_rate_pct": 52.78,
+        "total_cuan_rupiah": -46627
+    },
+    {
+        "ticker": "CPIN",
+        "total_trade": 16,
+        "win": 5,
+        "loss": 8,
+        "risk_free_bep": 3,
+        "win_rate_pct": 31.25,
+        "total_cuan_rupiah": -50526
+    },
+    {
+        "ticker": "MDKI",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -55030
+    },
+    {
+        "ticker": "MPMX",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 1,
+        "risk_free_bep": 4,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -55121
+    },
+    {
+        "ticker": "MTWI",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 4,
+        "risk_free_bep": 3,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": -55310
+    },
+    {
+        "ticker": "CLPI",
+        "total_trade": 17,
+        "win": 5,
+        "loss": 10,
+        "risk_free_bep": 2,
+        "win_rate_pct": 29.41,
+        "total_cuan_rupiah": -57395
+    },
+    {
+        "ticker": "BLTZ",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -59999
+    },
+    {
+        "ticker": "BMTR",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -59999
+    },
+    {
+        "ticker": "CITY",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -59999
+    },
+    {
+        "ticker": "AKPI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "AMFG",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "AMOR",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "APEX",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "ASLI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "ASRI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "BACA",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "BMRI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "BOBA",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "BSML",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "BULL",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "CLAY",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "CSAP",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "CTBN",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "DART",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "DILD",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "EMAS",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "ENRG",
+        "total_trade": 15,
+        "win": 3,
+        "loss": 6,
+        "risk_free_bep": 6,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "ESSA",
+        "total_trade": 13,
+        "win": 3,
+        "loss": 6,
+        "risk_free_bep": 4,
+        "win_rate_pct": 23.08,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "FLMC",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "FOOD",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "FORU",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "HILL",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "HOMI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "KOPI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "KRYA",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "MMIX",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "MSJA",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "NATO",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "NSSS",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "OBAT",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "PEGE",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "PSAT",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "PTSN",
+        "total_trade": 23,
+        "win": 6,
+        "loss": 11,
+        "risk_free_bep": 6,
+        "win_rate_pct": 26.09,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "PUDP",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "RIGS",
+        "total_trade": 15,
+        "win": 3,
+        "loss": 6,
+        "risk_free_bep": 6,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "SAPX",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "SMLE",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "SOCI",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 4,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "SPRE",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "SSTM",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "TRIN",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "TRON",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "UNVR",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "VISI",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "VTNY",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "WINE",
+        "total_trade": 1,
+        "win": 0,
+        "loss": 1,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -60000
+    },
+    {
+        "ticker": "ASRM",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -63021
+    },
+    {
+        "ticker": "FITT",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -63248
+    },
+    {
+        "ticker": "SMBR",
+        "total_trade": 16,
+        "win": 4,
+        "loss": 8,
+        "risk_free_bep": 4,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -68128
+    },
+    {
+        "ticker": "DAYA",
+        "total_trade": 21,
+        "win": 6,
+        "loss": 8,
+        "risk_free_bep": 7,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -70074
+    },
+    {
+        "ticker": "IFII",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -71282
+    },
+    {
+        "ticker": "BSIM",
+        "total_trade": 4,
+        "win": 2,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 50.0,
+        "total_cuan_rupiah": -71440
+    },
+    {
+        "ticker": "PNGO",
+        "total_trade": 17,
+        "win": 5,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 29.41,
+        "total_cuan_rupiah": -74050
+    },
+    {
+        "ticker": "ROTI",
+        "total_trade": 3,
+        "win": 1,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -78115
+    },
+    {
+        "ticker": "UCID",
+        "total_trade": 13,
+        "win": 5,
+        "loss": 8,
+        "risk_free_bep": 0,
+        "win_rate_pct": 38.46,
+        "total_cuan_rupiah": -78940
+    },
+    {
+        "ticker": "ALKA",
+        "total_trade": 11,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 7,
+        "win_rate_pct": 9.09,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "ASPI",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "BLOG",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "BNBA",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "CBUT",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "CFIN",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "DEPO",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "GMTD",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "IMJS",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "ITIC",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "MPRO",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "MRAT",
+        "total_trade": 5,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "SIDO",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "SOTS",
+        "total_trade": 4,
+        "win": 1,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -80000
+    },
+    {
+        "ticker": "JSMR",
+        "total_trade": 14,
+        "win": 4,
+        "loss": 8,
+        "risk_free_bep": 2,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -88129
+    },
+    {
+        "ticker": "EPMT",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -88412
+    },
+    {
+        "ticker": "PNIN",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 3,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -89468
+    },
+    {
+        "ticker": "BELI",
+        "total_trade": 11,
+        "win": 4,
+        "loss": 3,
+        "risk_free_bep": 4,
+        "win_rate_pct": 36.36,
+        "total_cuan_rupiah": -90304
+    },
+    {
+        "ticker": "ZONE",
+        "total_trade": 9,
+        "win": 4,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 44.44,
+        "total_cuan_rupiah": -92611
+    },
+    {
+        "ticker": "MARK",
+        "total_trade": 20,
+        "win": 3,
+        "loss": 5,
+        "risk_free_bep": 12,
+        "win_rate_pct": 15.0,
+        "total_cuan_rupiah": -95260
+    },
+    {
+        "ticker": "BPII",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -96697
+    },
+    {
+        "ticker": "NISP",
+        "total_trade": 43,
+        "win": 12,
+        "loss": 21,
+        "risk_free_bep": 10,
+        "win_rate_pct": 27.91,
+        "total_cuan_rupiah": -97573
+    },
+    {
+        "ticker": "APIC",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "BMSR",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "GUNA",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "PNLF",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "PTRO",
+        "total_trade": 8,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "TBMS",
+        "total_trade": 16,
+        "win": 2,
+        "loss": 5,
+        "risk_free_bep": 9,
+        "win_rate_pct": 12.5,
+        "total_cuan_rupiah": -100000
+    },
+    {
+        "ticker": "ARGO",
+        "total_trade": 9,
+        "win": 1,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -101737
+    },
+    {
+        "ticker": "BUDI",
+        "total_trade": 18,
+        "win": 3,
+        "loss": 7,
+        "risk_free_bep": 8,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -103478
+    },
+    {
+        "ticker": "PEHA",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -115971
+    },
+    {
+        "ticker": "BSDE",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -119999
+    },
+    {
+        "ticker": "CBPE",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -119999
+    },
+    {
+        "ticker": "UDNG",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -119999
+    },
+    {
+        "ticker": "AMAR",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 7,
+        "risk_free_bep": 4,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "ARNA",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "BBRI",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "BHAT",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "BRNA",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "CINT",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "CMNP",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "COCO",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "DOOH",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "DOSS",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "FOLK",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "FUTR",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "GLVA",
+        "total_trade": 10,
+        "win": 3,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 30.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "HELI",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "IBOS",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "KICI",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "LIVE",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "LRNA",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "MDIY",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "NFCX",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "PNSE",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "PSSI",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "RAAM",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "ROCK",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "SMIL",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "STAA",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "TRST",
+        "total_trade": 2,
+        "win": 0,
+        "loss": 2,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -120000
+    },
+    {
+        "ticker": "BTPS",
+        "total_trade": 14,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 6,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -132142
+    },
+    {
+        "ticker": "LPPF",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -133529
+    },
+    {
+        "ticker": "PWON",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -136326
+    },
+    {
+        "ticker": "DMND",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 8,
+        "risk_free_bep": 3,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -139385
+    },
+    {
+        "ticker": "BUKK",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -140000
+    },
+    {
+        "ticker": "DWGL",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -140000
+    },
+    {
+        "ticker": "ERTX",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -140000
+    },
+    {
+        "ticker": "INDY",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -140000
+    },
+    {
+        "ticker": "SPTO",
+        "total_trade": 16,
+        "win": 3,
+        "loss": 10,
+        "risk_free_bep": 3,
+        "win_rate_pct": 18.75,
+        "total_cuan_rupiah": -140982
+    },
+    {
+        "ticker": "ADHI",
+        "total_trade": 19,
+        "win": 5,
+        "loss": 11,
+        "risk_free_bep": 3,
+        "win_rate_pct": 26.32,
+        "total_cuan_rupiah": -144776
+    },
+    {
+        "ticker": "ELSA",
+        "total_trade": 19,
+        "win": 5,
+        "loss": 12,
+        "risk_free_bep": 2,
+        "win_rate_pct": 26.32,
+        "total_cuan_rupiah": -146151
+    },
+    {
+        "ticker": "RMKE",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -146460
+    },
+    {
+        "ticker": "MIKA",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 4,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -146832
+    },
+    {
+        "ticker": "BMHS",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -150526
+    },
+    {
+        "ticker": "SMSM",
+        "total_trade": 15,
+        "win": 5,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 33.33,
+        "total_cuan_rupiah": -152306
+    },
+    {
+        "ticker": "MTDL",
+        "total_trade": 26,
+        "win": 5,
+        "loss": 14,
+        "risk_free_bep": 7,
+        "win_rate_pct": 19.23,
+        "total_cuan_rupiah": -157920
+    },
+    {
+        "ticker": "CARE",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 3,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -160000
+    },
+    {
+        "ticker": "EMTK",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -160000
+    },
+    {
+        "ticker": "LSIP",
+        "total_trade": 21,
+        "win": 5,
+        "loss": 11,
+        "risk_free_bep": 5,
+        "win_rate_pct": 23.81,
+        "total_cuan_rupiah": -160000
+    },
+    {
+        "ticker": "MEDC",
+        "total_trade": 16,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 8,
+        "win_rate_pct": 12.5,
+        "total_cuan_rupiah": -160000
+    },
+    {
+        "ticker": "ASGR",
+        "total_trade": 15,
+        "win": 3,
+        "loss": 8,
+        "risk_free_bep": 4,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -164943
+    },
+    {
+        "ticker": "BIRD",
+        "total_trade": 12,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -168711
+    },
+    {
+        "ticker": "ARCI",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "BABY",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "BRPT",
+        "total_trade": 15,
+        "win": 3,
+        "loss": 8,
+        "risk_free_bep": 4,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "CCSI",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "CHEK",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "FAST",
+        "total_trade": 6,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "FPNI",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "GOLF",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "LABA",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "MAPB",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "MNCN",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "PTSP",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "RCCC",
+        "total_trade": 3,
+        "win": 0,
+        "loss": 3,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -180000
+    },
+    {
+        "ticker": "SIPD",
+        "total_trade": 8,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -186457
+    },
+    {
+        "ticker": "KLBF",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 4,
+        "risk_free_bep": 3,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -189938
+    },
+    {
+        "ticker": "VICI",
+        "total_trade": 15,
+        "win": 4,
+        "loss": 11,
+        "risk_free_bep": 0,
+        "win_rate_pct": 26.67,
+        "total_cuan_rupiah": -194041
+    },
+    {
+        "ticker": "CSRA",
+        "total_trade": 17,
+        "win": 4,
+        "loss": 8,
+        "risk_free_bep": 5,
+        "win_rate_pct": 23.53,
+        "total_cuan_rupiah": -195785
+    },
+    {
+        "ticker": "BESS",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -200000
+    },
+    {
+        "ticker": "RUIS",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -200000
+    },
+    {
+        "ticker": "SMRA",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 5,
+        "risk_free_bep": 1,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -200000
+    },
+    {
+        "ticker": "BJBR",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -207421
+    },
+    {
+        "ticker": "ERAA",
+        "total_trade": 10,
+        "win": 2,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -209074
+    },
+    {
+        "ticker": "SSIA",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 10,
+        "risk_free_bep": 1,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -217058
+    },
+    {
+        "ticker": "ARTO",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -220000
+    },
+    {
+        "ticker": "BBLD",
+        "total_trade": 16,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 7,
+        "win_rate_pct": 12.5,
+        "total_cuan_rupiah": -220000
+    },
+    {
+        "ticker": "MDKA",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -220000
+    },
+    {
+        "ticker": "NICE",
+        "total_trade": 9,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -220000
+    },
+    {
+        "ticker": "PTPP",
+        "total_trade": 11,
+        "win": 2,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 18.18,
+        "total_cuan_rupiah": -220000
+    },
+    {
+        "ticker": "KAEF",
+        "total_trade": 9,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 4,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -221143
+    },
+    {
+        "ticker": "JECC",
+        "total_trade": 6,
+        "win": 1,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -231341
+    },
+    {
+        "ticker": "DVLA",
+        "total_trade": 16,
+        "win": 1,
+        "loss": 12,
+        "risk_free_bep": 3,
+        "win_rate_pct": 6.25,
+        "total_cuan_rupiah": -236356
+    },
+    {
+        "ticker": "IRRA",
+        "total_trade": 14,
+        "win": 1,
+        "loss": 8,
+        "risk_free_bep": 5,
+        "win_rate_pct": 7.14,
+        "total_cuan_rupiah": -237900
+    },
+    {
+        "ticker": "BBSS",
+        "total_trade": 15,
+        "win": 3,
+        "loss": 9,
+        "risk_free_bep": 3,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "CUAN",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 9,
+        "risk_free_bep": 2,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "DATA",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "LCKM",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "MINE",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "MITI",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "MSTI",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "SHID",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "SNLK",
+        "total_trade": 4,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "SRTG",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 9,
+        "risk_free_bep": 2,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "TRJA",
+        "total_trade": 6,
+        "win": 0,
+        "loss": 4,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -240000
+    },
+    {
+        "ticker": "AVIA",
+        "total_trade": 12,
+        "win": 3,
+        "loss": 8,
+        "risk_free_bep": 1,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -253333
+    },
+    {
+        "ticker": "RALS",
+        "total_trade": 7,
+        "win": 1,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -255045
+    },
+    {
+        "ticker": "EDGE",
+        "total_trade": 9,
+        "win": 1,
+        "loss": 6,
+        "risk_free_bep": 2,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -260000
+    },
+    {
+        "ticker": "KETR",
+        "total_trade": 10,
+        "win": 1,
+        "loss": 6,
+        "risk_free_bep": 3,
+        "win_rate_pct": 10.0,
+        "total_cuan_rupiah": -260000
+    },
+    {
+        "ticker": "SDRA",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -264009
+    },
+    {
+        "ticker": "PRAY",
+        "total_trade": 13,
+        "win": 1,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 7.69,
+        "total_cuan_rupiah": -267793
+    },
+    {
+        "ticker": "NICK",
+        "total_trade": 24,
+        "win": 5,
+        "loss": 12,
+        "risk_free_bep": 7,
+        "win_rate_pct": 20.83,
+        "total_cuan_rupiah": -267808
+    },
+    {
+        "ticker": "ARTA",
+        "total_trade": 9,
+        "win": 1,
+        "loss": 8,
+        "risk_free_bep": 0,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -268307
+    },
+    {
+        "ticker": "BTPN",
+        "total_trade": 12,
+        "win": 1,
+        "loss": 11,
+        "risk_free_bep": 0,
+        "win_rate_pct": 8.33,
+        "total_cuan_rupiah": -271253
+    },
+    {
+        "ticker": "BBMD",
+        "total_trade": 19,
+        "win": 2,
+        "loss": 10,
+        "risk_free_bep": 7,
+        "win_rate_pct": 10.53,
+        "total_cuan_rupiah": -273094
+    },
+    {
+        "ticker": "TLKM",
+        "total_trade": 19,
+        "win": 5,
+        "loss": 10,
+        "risk_free_bep": 4,
+        "win_rate_pct": 26.32,
+        "total_cuan_rupiah": -275939
+    },
+    {
+        "ticker": "MGRO",
+        "total_trade": 15,
+        "win": 4,
+        "loss": 9,
+        "risk_free_bep": 2,
+        "win_rate_pct": 26.67,
+        "total_cuan_rupiah": -275971
+    },
+    {
+        "ticker": "ARII",
+        "total_trade": 16,
+        "win": 2,
+        "loss": 8,
+        "risk_free_bep": 6,
+        "win_rate_pct": 12.5,
+        "total_cuan_rupiah": -280000
+    },
+    {
+        "ticker": "DMMX",
+        "total_trade": 14,
+        "win": 2,
+        "loss": 8,
+        "risk_free_bep": 4,
+        "win_rate_pct": 14.29,
+        "total_cuan_rupiah": -280000
+    },
+    {
+        "ticker": "KBLI",
+        "total_trade": 18,
+        "win": 4,
+        "loss": 11,
+        "risk_free_bep": 3,
+        "win_rate_pct": 22.22,
+        "total_cuan_rupiah": -280696
+    },
+    {
+        "ticker": "ANTM",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 6,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -282438
+    },
+    {
+        "ticker": "PTPW",
+        "total_trade": 28,
+        "win": 8,
+        "loss": 15,
+        "risk_free_bep": 5,
+        "win_rate_pct": 28.57,
+        "total_cuan_rupiah": -283486
+    },
+    {
+        "ticker": "HEAL",
+        "total_trade": 15,
+        "win": 4,
+        "loss": 11,
+        "risk_free_bep": 0,
+        "win_rate_pct": 26.67,
+        "total_cuan_rupiah": -290652
+    },
+    {
+        "ticker": "BTON",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "FMII",
+        "total_trade": 8,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "LFLO",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "LION",
+        "total_trade": 8,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "PPRI",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "TALF",
+        "total_trade": 14,
+        "win": 3,
+        "loss": 10,
+        "risk_free_bep": 1,
+        "win_rate_pct": 21.43,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "TIRA",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "YPAS",
+        "total_trade": 5,
+        "win": 0,
+        "loss": 5,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -300000
+    },
+    {
+        "ticker": "KMDS",
+        "total_trade": 17,
+        "win": 1,
+        "loss": 8,
+        "risk_free_bep": 8,
+        "win_rate_pct": 5.88,
+        "total_cuan_rupiah": -300729
+    },
+    {
+        "ticker": "ENAK",
+        "total_trade": 10,
+        "win": 0,
+        "loss": 10,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -319308
+    },
+    {
+        "ticker": "RANC",
+        "total_trade": 10,
+        "win": 1,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 10.0,
+        "total_cuan_rupiah": -320000
+    },
+    {
+        "ticker": "SPMA",
+        "total_trade": 11,
+        "win": 1,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 9.09,
+        "total_cuan_rupiah": -320000
+    },
+    {
+        "ticker": "TRUS",
+        "total_trade": 9,
+        "win": 1,
+        "loss": 7,
+        "risk_free_bep": 1,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -320000
+    },
+    {
+        "ticker": "UANG",
+        "total_trade": 12,
+        "win": 1,
+        "loss": 7,
+        "risk_free_bep": 4,
+        "win_rate_pct": 8.33,
+        "total_cuan_rupiah": -320000
+    },
+    {
+        "ticker": "TOWR",
+        "total_trade": 6,
+        "win": 0,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -329586
+    },
+    {
+        "ticker": "GDYR",
+        "total_trade": 14,
+        "win": 0,
+        "loss": 10,
+        "risk_free_bep": 4,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -332038
+    },
+    {
+        "ticker": "IPCC",
+        "total_trade": 16,
+        "win": 3,
+        "loss": 12,
+        "risk_free_bep": 1,
+        "win_rate_pct": 18.75,
+        "total_cuan_rupiah": -341332
+    },
+    {
+        "ticker": "BLUE",
+        "total_trade": 13,
+        "win": 4,
+        "loss": 9,
+        "risk_free_bep": 0,
+        "win_rate_pct": 30.77,
+        "total_cuan_rupiah": -346542
+    },
+    {
+        "ticker": "MIDI",
+        "total_trade": 16,
+        "win": 4,
+        "loss": 12,
+        "risk_free_bep": 0,
+        "win_rate_pct": 25.0,
+        "total_cuan_rupiah": -348948
+    },
+    {
+        "ticker": "JIHD",
+        "total_trade": 6,
+        "win": 0,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -360000
+    },
+    {
+        "ticker": "KMTR",
+        "total_trade": 6,
+        "win": 0,
+        "loss": 6,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -360000
+    },
+    {
+        "ticker": "CAMP",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -363636
+    },
+    {
+        "ticker": "TRGU",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -369259
+    },
+    {
+        "ticker": "MAPI",
+        "total_trade": 18,
+        "win": 3,
+        "loss": 12,
+        "risk_free_bep": 3,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -377811
+    },
+    {
+        "ticker": "FUJI",
+        "total_trade": 12,
+        "win": 1,
+        "loss": 8,
+        "risk_free_bep": 3,
+        "win_rate_pct": 8.33,
+        "total_cuan_rupiah": -380000
+    },
+    {
+        "ticker": "BNII",
+        "total_trade": 15,
+        "win": 1,
+        "loss": 10,
+        "risk_free_bep": 4,
+        "win_rate_pct": 6.67,
+        "total_cuan_rupiah": -390266
+    },
+    {
+        "ticker": "TBIG",
+        "total_trade": 12,
+        "win": 2,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 16.67,
+        "total_cuan_rupiah": -412081
+    },
+    {
+        "ticker": "BBSI",
+        "total_trade": 13,
+        "win": 2,
+        "loss": 11,
+        "risk_free_bep": 0,
+        "win_rate_pct": 15.38,
+        "total_cuan_rupiah": -413884
+    },
+    {
+        "ticker": "HMSP",
+        "total_trade": 9,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 2,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -420000
+    },
+    {
+        "ticker": "MAYA",
+        "total_trade": 10,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -420000
+    },
+    {
+        "ticker": "MREI",
+        "total_trade": 12,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 5,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -420000
+    },
+    {
+        "ticker": "POLI",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -420000
+    },
+    {
+        "ticker": "TEBE",
+        "total_trade": 7,
+        "win": 0,
+        "loss": 7,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -420000
+    },
+    {
+        "ticker": "CMNT",
+        "total_trade": 11,
+        "win": 1,
+        "loss": 9,
+        "risk_free_bep": 1,
+        "win_rate_pct": 9.09,
+        "total_cuan_rupiah": -423269
+    },
+    {
+        "ticker": "MERK",
+        "total_trade": 9,
+        "win": 0,
+        "loss": 9,
+        "risk_free_bep": 0,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -434579
+    },
+    {
+        "ticker": "INDR",
+        "total_trade": 10,
+        "win": 1,
+        "loss": 9,
+        "risk_free_bep": 0,
+        "win_rate_pct": 10.0,
+        "total_cuan_rupiah": -440000
+    },
+    {
+        "ticker": "DRMA",
+        "total_trade": 17,
+        "win": 3,
+        "loss": 9,
+        "risk_free_bep": 5,
+        "win_rate_pct": 17.65,
+        "total_cuan_rupiah": -479675
+    },
+    {
+        "ticker": "APLI",
+        "total_trade": 11,
+        "win": 0,
+        "loss": 8,
+        "risk_free_bep": 3,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -480000
+    },
+    {
+        "ticker": "KONI",
+        "total_trade": 15,
+        "win": 0,
+        "loss": 9,
+        "risk_free_bep": 6,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -540000
+    },
+    {
+        "ticker": "SURE",
+        "total_trade": 14,
+        "win": 0,
+        "loss": 9,
+        "risk_free_bep": 5,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -540000
+    },
+    {
+        "ticker": "BBHI",
+        "total_trade": 16,
+        "win": 0,
+        "loss": 10,
+        "risk_free_bep": 6,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -546734
+    },
+    {
+        "ticker": "PKPK",
+        "total_trade": 16,
+        "win": 2,
+        "loss": 12,
+        "risk_free_bep": 2,
+        "win_rate_pct": 12.5,
+        "total_cuan_rupiah": -561884
+    },
+    {
+        "ticker": "GJTL",
+        "total_trade": 27,
+        "win": 2,
+        "loss": 13,
+        "risk_free_bep": 12,
+        "win_rate_pct": 7.41,
+        "total_cuan_rupiah": -580000
+    },
+    {
+        "ticker": "DUTI",
+        "total_trade": 12,
+        "win": 0,
+        "loss": 11,
+        "risk_free_bep": 1,
+        "win_rate_pct": 0.0,
+        "total_cuan_rupiah": -586556
+    },
+    {
+        "ticker": "BDMN",
+        "total_trade": 25,
+        "win": 5,
+        "loss": 17,
+        "risk_free_bep": 3,
+        "win_rate_pct": 20.0,
+        "total_cuan_rupiah": -612121
+    },
+    {
+        "ticker": "WOOD",
+        "total_trade": 16,
+        "win": 1,
+        "loss": 12,
+        "risk_free_bep": 3,
+        "win_rate_pct": 6.25,
+        "total_cuan_rupiah": -620000
+    },
+    {
+        "ticker": "OBMD",
+        "total_trade": 18,
+        "win": 2,
+        "loss": 14,
+        "risk_free_bep": 2,
+        "win_rate_pct": 11.11,
+        "total_cuan_rupiah": -640000
+    },
+    {
+        "ticker": "BBTN",
+        "total_trade": 22,
+        "win": 2,
+        "loss": 18,
+        "risk_free_bep": 2,
+        "win_rate_pct": 9.09,
+        "total_cuan_rupiah": -821459
+    }
+]

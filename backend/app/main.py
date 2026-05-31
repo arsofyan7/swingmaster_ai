@@ -10,6 +10,7 @@ from app.api.auth import router as auth_router
 from app.api.dashboard import router as dashboard_router
 from app.api.trade import router as trade_router
 from app.api.history import router as history_router
+from app.api.alerts import router as alerts_router
 from app.core.logger import logger
 import time
 import sqlite3
@@ -106,11 +107,25 @@ async def lifespan(app: FastAPI):
             updated_at TIMESTAMP
         )
     ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS daily_alerts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL,
+            strategy_name TEXT NOT NULL,
+            signal_date DATE NOT NULL,
+            price_at_signal REAL NOT NULL,
+            target_price REAL,
+            stop_loss REAL,
+            status TEXT DEFAULT 'open'
+        )
+    ''')
     conn.commit()
     conn.close()
     
+    from app.services.AlertEngine import run_daily_alerts
     logger.info("[CORE SCHEDULER] Starting APScheduler...")
     scheduler.add_job(scheduled_eod_price_sync, 'cron', day_of_week='mon-fri', hour=17, minute=0)
+    scheduler.add_job(run_daily_alerts, 'cron', day_of_week='mon-fri', hour=17, minute=30)
     scheduler.add_job(scheduled_live_price_tick, 'cron', day_of_week='mon-fri', hour='8-16', minute='*/15')
     scheduler.start()
     
@@ -165,6 +180,7 @@ app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(trade_router)
 app.include_router(history_router)
+app.include_router(alerts_router)
 
 # Mount folder static untuk melayani file UI
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

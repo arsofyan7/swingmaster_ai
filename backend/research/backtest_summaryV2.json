@@ -1,0 +1,83 @@
+{
+    "metadata": {
+        "deskripsi": "Arena Gladiator: Multi-Strategy Backtest",
+        "holding_period": "14 Hari Bursa"
+    },
+    "hasil_berdasarkan_rezim_pasar": {
+        "IHSG_Fase_Uptrend": {
+            "keterangan": "Adu 4 Strategi saat IHSG Uptrend",
+            "strategi": {
+                "Strat_Bottom_Reversal": {
+                    "total_trade": 7708,
+                    "win_rate_pct": 38.45,
+                    "rata_rata_pnl_14hari_pct": 1.83
+                },
+                "Strat_Bottom_Vol_Spike": {
+                    "total_trade": 2017,
+                    "win_rate_pct": 38.27,
+                    "rata_rata_pnl_14hari_pct": 2.53
+                },
+                "Strat_Trend_Pullback": {
+                    "total_trade": 4437,
+                    "win_rate_pct": 43.75,
+                    "rata_rata_pnl_14hari_pct": 4.85
+                },
+                "Strat_MA_Golden_Cross": {
+                    "total_trade": 2470,
+                    "win_rate_pct": 42.87,
+                    "rata_rata_pnl_14hari_pct": 5.17
+                }
+            }
+        },
+        "IHSG_Fase_Sideways": {
+            "keterangan": "Adu 4 Strategi saat IHSG Sideways",
+            "strategi": {
+                "Strat_Bottom_Reversal": {
+                    "total_trade": 2099,
+                    "win_rate_pct": 28.73,
+                    "rata_rata_pnl_14hari_pct": -2.38
+                },
+                "Strat_Bottom_Vol_Spike": {
+                    "total_trade": 435,
+                    "win_rate_pct": 30.57,
+                    "rata_rata_pnl_14hari_pct": -1.05
+                },
+                "Strat_Trend_Pullback": {
+                    "total_trade": 617,
+                    "win_rate_pct": 35.01,
+                    "rata_rata_pnl_14hari_pct": -0.03
+                },
+                "Strat_MA_Golden_Cross": {
+                    "total_trade": 463,
+                    "win_rate_pct": 37.58,
+                    "rata_rata_pnl_14hari_pct": 1.18
+                }
+            }
+        },
+        "IHSG_Fase_Downtrend": {
+            "keterangan": "Adu 4 Strategi saat IHSG Downtrend",
+            "strategi": {
+                "Strat_Bottom_Reversal": {
+                    "total_trade": 5447,
+                    "win_rate_pct": 42.1,
+                    "rata_rata_pnl_14hari_pct": 1.91
+                },
+                "Strat_Bottom_Vol_Spike": {
+                    "total_trade": 1187,
+                    "win_rate_pct": 36.82,
+                    "rata_rata_pnl_14hari_pct": 1.02
+                },
+                "Strat_Trend_Pullback": {
+                    "total_trade": 1260,
+                    "win_rate_pct": 38.49,
+                    "rata_rata_pnl_14hari_pct": 2.02
+                },
+                "Strat_MA_Golden_Cross": {
+                    "total_trade": 947,
+                    "win_rate_pct": 39.28,
+                    "rata_rata_pnl_14hari_pct": 2.1
+                }
+            }
+        }
+    }
+}
