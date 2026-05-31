@@ -142,17 +142,22 @@ def run_strategy_matrix():
     }
 
     # Looping per Ticker untuk ngadu strategi
+    # Looping per Ticker untuk ngadu strategi
     for ticker, group in df.groupby('ticker'):
         hasil_strat_ticker = []
         
         for strat_name, strat_col in daftar_strategi.items():
-            strat_df = group[group[strat_col] == True]
+            # Filter hanya baris yang menghasilkan sinyal beli (True)
+            strat_df = group[group[strat_col] == True].copy()
             t_trade = len(strat_df)
             
-            # Abaikan strategi kalau gak ada sinyal sama sekali di saham ini
             if t_trade == 0:
                 continue
-                
+            
+            # AMBIL 5 TANGGAL TERAKHIR (Format YYYY-MM-DD)
+            # Kita ambil kolom 'date', urutkan dari yang terbaru, lalu ambil 5 teratas
+            tgl_terakhir = strat_df['date'].dt.strftime('%Y-%m-%d').sort_values(ascending=False).head(5).tolist()
+            
             t_win = strat_df['Is_Win'].sum()
             t_loss = strat_df['Is_Loss'].sum()
             t_bep = strat_df['Is_BEP'].sum()
@@ -162,6 +167,7 @@ def run_strategy_matrix():
             hasil_strat_ticker.append({
                 "strategi": strat_name,
                 "total_trade": int(t_trade),
+                "5_tanggal_trigger": tgl_terakhir,  # <-- TANGGAL TRIGGER DITAMBAHKAN DI SINI
                 "win": int(t_win),
                 "loss": int(t_loss),
                 "risk_free_bep": int(t_bep),

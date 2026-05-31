@@ -488,7 +488,10 @@
     <main id="view-alerts" class="hidden max-w-7xl mx-auto p-3 sm:p-6 w-full pb-20 md:pb-6">
         <div class="mb-4 flex justify-between items-center">
             <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500"><i class="fas fa-fire mr-2 text-red-500"></i> Daily Trading Alerts</h2>
-            <button onclick="fetchAlerts()" class="text-gray-500 hover:text-blue-500 dark:text-gray-400 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+            <div class="flex space-x-3">
+                <button onclick="copyAlertsAsList()" class="text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400 transition" id="copyAlertsBtn"><i class="fas fa-copy mr-1"></i> Copy List</button>
+                <button onclick="fetchAlerts()" class="text-gray-500 hover:text-blue-500 dark:text-gray-400 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+            </div>
         </div>
 
         <!-- Alerts Sub-Tabs -->
@@ -2769,6 +2772,41 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
+            });
+        }
+
+        function copyAlertsAsList() {
+            const rows = document.querySelectorAll('#alertsTableBody tr');
+            const tickers = [];
+            rows.forEach(tr => {
+                const tickerTd = tr.querySelector('td:first-child');
+                if (tickerTd && tickerTd.textContent && !tickerTd.textContent.includes("Belum ada alert")) {
+                    tickers.push(tickerTd.textContent.trim());
+                }
+            });
+            
+            if (tickers.length === 0) {
+                alert("Tidak ada data alert untuk dicopy.");
+                return;
+            }
+            
+            const listStr = tickers.join(", ");
+            navigator.clipboard.writeText(listStr).then(() => {
+                const btn = document.getElementById('copyAlertsBtn');
+                if (btn) {
+                    const origHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    btn.classList.add('text-green-500', 'dark:text-green-400');
+                    btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+                    setTimeout(() => {
+                        btn.innerHTML = origHtml;
+                        btn.classList.remove('text-green-500', 'dark:text-green-400');
+                        btn.classList.add('text-gray-500', 'dark:text-gray-400');
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error("Gagal copy", err);
+                alert("Gagal copy ke clipboard!");
             });
         }
 
