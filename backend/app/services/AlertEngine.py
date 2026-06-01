@@ -50,6 +50,11 @@ def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df['EMA_20_prev'] = df['EMA_20'].shift(1)
     df['MACD_prev'] = df['MACD'].shift(1)
 
+    # Values for Swing Reversal (Pivot Low)
+    df['low_prev'] = df['low'].shift(1)
+    df['low_prev2'] = df['low'].shift(2)
+    df['high_prev'] = df['high'].shift(1)
+
     return df
 
 def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
@@ -85,14 +90,22 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
         cond3 = (latest['OBV'] > latest['OBV_EMA_20']) and (latest['ADL'] > latest['ADL_EMA_20'])
         return cond1 and cond2 and cond3
 
+    # Swing_Reversal Logic
+    def check_swing_reversal(latest):
+        cond1 = latest['close'] > latest['EMA_200'] # Uptrend Makro
+        cond2 = (latest['low_prev'] < latest['low']) and (latest['low_prev'] < latest['low_prev2']) # is_pivot_low
+        cond3 = latest['close'] > latest['high_prev']
+        return cond1 and cond2 and cond3
+
     strategies = {
         "V8_Pullback": check_v8(latest),
         "V3_Breakout": check_v3(latest),
-        "V6_Bandar": check_v6(latest)
+        "V6_Bandar": check_v6(latest),
+        "Swing_Reversal": check_swing_reversal(latest)
     }
 
     # Evaluate based on rank
-    for rank in ['peringkat_1', 'peringkat_2', 'peringkat_3']:
+    for rank in ['peringkat_1', 'peringkat_2', 'peringkat_3', 'peringkat_4']:
         if rank in ticker_config:
             strategy_name = ticker_config[rank]['strategi']
             if strategies.get(strategy_name, False):
