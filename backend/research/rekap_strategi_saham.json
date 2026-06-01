@@ -1,0 +1,290 @@
+{
+    "V8_Pullback": [
+        {
+            "ticker": "TOTL",
+            "win_rate": 61.11,
+            "cuan": 78310847,
+            "total_trade": 36,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "EXCL",
+            "win_rate": 62.96,
+            "cuan": 57001915,
+            "total_trade": 27,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "TSPC",
+            "win_rate": 62.5,
+            "cuan": 54378167,
+            "total_trade": 24,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "PGAS",
+            "win_rate": 52.78,
+            "cuan": 51650692,
+            "total_trade": 36,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "SILO",
+            "win_rate": 45.16,
+            "cuan": 48143152,
+            "total_trade": 31,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "KEEN",
+            "win_rate": 61.9,
+            "cuan": 41181184,
+            "total_trade": 21,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "HRUM",
+            "win_rate": 76.92,
+            "cuan": 41000829,
+            "total_trade": 13,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "SCCO",
+            "win_rate": 46.15,
+            "cuan": 39159854,
+            "total_trade": 26,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "KEJU",
+            "win_rate": 60.0,
+            "cuan": 38999999,
+            "total_trade": 20,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "JTPE",
+            "win_rate": 75.0,
+            "cuan": 35999999,
+            "total_trade": 12,
+            "rank": "peringkat_2"
+        }
+    ],
+    "V3_Breakout": [
+        {
+            "ticker": "SHID",
+            "win_rate": 80.0,
+            "cuan": 20000000,
+            "total_trade": 5,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "MBMA",
+            "win_rate": 71.43,
+            "cuan": 18999999,
+            "total_trade": 7,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "MREI",
+            "win_rate": 66.67,
+            "cuan": 17000000,
+            "total_trade": 6,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "AIMS",
+            "win_rate": 80.0,
+            "cuan": 16999999,
+            "total_trade": 5,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "GPSO",
+            "win_rate": 80.0,
+            "cuan": 16999999,
+            "total_trade": 5,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "SGER",
+            "win_rate": 44.44,
+            "cuan": 16999999,
+            "total_trade": 9,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "TUGU",
+            "win_rate": 80.0,
+            "cuan": 16999999,
+            "total_trade": 5,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "BBTN",
+            "win_rate": 80.0,
+            "cuan": 16124606,
+            "total_trade": 5,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "SURE",
+            "win_rate": 55.56,
+            "cuan": 15999999,
+            "total_trade": 9,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "PNGO",
+            "win_rate": 66.67,
+            "cuan": 13999999,
+            "total_trade": 6,
+            "rank": "peringkat_2"
+        }
+    ],
+    "V6_Bandar": [
+        {
+            "ticker": "JRPT",
+            "win_rate": 93.85,
+            "cuan": 250980798,
+            "total_trade": 65,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "YULE",
+            "win_rate": 50.0,
+            "cuan": 144781127,
+            "total_trade": 72,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "KEJU",
+            "win_rate": 86.67,
+            "cuan": 124161984,
+            "total_trade": 30,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "JTPE",
+            "win_rate": 71.43,
+            "cuan": 122515151,
+            "total_trade": 42,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "BSSR",
+            "win_rate": 85.29,
+            "cuan": 100135129,
+            "total_trade": 34,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "BOLT",
+            "win_rate": 93.55,
+            "cuan": 92057648,
+            "total_trade": 31,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "PTIS",
+            "win_rate": 72.41,
+            "cuan": 85492610,
+            "total_trade": 29,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "SCCO",
+            "win_rate": 66.67,
+            "cuan": 85128549,
+            "total_trade": 33,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "MPRO",
+            "win_rate": 83.33,
+            "cuan": 84538154,
+            "total_trade": 24,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "TSPC",
+            "win_rate": 60.47,
+            "cuan": 81615132,
+            "total_trade": 43,
+            "rank": "peringkat_1"
+        }
+    ],
+    "Swing_Reversal": [
+        {
+            "ticker": "AIMS",
+            "win_rate": 65.0,
+            "cuan": 49999999,
+            "total_trade": 20,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "BHAT",
+            "win_rate": 100.0,
+            "cuan": 34235428,
+            "total_trade": 8,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "MEDC",
+            "win_rate": 58.82,
+            "cuan": 31999999,
+            "total_trade": 17,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "INDY",
+            "win_rate": 53.33,
+            "cuan": 27999999,
+            "total_trade": 15,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "HATM",
+            "win_rate": 50.0,
+            "cuan": 26496240,
+            "total_trade": 16,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "LPPF",
+            "win_rate": 61.11,
+            "cuan": 26310413,
+            "total_trade": 18,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "ISAT",
+            "win_rate": 53.33,
+            "cuan": 26061224,
+            "total_trade": 15,
+            "rank": "peringkat_2"
+        },
+        {
+            "ticker": "HELI",
+            "win_rate": 66.67,
+            "cuan": 25837209,
+            "total_trade": 9,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "TIFA",
+            "win_rate": 100.0,
+            "cuan": 25000000,
+            "total_trade": 5,
+            "rank": "peringkat_1"
+        },
+        {
+            "ticker": "AGRO",
+            "win_rate": 44.44,
+            "cuan": 24999999,
+            "total_trade": 18,
+            "rank": "peringkat_1"
+        }
+    ]
+}

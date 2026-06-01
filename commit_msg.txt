@@ -1,0 +1,11 @@
+feat: Implement Swing Reversal strategy & update backtest logic
+
+- Implemented Swing Reversal logic in AlertEngine.py (Support 4 strategies now).
+- Added RSI(14) filter with RSI_prev < 50 requirement.
+- Updated Pivot Low logic to check 3 days back (low[1] <= low[2] and low[1] <= low[3]).
+- Removed Close > EMA 200 filter for Swing Reversal as requested.
+- Synced the updated logic (RSI, Pivot Low, EMA filter removal) to engine_backtest_4strategi.py.
+- Updated matrix_saham.json with the latest backtest performance data.
+- Fixed file path in scratch_analyze.py to point to the correct matrix_saham.json file.
+- Generated new rekap_strategi_saham.json from scratch_analyze.py.
+- Minor UI updates in index.html to support the 4th strategy.

@@ -1,6 +1,6 @@
 import json
 
-file_path = r"d:\Coding\swingmaster_ai\backend\research\matrix_saham.json"
+file_path = r"d:\Coding\swingmaster_ai\backend\matrix_saham.json"
 
 with open(file_path, "r", encoding="utf-8") as f:
     data = json.load(f)
@@ -27,12 +27,19 @@ for ticker, ranks in data.items():
                 "rank": rank_key
             })
 
+output_data = {}
+
 for strat, items in strategies.items():
     # Filter valid items, e.g., total_trade >= 5 to have enough sample size
     valid_items = [x for x in items if x["total_trade"] >= 5 and x["cuan"] > 0]
     # Sort by cuan
     valid_items.sort(key=lambda x: x["cuan"], reverse=True)
     
-    print(f"\nTop 10 Saham untuk Strategi {strat} (berdasarkan Total Cuan & min 5 trade):")
-    for i, item in enumerate(valid_items[:10], 1):
-        print(f"{i}. {item['ticker']} - Cuan: Rp {item['cuan']:,} | Win Rate: {item['win_rate']}% | Total Trade: {item['total_trade']} | (Peringkat di Ticker ini: {item['rank']})")
+    # Store top 10
+    output_data[strat] = valid_items[:10]
+
+output_file = r"d:\Coding\swingmaster_ai\backend\research\rekap_strategi_saham.json"
+with open(output_file, "w", encoding="utf-8") as f:
+    json.dump(output_data, f, indent=4)
+
+print(f"Hasil rekap analisis berhasil disimpan di: {output_file}")

@@ -79,10 +79,21 @@ def run_strategy_matrix():
     # --- 3.4 Injeksi Logika PineScript (Swing Reversal) ---
     df['low_prev'] = df.groupby('ticker')['low'].shift(1)
     df['low_prev2'] = df.groupby('ticker')['low'].shift(2)
+    df['low_prev3'] = df.groupby('ticker')['low'].shift(3)
     df['high_prev'] = df.groupby('ticker')['high'].shift(1)
     
-    # Pivot Low Logic (Harga kemarin adalah titik terendah dari hari ini dan 2 hari lalu)
-    df['is_pivot_low'] = (df['low_prev'] < df['low']) & (df['low_prev'] < df['low_prev2'])
+    # RSI 14
+    delta = df.groupby('ticker')['close'].diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    df['avg_gain'] = gain.groupby(df['ticker']).transform(lambda x: x.ewm(alpha=1/14, min_periods=14, adjust=False).mean())
+    df['avg_loss'] = loss.groupby(df['ticker']).transform(lambda x: x.ewm(alpha=1/14, min_periods=14, adjust=False).mean())
+    df['rs'] = df['avg_gain'] / df['avg_loss']
+    df['RSI_14'] = 100 - (100 / (1 + df['rs']))
+    df['RSI_14_prev'] = df.groupby('ticker')['RSI_14'].shift(1)
+    
+    # Pivot Low Logic (Harga kemarin adalah titik terendah dari 3 hari terakhir)
+    df['is_pivot_low'] = (df['low_prev'] <= df['low_prev2']) & (df['low_prev'] <= df['low_prev3'])
 
     print("[4] Membangun MATRIX 4 STRATEGI (V8, V3, V6, & Swing_Reversal)...")
     # Filter Universal: Harga 200 - 5000 + Makro Uptrend
@@ -103,8 +114,8 @@ def run_strategy_matrix():
     df['Sinyal_V3_Breakout'] = df['Filter_Harga'] & Volume_Spike & Close_Cross_EMA20 & MACD_Menanjak
     df['Sinyal_V6_Bandar']   = df['Filter_Harga'] & df['Uptrend_Makro'] & Near_EMA20 & Bandar_Akumulasi
     
-    # PineScript Sinyal: Harga menembus High kemarin setelah membentuk Pivot Low
-    df['Sinyal_Swing_Reversal'] = df['Filter_Harga'] & df['Uptrend_Makro'] & df['is_pivot_low'] & (df['close'] > df['high_prev'])
+    # PineScript Sinyal: Harga menembus High kemarin setelah membentuk Pivot Low, Filter RSI < 50
+    df['Sinyal_Swing_Reversal'] = df['Filter_Harga'] & df['is_pivot_low'] & (df['close'] > df['high_prev']) & (df['RSI_14_prev'] < 50)
 
     print("[5] Simulasi Universal Smart Exit (21 Hari, Trailing BEP)...")
     df['Target_Profit'] = df['close'] * 1.10   

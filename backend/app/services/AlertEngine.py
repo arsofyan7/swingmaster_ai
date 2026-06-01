@@ -50,9 +50,20 @@ def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df['EMA_20_prev'] = df['EMA_20'].shift(1)
     df['MACD_prev'] = df['MACD'].shift(1)
 
+    # RSI 14
+    delta = df['close'].diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    avg_gain = gain.ewm(alpha=1/14, min_periods=14, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1/14, min_periods=14, adjust=False).mean()
+    rs = avg_gain / avg_loss
+    df['RSI_14'] = 100 - (100 / (1 + rs))
+    df['RSI_14_prev'] = df['RSI_14'].shift(1)
+
     # Values for Swing Reversal (Pivot Low)
     df['low_prev'] = df['low'].shift(1)
     df['low_prev2'] = df['low'].shift(2)
+    df['low_prev3'] = df['low'].shift(3)
     df['high_prev'] = df['high'].shift(1)
 
     return df
@@ -92,9 +103,9 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
 
     # Swing_Reversal Logic
     def check_swing_reversal(latest):
-        cond1 = latest['close'] > latest['EMA_200'] # Uptrend Makro
-        cond2 = (latest['low_prev'] < latest['low']) and (latest['low_prev'] < latest['low_prev2']) # is_pivot_low
-        cond3 = latest['close'] > latest['high_prev']
+        cond1 = (latest['low_prev'] <= latest['low_prev2']) and (latest['low_prev'] <= latest['low_prev3']) # is_pivot_low (3 days lookback)
+        cond2 = latest['close'] > latest['high_prev'] # Reversal Confirmation
+        cond3 = latest['RSI_14_prev'] < 50 # RSI Filter (Moderate)
         return cond1 and cond2 and cond3
 
     strategies = {
