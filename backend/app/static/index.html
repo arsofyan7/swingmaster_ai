@@ -2028,8 +2028,43 @@
             return emaData;
         }
 
-        function calculatePivotLows(data, lookback = 8) {
+        function calculateRSI(data, period = 14) {
+            let rsiData = [];
+            if (data.length <= period) return rsiData;
+            
+            let avgGain = 0, avgLoss = 0;
+            for (let i = 1; i <= period; i++) {
+                const change = data[i].close - data[i-1].close;
+                if (change > 0) avgGain += change;
+                else avgLoss -= change;
+            }
+            avgGain /= period;
+            avgLoss /= period;
+            
+            let rs = avgGain / (avgLoss === 0 ? 0.0001 : avgLoss);
+            let rsi = 100 - (100 / (1 + rs));
+            rsiData.push({ time: data[period].time, value: rsi });
+            
+            for (let i = period + 1; i < data.length; i++) {
+                const change = data[i].close - data[i-1].close;
+                const gain = change > 0 ? change : 0;
+                const loss = change < 0 ? -change : 0;
+                
+                avgGain = ((avgGain * (period - 1)) + gain) / period;
+                avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+                
+                rs = avgGain / (avgLoss === 0 ? 0.0001 : avgLoss);
+                rsi = 100 - (100 / (1 + rs));
+                rsiData.push({ time: data[i].time, value: rsi });
+            }
+            return rsiData;
+        }
+
+        function calculatePivotLows(data, rsiData, lookback = 8) {
             let markers = [];
+            const rsiMap = {};
+            rsiData.forEach(r => rsiMap[r.time] = r.value);
+            
             for (let i = lookback; i < data.length - 1; i++) {
                 let isPivot = true;
                 const currentLow = data[i].low;
@@ -2040,16 +2075,94 @@
                     }
                 }
                 if (isPivot) {
-                    markers.push({
-                        time: data[i].time,
-                        position: 'belowBar',
-                        color: '#f59e0b', // amber
-                        shape: 'arrowUp',
-                        text: 'Pivot Low'
-                    });
+                    const rsiVal = rsiMap[data[i].time];
+                    if (rsiVal !== undefined && rsiVal < 50) {
+                        markers.push({
+                            time: data[i].time,
+                            position: 'belowBar',
+                            color: '#f59e0b', // amber
+                            shape: 'arrowUp',
+                            text: 'Pivot Low'
+                        });
+                    }
                 }
             }
             return markers;
+        }
+
+        function calculateMACD(data, fast=12, slow=26, signal=9) {
+            const emaFast = calculateEMA(data, fast);
+            const emaSlow = calculateEMA(data, slow);
+            
+            let macdLine = [];
+            let slowMap = {};
+            emaSlow.forEach(d => slowMap[d.time] = d.value);
+            
+            emaFast.forEach(d => {
+                if (slowMap[d.time] !== undefined) {
+                    macdLine.push({ time: d.time, close: d.value - slowMap[d.time] });
+                }
+            });
+            
+            const signalLineData = calculateEMA(macdLine, signal);
+            let signalMap = {};
+            signalLineData.forEach(d => signalMap[d.time] = d.value);
+            
+            let macdResult = [];
+            let signalResult = [];
+            let histResult = [];
+            
+            macdLine.forEach(d => {
+                macdResult.push({ time: d.time, value: d.close });
+                if (signalMap[d.time] !== undefined) {
+                    signalResult.push({ time: d.time, value: signalMap[d.time] });
+                    const hist = d.close - signalMap[d.time];
+                    histResult.push({ 
+                        time: d.time, 
+                        value: hist,
+                        color: hist >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)'
+                    });
+                }
+            });
+            
+            return { macd: macdResult, signal: signalResult, hist: histResult };
+        }
+
+        function calculateOBV(data) {
+            let obvData = [];
+            if (!data.length) return obvData;
+            
+            let obv = 0;
+            obvData.push({ time: data[0].time, value: obv });
+            
+            for (let i = 1; i < data.length; i++) {
+                if (data[i].close > data[i-1].close) obv += data[i].volume;
+                else if (data[i].close < data[i-1].close) obv -= data[i].volume;
+                obvData.push({ time: data[i].time, value: obv });
+            }
+            return obvData;
+        }
+
+        function calculateADL(data) {
+            let adlData = [];
+            if (!data.length) return adlData;
+            
+            let adl = 0;
+            for (let i = 0; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                const close = data[i].close;
+                const volume = data[i].volume;
+                
+                let mfv = 0;
+                if (high !== low) {
+                    const mfm = ((close - low) - (high - close)) / (high - low);
+                    mfv = mfm * volume;
+                }
+                adl += mfv;
+                adlData.push({ time: data[i].time, value: adl });
+            }
+            return adlData;
         }
 
         function toggleStrategyIndicator(strategy) {
@@ -2068,9 +2181,15 @@
             });
 
             // Hide all overlays first
-            // Hide all overlays first
+            // Hide all overlays and subpanes first
             _activeChartRefs.ema20Series.applyOptions({ visible: false });
             _activeChartRefs.ema200Series.applyOptions({ visible: false });
+            if (_activeChartRefs.macdSeries) _activeChartRefs.macdSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.signalSeries) _activeChartRefs.signalSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.histSeries) _activeChartRefs.histSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: true }); // Default Show
             
             // Hide markers if they exist
             if (_activeChartRefs.markersPlugin) {
@@ -2091,9 +2210,16 @@
                     _activeChartRefs.ema200Series.applyOptions({ visible: true });
                 } else if (strategy === 'V3') {
                     _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                    if (_activeChartRefs.macdSeries) _activeChartRefs.macdSeries.applyOptions({ visible: true });
+                    if (_activeChartRefs.signalSeries) _activeChartRefs.signalSeries.applyOptions({ visible: true });
+                    if (_activeChartRefs.histSeries) _activeChartRefs.histSeries.applyOptions({ visible: true });
                 } else if (strategy === 'V6') {
                     _activeChartRefs.ema20Series.applyOptions({ visible: true });
                     _activeChartRefs.ema200Series.applyOptions({ visible: true });
+                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                    if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: true });
+                    if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: true });
                 } else if (strategy === 'SR') {
                     if (!_activeChartRefs.markersPlugin) {
                         try {
@@ -2190,7 +2316,8 @@
                 open: parseFloat(h.open),
                 high: parseFloat(h.high),
                 low: parseFloat(h.low),
-                close: parseFloat(h.close)
+                close: parseFloat(h.close),
+                volume: parseFloat(h.volume || 0)
             }));
 
             const volumeData = sortedHistory.map(h => ({
@@ -2220,13 +2347,42 @@
                 });
                 ema200Series.setData(calculateEMA(formattedOhlcvData, 200));
 
-                const pivotMarkers = calculatePivotLows(formattedOhlcvData, 8);
+                const pivotMarkers = calculatePivotLows(formattedOhlcvData, calculateRSI(formattedOhlcvData, 14), 8);
+
+                // --- Subpane Indicators (MACD, OBV, ADL) ---
+                const macdSeries = chart.addSeries(LightweightCharts.LineSeries, { color: '#2962FF', lineWidth: 1.5, visible: false, priceScaleId: 'macd' });
+                const signalSeries = chart.addSeries(LightweightCharts.LineSeries, { color: '#FF6D00', lineWidth: 1.5, visible: false, priceScaleId: 'macd' });
+                const histSeries = chart.addSeries(LightweightCharts.HistogramSeries, { visible: false, priceScaleId: 'macd' });
+                
+                macdSeries.priceScale().applyOptions({ scaleMargins: { top: 0.75, bottom: 0 } });
+                signalSeries.priceScale().applyOptions({ scaleMargins: { top: 0.75, bottom: 0 } });
+                histSeries.priceScale().applyOptions({ scaleMargins: { top: 0.75, bottom: 0 } });
+                
+                const macdData = calculateMACD(formattedOhlcvData);
+                macdSeries.setData(macdData.macd);
+                signalSeries.setData(macdData.signal);
+                histSeries.setData(macdData.hist);
+
+                const obvSeries = chart.addSeries(LightweightCharts.LineSeries, { color: '#22c55e', lineWidth: 1.5, visible: false, priceScaleId: 'obv' });
+                const adlSeries = chart.addSeries(LightweightCharts.LineSeries, { color: '#eab308', lineWidth: 1.5, visible: false, priceScaleId: 'adl' });
+                
+                obvSeries.priceScale().applyOptions({ scaleMargins: { top: 0.75, bottom: 0.125 } });
+                adlSeries.priceScale().applyOptions({ scaleMargins: { top: 0.875, bottom: 0 } });
+                
+                obvSeries.setData(calculateOBV(formattedOhlcvData));
+                adlSeries.setData(calculateADL(formattedOhlcvData));
 
                 _activeChartRefs = {
                     chart,
                     candleSeries,
+                    volumeSeries,
                     ema20Series,
                     ema200Series,
+                    macdSeries,
+                    signalSeries,
+                    histSeries,
+                    obvSeries,
+                    adlSeries,
                     pivotMarkers
                 };
 
