@@ -2070,7 +2070,11 @@
             // Hide all overlays first
             _activeChartRefs.ema20Series.applyOptions({ visible: false });
             _activeChartRefs.ema200Series.applyOptions({ visible: false });
-            // _activeChartRefs.candleSeries.setMarkers([]); // Removed, not supported in v5
+            
+            // Hide markers if they exist
+            if (_activeChartRefs.markersPlugin) {
+                _activeChartRefs.markersPlugin.setData([]);
+            }
 
             if (!isActive) {
                 // Turn on
@@ -2086,9 +2090,15 @@
                     _activeChartRefs.ema20Series.applyOptions({ visible: true });
                     _activeChartRefs.ema200Series.applyOptions({ visible: true });
                 } else if (strategy === 'SR') {
-                    // Markers are not natively supported in v5 without plugins
-                    // _activeChartRefs.candleSeries.setMarkers(_activeChartRefs.pivotMarkers);
-                    alert("Indikator Swing Reversal (Markers) tidak disupport oleh versi Lightweight Charts saat ini (v5).");
+                    if (!_activeChartRefs.markersPlugin) {
+                        try {
+                            _activeChartRefs.markersPlugin = LightweightCharts.createSeriesMarkers(_activeChartRefs.candleSeries, _activeChartRefs.pivotMarkers);
+                        } catch (e) {
+                            console.error("Marker plugin error:", e);
+                        }
+                    } else {
+                        _activeChartRefs.markersPlugin.setData(_activeChartRefs.pivotMarkers);
+                    }
                 }
             }
         }
