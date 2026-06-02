@@ -1343,84 +1343,76 @@
             }
         }
 
-        // --- Progress Bar Simulation ---
-        let _progressInterval = null;
-        let _progressStart = null;
-        let _tickerCount = 0;
-
-        const _fakeTickers = ['Mengambil data','Menghitung indikator','Menyiapkan payload','Mengirim ke Gemini','Memproses respons'];
+        // --- Real-time SSE Progress ---
+        let _sseSource = null;
 
         function startProgressBar(estimatedTickers = 30) {
-            _tickerCount = estimatedTickers;
-            _progressStart = Date.now();
             const loadingEl = document.getElementById('loadingState');
             loadingEl.classList.remove('hidden');
             loadingEl.classList.add('flex', 'flex-col');
 
             // Reset UI
-            setProgress(0, 'Mempersiapkan koneksi ke server...');
+            setProgress(3, 'Menghubungkan ke server...');
             setPhase(1, 'active');
             setPhase(2, 'idle');
             setPhase(3, 'idle');
+            document.getElementById('progressEta').textContent = '';
 
-            // Estimate durations (ms)
-            // Phase 1: ~3.5s per ticker
-            const p1Duration = estimatedTickers * 3500;
-            // Phase 2: ~70s per 12 tickers (batched)
-            const numBatches = Math.ceil(estimatedTickers / 12);
-            const p2Duration = numBatches * 70000;
-            const totalDuration = p1Duration + p2Duration;
+            // Close any existing SSE connection
+            if (_sseSource) { _sseSource.close(); _sseSource = null; }
 
-            // Phase boundaries as % of total
-            const p1End = (p1Duration / totalDuration) * 70; // phase1 covers 0-70% of bar
-            const p2End = 95; // phase2 covers 70-95% of bar
+            // Open SSE stream to backend progress endpoint
+            _sseSource = new EventSource('/api/v1/stock/progress');
 
-            let tickersFetched = 0;
-            const allTickers = [...Array(estimatedTickers).keys()].map(i => `Ticker ${i+1}`);
+            _sseSource.onmessage = (event) => {
+                try {
+                    const d = JSON.parse(event.data);
+                    const stage  = d.stage   || 'idle';
+                    const msg    = d.message || '';
+                    const pct    = d.pct     || 0;
+                    const detail = d.detail  || '';
 
-            _progressInterval = setInterval(() => {
-                const elapsed = Date.now() - _progressStart;
-                const elapsedSec = Math.floor(elapsed / 1000);
+                    if (stage === 'idle') return;
 
-                // Determine current phase
-                if (elapsed < p1Duration) {
-                    // Phase 1: data fetch
-                    const p1Progress = Math.min(elapsed / p1Duration, 1);
-                    const pct = Math.round(p1Progress * p1End);
-                    tickersFetched = Math.min(Math.floor(p1Progress * estimatedTickers), estimatedTickers);
-                    const etaSec = Math.max(0, Math.round((totalDuration - elapsed) / 1000));
-                    const etaLabel = etaSec > 60 ? `~${Math.round(etaSec/60)} menit` : `~${etaSec} detik`;
-                    setProgress(pct, `Mengambil data historis... (${tickersFetched}/${estimatedTickers} ticker)`, etaLabel);
-                    setPhase(1, 'active');
-                    setPhase(2, 'idle');
-                    addLog(`[FETCH] Mengambil data ticker #${tickersFetched}...`);
-                } else if (elapsed < p1Duration + p2Duration) {
-                    // Phase 2: AI batch
-                    const p2Elapsed = elapsed - p1Duration;
-                    const p2Progress = Math.min(p2Elapsed / p2Duration, 1);
-                    const pct = Math.round(p1End + (p2Progress * (p2End - p1End)));
-                    const batchNum = Math.ceil(p2Progress * numBatches);
-                    const etaSec = Math.max(0, Math.round((p1Duration + p2Duration - elapsed) / 1000));
-                    const etaLabel = etaSec > 60 ? `~${Math.round(etaSec/60)} menit` : `~${etaSec} detik`;
-                    setProgress(pct, `AI menganalisis batch ${batchNum}/${numBatches} (Gemini Flash)...`, etaLabel);
-                    setPhase(1, 'done');
-                    setPhase(2, 'active');
-                    addLog(`[AI] Memproses batch ke-${batchNum} dari ${numBatches}...`);
-                } else {
-                    // Stall at 95% until done
-                    setProgress(95, 'Menunggu respons final dari server...', 'Sebentar lagi...');
-                    setPhase(1, 'done');
-                    setPhase(2, 'active');
-                    addLog('[AI] Finalisasi analisis...');
-                }
-            }, 2000);
+                    if (stage === 'pre_filter') {
+                        setProgress(pct, msg, '');
+                        setPhase(1, 'active');
+                        setPhase(2, 'idle');
+                        addLog(`[FILTER] ${detail}`);
+                    } else if (stage === 'pre_filter_done') {
+                        setProgress(pct, msg, '');
+                        setPhase(1, 'done');
+                        setPhase(2, 'active');
+                        addLog(`[FILTER] ${detail}`);
+                    } else if (stage === 'ai_cache') {
+                        setProgress(pct, msg, '');
+                        setPhase(1, 'done');
+                        setPhase(2, 'active');
+                        addLog(`[CACHE] ${detail}`);
+                    } else if (stage === 'ai_processing') {
+                        setProgress(pct, msg, '');
+                        setPhase(1, 'done');
+                        setPhase(2, 'active');
+                        addLog(`[GEMINI] ${detail}`);
+                    } else if (stage === 'ai_chunk_done') {
+                        setProgress(pct, msg, '');
+                        addLog(`[GEMINI] ${detail}`);
+                    } else if (stage === 'done') {
+                        // Backend done — close SSE, let stopProgressBar() do the final render
+                        _sseSource.close();
+                        _sseSource = null;
+                    }
+                } catch(e) { /* ignore parse errors */ }
+            };
+
+            _sseSource.onerror = () => {
+                // SSE closed normally when screener finishes
+                if (_sseSource) { _sseSource.close(); _sseSource = null; }
+            };
         }
 
         function stopProgressBar() {
-            if (_progressInterval) {
-                clearInterval(_progressInterval);
-                _progressInterval = null;
-            }
+            if (_sseSource) { _sseSource.close(); _sseSource = null; }
             setProgress(100, 'Analisis selesai! Merender hasil...', 'Done ✓');
             setPhase(1, 'done');
             setPhase(2, 'done');
