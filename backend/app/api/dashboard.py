@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import sqlite3
+from datetime import date
 from app.services.yfinance_service import get_db_connection
 
 router = APIRouter(prefix="/api/v1/portfolios", tags=["dashboard"])
@@ -57,11 +58,23 @@ def get_dashboard(portfolio_id: int):
         dist_tp = ((p['target_tp'] - current_price) / current_price) * 100 if p['target_tp'] else 0
         dist_sl = ((current_price - p['target_sl']) / current_price) * 100 if p['target_sl'] else 0
         
+        # Calculate days held
+        buy_date_str = p['buy_date'] if p['buy_date'] else None
+        days_held = 0
+        if buy_date_str:
+            try:
+                buy_dt = date.fromisoformat(buy_date_str[:10])
+                days_held = (date.today() - buy_dt).days
+            except:
+                pass
+
         active_positions.append({
             "id": p['id'],
             "ticker": p['ticker'],
             "sector": p['sector'],
             "buy_price": p['buy_price'],
+            "buy_date": buy_date_str,
+            "days_held": days_held,
             "current_price": round(current_price, 2),
             "total_lot": p['total_lot'],
             "target_tp": p['target_tp'],

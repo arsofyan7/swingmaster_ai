@@ -334,6 +334,7 @@
                                     <th class="p-3 font-semibold">Rp</th>
                                     <th class="p-3 font-semibold">Floating P/L</th>
                                     <th class="p-3 font-semibold">% Floating</th>
+                                    <th class="p-3 font-semibold text-center">Days Held</th>
                                     <th class="p-3 font-semibold text-center">Action</th>
                                 </tr>
                             </thead>
@@ -1770,7 +1771,7 @@
             const tbody = document.getElementById('activePositionsTable');
             tbody.innerHTML = '';
             if (!positions || positions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No active positions found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-gray-500">No active positions found.</td></tr>';
                 return;
             }
 
@@ -1806,6 +1807,13 @@
                     <td class="p-3">${investedRp.toLocaleString('id-ID')}</td>
                     <td class="p-3 font-bold ${pnlColor}">${pnlSign}Rp ${p.floating_pnl.toLocaleString('id-ID')}</td>
                     <td class="p-3 font-semibold ${pnlColor}">${pnlSign}${pnlPct.toFixed(2)}%</td>
+                    <td class="p-3 text-center">
+                        ${(() => {
+                            const d = p.days_held || 0;
+                            const dColor = d <= 5 ? 'text-green-600 dark:text-green-400' : d <= 14 ? 'text-orange-500 dark:text-orange-400' : 'text-red-600 dark:text-red-400';
+                            return `<span class="font-bold ${dColor}" title="Buy date: ${p.buy_date || '-'}">${d} hari</span>`;
+                        })()}
+                    </td>
                     <td class="p-3 text-center">${actionBtn}</td>
                 `;
                 tbody.appendChild(tr);

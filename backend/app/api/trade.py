@@ -48,8 +48,8 @@ def execute_buy(portfolio_id: int, payload: BuyRequest):
     cursor.execute("UPDATE portfolios SET current_balance = ? WHERE id = ?", (new_balance, portfolio_id))
     
     cursor.execute('''
-        INSERT INTO active_positions (portfolio_id, ticker, buy_price, total_lot, target_tp, target_sl)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO active_positions (portfolio_id, ticker, buy_price, total_lot, target_tp, target_sl, buy_date)
+        VALUES (?, ?, ?, ?, ?, ?, date('now'))
     ''', (portfolio_id, payload.ticker, payload.buy_price, payload.total_lot, payload.target_tp, payload.target_sl))
     
     conn.commit()
