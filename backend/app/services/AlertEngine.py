@@ -106,7 +106,8 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
         cond1 = (latest['low_prev'] <= latest['low_prev2']) and (latest['low_prev'] <= latest['low_prev3']) # is_pivot_low (3 days lookback)
         cond2 = latest['close'] > latest['high_prev'] # Reversal Confirmation
         cond3 = latest['RSI_14_prev'] < 50 # RSI Filter (Moderate)
-        return cond1 and cond2 and cond3
+        cond4 = latest['close'] > 150 # Filter minimal harga
+        return cond1 and cond2 and cond3 and cond4
 
     strategies = {
         "V8_Pullback": check_v8(latest),

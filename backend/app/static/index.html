@@ -425,13 +425,50 @@
 
         </div>
 
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden flex-col items-center justify-center py-12">
-            <div class="loader mb-4"></div>
-            <p class="text-lg font-medium text-blue-600 dark:text-blue-400 animate-pulse">AI is analyzing the market...
-            </p>
-            <p class="text-sm text-gray-500 mt-2 text-center px-4">Sistem sedang mengekstrak data historis dan
-                menjalankan analisa Gemini.<br>Ini bisa memakan waktu hingga beberapa menit tergantung ukuran batch.</p>
+        <!-- Loading State / Progress Bar -->
+        <div id="loadingState" class="hidden py-8 px-4">
+            <div class="bg-white dark:bg-darkcard rounded-2xl border border-gray-200 dark:border-darkborder shadow-md p-6">
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                        <i class="fas fa-brain text-blue-500 text-sm animate-pulse"></i>
+                    </div>
+                    <div>
+                        <p id="progressTitle" class="font-bold text-gray-800 dark:text-gray-100 text-sm">Memulai proses...</p>
+                        <p id="progressSubtitle" class="text-xs text-gray-400 dark:text-gray-500">Harap tunggu, jangan tutup halaman ini</p>
+                    </div>
+                    <div class="ml-auto text-right">
+                        <span id="progressPercent" class="text-2xl font-black text-blue-600 dark:text-blue-400">0%</span>
+                        <p id="progressEta" class="text-xs text-gray-400">Estimasi: menghitung...</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4 overflow-hidden">
+                    <div id="progressBar" class="h-3 rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" style="width: 0%"></div>
+                </div>
+
+                <!-- Phases -->
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div id="phase1" class="flex items-center gap-1.5 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 transition-all">
+                        <i id="phase1-icon" class="fas fa-cloud-download-alt text-gray-400"></i>
+                        <span id="phase1-label" class="text-gray-500 dark:text-gray-400 font-medium">Fase 1: Ambil Data Historis</span>
+                    </div>
+                    <div id="phase2" class="flex items-center gap-1.5 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 transition-all">
+                        <i id="phase2-icon" class="fas fa-robot text-gray-400"></i>
+                        <span id="phase2-label" class="text-gray-500 dark:text-gray-400 font-medium">Fase 2: Analisis AI (Gemini)</span>
+                    </div>
+                    <div id="phase3" class="flex items-center gap-1.5 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 transition-all">
+                        <i id="phase3-icon" class="fas fa-chart-line text-gray-400"></i>
+                        <span id="phase3-label" class="text-gray-500 dark:text-gray-400 font-medium">Fase 3: Render Hasil</span>
+                    </div>
+                </div>
+
+                <!-- Ticker log -->
+                <div class="mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 h-16 overflow-hidden">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 font-mono" id="progressLog">Memulai...</p>
+                </div>
+            </div>
         </div>
 
         <!-- Error State -->
@@ -495,9 +532,24 @@
         </div>
 
         <!-- Alerts Sub-Tabs -->
-        <div class="flex border-b border-gray-200 dark:border-darkborder mb-6">
+        <div class="flex border-b border-gray-200 dark:border-darkborder mb-4">
             <button id="alert-tab-today" onclick="switchAlertTab('today')" class="px-4 py-2 font-medium text-sm text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400 transition">Hari Ini (Live)</button>
             <button id="alert-tab-history" onclick="switchAlertTab('history')" class="px-4 py-2 font-medium text-sm text-gray-500 hover:text-gray-700 border-b-2 border-transparent dark:text-gray-400 dark:hover:text-gray-300 transition">Riwayat Alert</button>
+        </div>
+
+        <!-- Alert Summary Bar -->
+        <div id="alert-summary-bar" class="flex flex-wrap gap-4 mb-6 bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
+            <div class="flex items-center">
+                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 mr-2">Total Alerts:</span>
+                <span id="summary-total-alerts" class="text-lg font-bold text-gray-900 dark:text-white">0</span>
+            </div>
+            <div class="hidden sm:block border-l border-gray-300 dark:border-gray-700"></div>
+            <div class="flex flex-wrap items-center gap-4 text-sm">
+                <div><span class="font-medium text-blue-600 dark:text-blue-400">V8 Pullback:</span> <span id="summary-v8" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
+                <div><span class="font-medium text-green-600 dark:text-green-400">V3 Breakout:</span> <span id="summary-v3" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
+                <div><span class="font-medium text-purple-600 dark:text-purple-400">V6 Bandar:</span> <span id="summary-v6" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
+                <div><span class="font-medium text-gray-600 dark:text-gray-400">Swing Reversal:</span> <span id="summary-swing" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
+            </div>
         </div>
 
         <!-- History Selector (Hidden by default) -->
@@ -519,12 +571,12 @@
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-800/50 border-b border-gray-200 dark:border-darkborder text-gray-600 dark:text-gray-400">
-                            <th class="p-4 font-semibold">Ticker</th>
-                            <th class="p-4 font-semibold">Strategy Triggered</th>
-                            <th class="p-4 font-semibold">Price @ Signal</th>
-                            <th class="p-4 font-semibold text-green-600 dark:text-green-400">Target TP</th>
-                            <th class="p-4 font-semibold text-red-600 dark:text-red-400">Stop Loss</th>
-                            <th class="p-4 font-semibold">Potensi Cuan</th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('ticker')">Ticker ↕</th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('strategy_name')">Strategy Triggered ↕</th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('price_at_signal')">Price @ Signal ↕</th>
+                            <th class="p-4 font-semibold text-green-600 dark:text-green-400 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('target_price')">Target TP ↕</th>
+                            <th class="p-4 font-semibold text-red-600 dark:text-red-400 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('stop_loss')">Stop Loss ↕</th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition" onclick="sortAlerts('potensi_cuan_pct')">Potensi Cuan ↕</th>
                             <th class="p-4 font-semibold text-center">Action</th>
                         </tr>
                     </thead>
@@ -1290,52 +1342,159 @@
             }
         }
 
+        // --- Progress Bar Simulation ---
+        let _progressInterval = null;
+        let _progressStart = null;
+        let _tickerCount = 0;
+
+        const _fakeTickers = ['Mengambil data','Menghitung indikator','Menyiapkan payload','Mengirim ke Gemini','Memproses respons'];
+
+        function startProgressBar(estimatedTickers = 30) {
+            _tickerCount = estimatedTickers;
+            _progressStart = Date.now();
+            const loadingEl = document.getElementById('loadingState');
+            loadingEl.classList.remove('hidden');
+            loadingEl.classList.add('flex', 'flex-col');
+
+            // Reset UI
+            setProgress(0, 'Mempersiapkan koneksi ke server...');
+            setPhase(1, 'active');
+            setPhase(2, 'idle');
+            setPhase(3, 'idle');
+
+            // Estimate durations (ms)
+            // Phase 1: ~3.5s per ticker
+            const p1Duration = estimatedTickers * 3500;
+            // Phase 2: ~70s per 12 tickers (batched)
+            const numBatches = Math.ceil(estimatedTickers / 12);
+            const p2Duration = numBatches * 70000;
+            const totalDuration = p1Duration + p2Duration;
+
+            // Phase boundaries as % of total
+            const p1End = (p1Duration / totalDuration) * 70; // phase1 covers 0-70% of bar
+            const p2End = 95; // phase2 covers 70-95% of bar
+
+            let tickersFetched = 0;
+            const allTickers = [...Array(estimatedTickers).keys()].map(i => `Ticker ${i+1}`);
+
+            _progressInterval = setInterval(() => {
+                const elapsed = Date.now() - _progressStart;
+                const elapsedSec = Math.floor(elapsed / 1000);
+
+                // Determine current phase
+                if (elapsed < p1Duration) {
+                    // Phase 1: data fetch
+                    const p1Progress = Math.min(elapsed / p1Duration, 1);
+                    const pct = Math.round(p1Progress * p1End);
+                    tickersFetched = Math.min(Math.floor(p1Progress * estimatedTickers), estimatedTickers);
+                    const etaSec = Math.max(0, Math.round((totalDuration - elapsed) / 1000));
+                    const etaLabel = etaSec > 60 ? `~${Math.round(etaSec/60)} menit` : `~${etaSec} detik`;
+                    setProgress(pct, `Mengambil data historis... (${tickersFetched}/${estimatedTickers} ticker)`, etaLabel);
+                    setPhase(1, 'active');
+                    setPhase(2, 'idle');
+                    addLog(`[FETCH] Mengambil data ticker #${tickersFetched}...`);
+                } else if (elapsed < p1Duration + p2Duration) {
+                    // Phase 2: AI batch
+                    const p2Elapsed = elapsed - p1Duration;
+                    const p2Progress = Math.min(p2Elapsed / p2Duration, 1);
+                    const pct = Math.round(p1End + (p2Progress * (p2End - p1End)));
+                    const batchNum = Math.ceil(p2Progress * numBatches);
+                    const etaSec = Math.max(0, Math.round((p1Duration + p2Duration - elapsed) / 1000));
+                    const etaLabel = etaSec > 60 ? `~${Math.round(etaSec/60)} menit` : `~${etaSec} detik`;
+                    setProgress(pct, `AI menganalisis batch ${batchNum}/${numBatches} (Gemini Flash)...`, etaLabel);
+                    setPhase(1, 'done');
+                    setPhase(2, 'active');
+                    addLog(`[AI] Memproses batch ke-${batchNum} dari ${numBatches}...`);
+                } else {
+                    // Stall at 95% until done
+                    setProgress(95, 'Menunggu respons final dari server...', 'Sebentar lagi...');
+                    setPhase(1, 'done');
+                    setPhase(2, 'active');
+                    addLog('[AI] Finalisasi analisis...');
+                }
+            }, 2000);
+        }
+
+        function stopProgressBar() {
+            if (_progressInterval) {
+                clearInterval(_progressInterval);
+                _progressInterval = null;
+            }
+            setProgress(100, 'Analisis selesai! Merender hasil...', 'Done ✓');
+            setPhase(1, 'done');
+            setPhase(2, 'done');
+            setPhase(3, 'active');
+            setTimeout(() => {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('loadingState').classList.remove('flex', 'flex-col');
+                setPhase(3, 'done');
+            }, 600);
+        }
+
+        function setProgress(pct, title, eta = null) {
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressPercent').textContent = pct + '%';
+            if (title) document.getElementById('progressTitle').textContent = title;
+            if (eta) document.getElementById('progressEta').textContent = 'ETA: ' + eta;
+        }
+
+        function setPhase(n, state) {
+            const el = document.getElementById(`phase${n}`);
+            const icon = document.getElementById(`phase${n}-icon`);
+            const label = document.getElementById(`phase${n}-label`);
+            el.classList.remove('bg-blue-50','dark:bg-blue-900/20','bg-green-50','dark:bg-green-900/20','bg-gray-100','dark:bg-gray-800');
+            icon.classList.remove('text-blue-500','text-green-500','text-gray-400','animate-spin');
+
+            if (state === 'active') {
+                el.classList.add('bg-blue-50','dark:bg-blue-900/20');
+                icon.classList.add('text-blue-500','animate-spin');
+                label.classList.replace('text-gray-500','text-blue-600');
+                label.classList.replace('text-green-600','text-blue-600');
+            } else if (state === 'done') {
+                el.classList.add('bg-green-50','dark:bg-green-900/20');
+                icon.classList.add('text-green-500');
+                icon.className = icon.className.replace('fa-cloud-download-alt fa-robot fa-chart-line'.split(' ').find(c => icon.className.includes(c)), 'fa-check-circle');
+                label.classList.add('text-green-600');
+            } else {
+                el.classList.add('bg-gray-100','dark:bg-gray-800');
+                icon.classList.add('text-gray-400');
+            }
+        }
+
+        function addLog(msg) {
+            const el = document.getElementById('progressLog');
+            if (el) el.textContent = `[${new Date().toLocaleTimeString('id-ID')}] ` + msg;
+        }
+
         // --- Fetch Logic ---
         async function runIndexScreener() {
             const indexName = document.getElementById('indexSelect').value;
-            fetchData(`/api/v1/stock/index/${indexName}`, 'GET');
+            // Estimate ticker count per index
+            const indexSizes = { 'lq45': 45, 'kompas100': 100, 'idx30': 30, 'idxsmc': 50, 'idxbumn20': 20 };
+            const estimated = indexSizes[indexName] || 50;
+            fetchData(`/api/v1/stock/index/${indexName}`, 'GET', null, estimated);
         }
 
         async function runCustomScreener() {
             const input = document.getElementById('customTickers').value;
             if (!input.trim()) return alert("Masukkan minimal 1 ticker!");
-
             const tickers = input.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-            fetchData('/api/v1/stock/screen', 'POST', { tickers });
+            fetchData('/api/v1/stock/screen', 'POST', { tickers }, tickers.length);
         }
 
-        async function fetchData(url, method, body = null) {
+        async function fetchData(url, method, body = null, estimatedTickers = 30) {
             // UI States
             document.getElementById('errorState').classList.add('hidden');
-            document.getElementById('resultsContainer').classList.remove('hidden');
+            document.getElementById('resultsContainer').classList.add('hidden');
 
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = `
-                <tr class="skeleton-row border-b border-gray-100 dark:border-gray-800">
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-1/2"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-3/4"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-full"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-5/6"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-full"></div></td>
-                </tr>
-                <tr class="skeleton-row border-b border-gray-100 dark:border-gray-800">
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-3/4"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-1/2"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-5/6"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-full"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-3/4"></div></td>
-                </tr>
-                <tr class="skeleton-row border-b border-gray-100 dark:border-gray-800">
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-2/3"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-5/6"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-1/2"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-3/4"></div></td>
-                    <td class="p-4"><div class="skeleton-shimmer h-6 rounded w-full"></div></td>
-                </tr>
-            `;
+            tbody.innerHTML = '';
 
             document.getElementById('btnRunIndex').disabled = true;
             document.getElementById('btnRunCustom').disabled = true;
+
+            // Start progress bar
+            startProgressBar(estimatedTickers);
 
             const options = {
                 method: method,
@@ -1351,16 +1510,21 @@
                     throw new Error(data.message || data.detail || "Terjadi kesalahan pada server");
                 }
 
+                // Render results immediately
                 currentData = data.data;
                 renderTable(currentData);
-
                 document.getElementById('totalResults').textContent = data.data.length;
                 document.getElementById('resultsContainer').classList.remove('hidden');
+
+                // Langsung sembunyikan progress bar (clean, no animation delay)
+                document.getElementById('loadingState').classList.add('hidden');
+                stopProgressBar();
             } catch (err) {
+                stopProgressBar();
                 document.getElementById('errorMessage').textContent = err.message;
                 document.getElementById('errorState').classList.remove('hidden');
             } finally {
-                document.getElementById('loadingState').classList.add('hidden');
+                // DO NOT touch loadingState here — stopProgressBar handles it
                 document.getElementById('btnRunIndex').disabled = false;
                 document.getElementById('btnRunCustom').disabled = false;
             }
@@ -2730,6 +2894,10 @@
             }
         }
 
+        let currentAlertsData = [];
+        let currentAlertsSortCol = '';
+        let currentAlertsSortAsc = true;
+
         async function fetchAlerts(date = null) {
             try {
                 let url = '/alerts/';
@@ -2737,7 +2905,8 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.status === 'success') {
-                    renderAlertsTable(data.data, date);
+                    currentAlertsData = data.data;
+                    renderAlertsTable(currentAlertsData, date);
                 } else {
                     console.error("Failed to fetch alerts:", data.message);
                 }
@@ -2746,10 +2915,53 @@
             }
         }
 
+        function sortAlerts(column) {
+            if (currentAlertsSortCol === column) {
+                currentAlertsSortAsc = !currentAlertsSortAsc;
+            } else {
+                currentAlertsSortCol = column;
+                currentAlertsSortAsc = true;
+            }
+            
+            const sortedData = [...currentAlertsData].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+                
+                if (valA < valB) return currentAlertsSortAsc ? -1 : 1;
+                if (valA > valB) return currentAlertsSortAsc ? 1 : -1;
+                return 0;
+            });
+            
+            renderAlertsTable(sortedData, null); // Pass null for date to avoid replacing title incorrectly if needed
+        }
+
         function renderAlertsTable(alerts, date = null) {
             const tbody = document.getElementById('alertsTableBody');
             tbody.innerHTML = '';
             
+            // Update Summary Bar
+            let countV8 = 0, countV3 = 0, countV6 = 0, countSwing = 0;
+            alerts.forEach(alert => {
+                if (alert.strategy_name === 'V8_Pullback') countV8++;
+                else if (alert.strategy_name === 'V3_Breakout') countV3++;
+                else if (alert.strategy_name === 'V6_Bandar') countV6++;
+                else if (alert.strategy_name === 'Swing_Reversal') countSwing++;
+            });
+            
+            const elTotal = document.getElementById('summary-total-alerts');
+            const elV8 = document.getElementById('summary-v8');
+            const elV3 = document.getElementById('summary-v3');
+            const elV6 = document.getElementById('summary-v6');
+            const elSwing = document.getElementById('summary-swing');
+            
+            if (elTotal) elTotal.textContent = alerts.length;
+            if (elV8) elV8.textContent = countV8;
+            if (elV3) elV3.textContent = countV3;
+            if (elV6) elV6.textContent = countV6;
+            if (elSwing) elSwing.textContent = countSwing;
+
             if (alerts.length === 0) {
                 const msg = date ? `Belum ada alert yang ter-trigger pada ${date}.` : `Belum ada alert yang ter-trigger hari ini.`;
                 tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">${msg}</td></tr>`;
@@ -2768,17 +2980,28 @@
                     strategyBadge = `<span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 rounded text-xs font-bold">${alert.strategy_name}</span>`;
                 }
 
+                const itemObj = {
+                    ticker: alert.ticker,
+                    filters: { price: { value: alert.price_at_signal } },
+                    ai_analysis: {
+                        rekomendasi_buy: alert.price_at_signal,
+                        take_profit: alert.target_price,
+                        stop_loss: alert.stop_loss
+                    }
+                };
+                const itemJsonStr = JSON.stringify(itemObj).replace(/"/g, '&quot;');
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition border-b border-gray-100 dark:border-gray-800";
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-gray-900 dark:text-white">${alert.ticker}</td>
+                    <td class="p-4 font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer underline" onclick="openActionMenu(${itemJsonStr})">${alert.ticker}</td>
                     <td class="p-4">${strategyBadge}</td>
                     <td class="p-4 font-medium text-gray-700 dark:text-gray-300">Rp ${alert.price_at_signal.toLocaleString('id-ID')}</td>
                     <td class="p-4 font-bold text-green-600 dark:text-green-400">Rp ${alert.target_price.toLocaleString('id-ID')}</td>
                     <td class="p-4 font-bold text-red-600 dark:text-red-400">Rp ${alert.stop_loss.toLocaleString('id-ID')}</td>
                     <td class="p-4 font-bold text-blue-600 dark:text-blue-400">+${alert.potensi_cuan_pct}%</td>
                     <td class="p-4 text-center">
-                        <button onclick="promptTransaction('${alert.ticker}', ${alert.price_at_signal}, ${alert.target_price}, ${alert.stop_loss})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded transition shadow-sm font-medium">Buy Action</button>
+                        <button onclick="openActionMenu(${itemJsonStr})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded transition shadow-sm font-medium">Action</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -2801,7 +3024,8 @@
             }
             
             const listStr = tickers.join(", ");
-            navigator.clipboard.writeText(listStr).then(() => {
+            
+            const onSuccess = () => {
                 const btn = document.getElementById('copyAlertsBtn');
                 if (btn) {
                     const origHtml = btn.innerHTML;
@@ -2814,10 +3038,34 @@
                         btn.classList.add('text-gray-500', 'dark:text-gray-400');
                     }, 2000);
                 }
-            }).catch(err => {
-                console.error("Gagal copy", err);
-                alert("Gagal copy ke clipboard!");
-            });
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(listStr).then(onSuccess).catch(err => {
+                    console.error("Gagal copy", err);
+                    alert("Gagal copy ke clipboard!");
+                });
+            } else {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = listStr;
+                    textArea.style.position = "absolute";
+                    textArea.style.left = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    if (successful) {
+                        onSuccess();
+                    } else {
+                        alert("Gagal copy ke clipboard!");
+                    }
+                } catch (err) {
+                    console.error("Fallback gagal copy", err);
+                    alert("Gagal copy ke clipboard!");
+                }
+            }
         }
 
         // --- Alert History Logic ---
