@@ -1009,6 +1009,12 @@
                     </div>
                     <h3 id="chartModalTitle" class="text-xl font-bold text-white tracking-wide">Analisis Teknikal</h3>
                 </div>
+                <div class="flex gap-2 mx-4 overflow-x-auto hide-scrollbar flex-1 justify-center">
+                    <button id="toggleV8" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V8')">V8 Pullback</button>
+                    <button id="toggleV3" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V3')">V3 Breakout</button>
+                    <button id="toggleV6" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V6')">V6 Bandar</button>
+                    <button id="toggleSR" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('SR')">Swing Reversal</button>
+                </div>
                 <button onclick="closeChartModal()" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
             </div>
             <div id="tv_chart_container" class="flex-1 w-full min-h-[50vh]"></div>
@@ -2007,6 +2013,83 @@
                 document.body.style.cursor = 'default';
             }
         }
+        let _activeChartRefs = {};
+
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            let emaData = [];
+            let ema = data[0].close;
+            for (let i = 0; i < data.length; i++) {
+                ema = (data[i].close - ema) * k + ema;
+                if (i >= period - 1) {
+                    emaData.push({ time: data[i].time, value: ema });
+                }
+            }
+            return emaData;
+        }
+
+        function calculatePivotLows(data, lookback = 8) {
+            let markers = [];
+            for (let i = lookback; i < data.length - 1; i++) {
+                let isPivot = true;
+                const currentLow = data[i].low;
+                for (let j = 1; j <= lookback; j++) {
+                    if (data[i - j].low <= currentLow) {
+                        isPivot = false;
+                        break;
+                    }
+                }
+                if (isPivot) {
+                    markers.push({
+                        time: data[i].time,
+                        position: 'belowBar',
+                        color: '#f59e0b', // amber
+                        shape: 'arrowUp',
+                        text: 'Pivot Low'
+                    });
+                }
+            }
+            return markers;
+        }
+
+        function toggleStrategyIndicator(strategy) {
+            if (!_activeChartRefs.candleSeries) return;
+
+            const btn = document.getElementById(`toggle${strategy}`);
+            const isActive = btn.classList.contains('bg-blue-600');
+
+            // Reset all buttons
+            ['V8','V3','V6','SR'].forEach(s => {
+                const b = document.getElementById(`toggle${s}`);
+                if (b) {
+                    b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                    b.classList.add('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
+                }
+            });
+
+            // Hide all overlays first
+            _activeChartRefs.ema20Series.applyOptions({ visible: false });
+            _activeChartRefs.ema200Series.applyOptions({ visible: false });
+            _activeChartRefs.candleSeries.setMarkers([]);
+
+            if (!isActive) {
+                // Turn on
+                btn.classList.remove('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
+                btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+
+                if (strategy === 'V8') {
+                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                    _activeChartRefs.ema200Series.applyOptions({ visible: true });
+                } else if (strategy === 'V3') {
+                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                } else if (strategy === 'V6') {
+                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                    _activeChartRefs.ema200Series.applyOptions({ visible: true });
+                } else if (strategy === 'SR') {
+                    _activeChartRefs.candleSeries.setMarkers(_activeChartRefs.pivotMarkers);
+                }
+            }
+        }
 
         function openChartModal() {
             if (!selectedStockData) return;
@@ -2016,6 +2099,16 @@
 
             const container = document.getElementById('tv_chart_container');
             container.innerHTML = '';
+            _activeChartRefs = {};
+
+            // Reset toggles
+            ['V8','V3','V6','SR'].forEach(s => {
+                const b = document.getElementById(`toggle${s}`);
+                if (b) {
+                    b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                    b.classList.add('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
+                }
+            });
 
             const ticker = selectedStockData.ticker;
             
@@ -2088,6 +2181,34 @@
             if (formattedOhlcvData.length > 0) {
                 candleSeries.setData(formattedOhlcvData);
                 volumeSeries.setData(volumeData);
+                
+                // --- Technical Indicators ---
+                const ema20Series = chart.addSeries(LightweightCharts.LineSeries, {
+                    color: '#3b82f6', // blue
+                    lineWidth: 2,
+                    visible: false,
+                    title: 'EMA 20'
+                });
+                ema20Series.setData(calculateEMA(formattedOhlcvData, 20));
+
+                const ema200Series = chart.addSeries(LightweightCharts.LineSeries, {
+                    color: '#f97316', // orange
+                    lineWidth: 2,
+                    visible: false,
+                    title: 'EMA 200'
+                });
+                ema200Series.setData(calculateEMA(formattedOhlcvData, 200));
+
+                const pivotMarkers = calculatePivotLows(formattedOhlcvData, 8);
+
+                _activeChartRefs = {
+                    chart,
+                    candleSeries,
+                    ema20Series,
+                    ema200Series,
+                    pivotMarkers
+                };
+
                 chart.timeScale().fitContent();
             } else {
                 container.innerHTML = '<div class="h-full flex items-center justify-center text-gray-500">Tidak ada data historis OHLCV.</div>';
