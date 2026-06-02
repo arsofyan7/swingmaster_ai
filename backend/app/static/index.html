@@ -2068,12 +2068,17 @@
             });
 
             // Hide all overlays first
+            // Hide all overlays first
             _activeChartRefs.ema20Series.applyOptions({ visible: false });
             _activeChartRefs.ema200Series.applyOptions({ visible: false });
             
             // Hide markers if they exist
             if (_activeChartRefs.markersPlugin) {
-                _activeChartRefs.markersPlugin.setData([]);
+                try {
+                    _activeChartRefs.markersPlugin.setMarkers([]);
+                } catch (e) {
+                    console.error("Error clearing markers:", e);
+                }
             }
 
             if (!isActive) {
@@ -2097,7 +2102,11 @@
                             console.error("Marker plugin error:", e);
                         }
                     } else {
-                        _activeChartRefs.markersPlugin.setData(_activeChartRefs.pivotMarkers);
+                        try {
+                            _activeChartRefs.markersPlugin.setMarkers(_activeChartRefs.pivotMarkers);
+                        } catch (e) {
+                            console.error("Marker plugin error:", e);
+                        }
                     }
                 }
             }
