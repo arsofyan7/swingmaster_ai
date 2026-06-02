@@ -1,9 +1,23 @@
 from fastapi import APIRouter, HTTPException
 import sqlite3
+import asyncio
 from datetime import datetime
 from typing import Optional
 
 router = APIRouter(prefix="/alerts", tags=["Alerts"])
+
+@router.post("/run")
+async def trigger_run_alerts():
+    """
+    Manually trigger the daily alert generation process (run AlertEngine).
+    Useful for manual refresh from the frontend.
+    """
+    try:
+        from app.services.AlertEngine import run_daily_alerts
+        await run_daily_alerts()
+        return {"status": "success", "message": "Alert generation completed successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/dates")
 def get_alert_dates():
@@ -51,7 +65,7 @@ def get_daily_alerts(date: Optional[str] = None):
             cursor.execute('''
                 SELECT id, ticker, strategy_name, signal_date, price_at_signal, target_price, stop_loss, status
                 FROM daily_alerts
-                WHERE signal_date = ? OR status = 'open'
+                WHERE signal_date = ?
                 ORDER BY signal_date DESC
             ''', (today_str,))
             

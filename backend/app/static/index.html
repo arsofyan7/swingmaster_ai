@@ -527,7 +527,7 @@
             <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500"><i class="fas fa-fire mr-2 text-red-500"></i> Daily Trading Alerts</h2>
             <div class="flex space-x-3">
                 <button onclick="copyAlertsAsList()" class="text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400 transition" id="copyAlertsBtn"><i class="fas fa-copy mr-1"></i> Copy List</button>
-                <button onclick="fetchAlerts()" class="text-gray-500 hover:text-blue-500 dark:text-gray-400 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                <button onclick="runAndFetchAlerts()" id="refreshAlertsBtn" class="text-gray-500 hover:text-blue-500 dark:text-gray-400 transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
             </div>
         </div>
 
@@ -2912,6 +2912,49 @@
                 }
             } catch(e) {
                 console.error("Error fetching alerts:", e);
+            }
+        }
+
+        async function runAndFetchAlerts() {
+            const btn = document.getElementById('refreshAlertsBtn');
+            if (!btn) return;
+
+            // Set loading state
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync-alt mr-1 animate-spin"></i> Generating...';
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+            try {
+                // Trigger alert generation on the backend
+                const res = await fetch('/alerts/run', { method: 'POST' });
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    // Fetch fresh results
+                    await fetchAlerts();
+
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-24 md:bottom-6 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2 transition-opacity';
+                    toast.innerHTML = '<i class="fas fa-check-circle"></i> Alert berhasil di-generate ulang!';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3500);
+                } else {
+                    throw new Error(data.detail || data.message || 'Gagal generate alert');
+                }
+            } catch(e) {
+                console.error("Error running alerts:", e);
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-24 md:bottom-6 right-4 bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2';
+                toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> Gagal: ${e.message}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            } finally {
+                // Restore button
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+                btn.classList.remove('opacity-60', 'cursor-not-allowed');
             }
         }
 

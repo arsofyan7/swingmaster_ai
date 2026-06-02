@@ -60,10 +60,15 @@ def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df['RSI_14'] = 100 - (100 / (1 + rs))
     df['RSI_14_prev'] = df['RSI_14'].shift(1)
 
-    # Values for Swing Reversal (Pivot Low)
+    # Values for Swing Reversal (Pivot Low) - 8 bar lookback
     df['low_prev'] = df['low'].shift(1)
     df['low_prev2'] = df['low'].shift(2)
     df['low_prev3'] = df['low'].shift(3)
+    df['low_prev4'] = df['low'].shift(4)
+    df['low_prev5'] = df['low'].shift(5)
+    df['low_prev6'] = df['low'].shift(6)
+    df['low_prev7'] = df['low'].shift(7)
+    df['low_prev8'] = df['low'].shift(8)
     df['high_prev'] = df['high'].shift(1)
 
     return df
@@ -85,29 +90,42 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
         cond2 = (latest['low'] <= latest['EMA_20']) and (latest['close'] >= latest['EMA_20']) and (latest['close'] <= (latest['EMA_20'] * 1.02))
         cond3 = latest['close'] < latest['close_prev']
         cond4 = latest['volume'] < latest['VMA_20']
-        return cond1 and cond2 and cond3 and cond4
+        cond5 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        return cond1 and cond2 and cond3 and cond4 and cond5
 
     # V3_Breakout Logic
     def check_v3(latest):
         cond1 = latest['volume'] >= (2 * latest['VMA_20'])
         cond2 = (latest['close'] > latest['EMA_20']) and (latest['close_prev'] <= latest['EMA_20_prev'])
         cond3 = latest['MACD'] > latest['MACD_prev']
-        return cond1 and cond2 and cond3
+        cond4 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        return cond1 and cond2 and cond3 and cond4
 
     # V6_Bandar Logic
     def check_v6(latest):
         cond1 = latest['close'] > latest['EMA_200']
         cond2 = (latest['low'] <= latest['EMA_20']) and (latest['close'] >= latest['EMA_20']) and (latest['close'] <= (latest['EMA_20'] * 1.02))
         cond3 = (latest['OBV'] > latest['OBV_EMA_20']) and (latest['ADL'] > latest['ADL_EMA_20'])
-        return cond1 and cond2 and cond3
+        cond4 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        return cond1 and cond2 and cond3 and cond4
 
     # Swing_Reversal Logic
     def check_swing_reversal(latest):
-        cond1 = (latest['low_prev'] <= latest['low_prev2']) and (latest['low_prev'] <= latest['low_prev3']) # is_pivot_low (3 days lookback)
+        # is_pivot_low: low_prev harus terendah di antara 8 bar sebelumnya
+        cond1 = (
+            latest['low_prev'] <= latest['low_prev2'] and
+            latest['low_prev'] <= latest['low_prev3'] and
+            latest['low_prev'] <= latest['low_prev4'] and
+            latest['low_prev'] <= latest['low_prev5'] and
+            latest['low_prev'] <= latest['low_prev6'] and
+            latest['low_prev'] <= latest['low_prev7'] and
+            latest['low_prev'] <= latest['low_prev8']
+        ) # is_pivot_low (8 bars lookback)
         cond2 = latest['close'] > latest['high_prev'] # Reversal Confirmation
         cond3 = latest['RSI_14_prev'] < 50 # RSI Filter (Moderate)
         cond4 = latest['close'] > 150 # Filter minimal harga
-        return cond1 and cond2 and cond3 and cond4
+        cond5 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        return cond1 and cond2 and cond3 and cond4 and cond5
 
     strategies = {
         "V8_Pullback": check_v8(latest),
@@ -146,6 +164,11 @@ async def run_daily_alerts():
         
         alerts_to_insert = []
         today_str = datetime.now().strftime("%Y-%m-%d")
+
+        # Delete today's existing alerts before re-generating (idempotent)
+        cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ?", (today_str,))
+        conn.commit()
+        logger.info(f"[ALERT ENGINE] Cleared existing alerts for {today_str}, re-generating...")
 
         for ticker in tickers:
             if ticker not in matrix:
