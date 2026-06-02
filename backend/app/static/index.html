@@ -1715,15 +1715,16 @@
                             height: 300
                         };
                         const chart = LightweightCharts.createChart(ihsgContainer, chartOptions);
-                        const areaSeries = chart.addSeries(LightweightCharts.AreaSeries, {
-                            lineColor: '#3b82f6',
-                            topColor: 'rgba(59, 130, 246, 0.4)',
-                            bottomColor: 'rgba(59, 130, 246, 0.0)',
-                            lineWidth: 2
+                        const ihsgSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
+                            upColor: '#22c55e',
+                            downColor: '#ef4444',
+                            borderVisible: false,
+                            wickUpColor: '#22c55e',
+                            wickDownColor: '#ef4444'
                         });
 
                         const sortedData = (data.ihsg_history || []).sort((a, b) => a.time.localeCompare(b.time));
-                        areaSeries.setData(sortedData);
+                        ihsgSeries.setData(sortedData);
                         chart.timeScale().fitContent();
 
                         // Handle resize

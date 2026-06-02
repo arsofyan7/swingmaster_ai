@@ -124,12 +124,15 @@ def get_dashboard(portfolio_id: int):
     # 6. Fetch IHSG History (^JKSE -> COMPOSITE)
     ihsg_history = []
     try:
-        cursor.execute("SELECT date, close FROM daily_prices WHERE ticker = 'COMPOSITE' ORDER BY date ASC")
+        cursor.execute("SELECT date, open, high, low, close FROM daily_prices WHERE ticker = 'COMPOSITE' ORDER BY date ASC")
         rows = cursor.fetchall()
         for row in rows:
             ihsg_history.append({
                 "time": row["date"],
-                "value": round(float(row["close"]), 2)
+                "open": round(float(row["open"]), 2),
+                "high": round(float(row["high"]), 2),
+                "low": round(float(row["low"]), 2),
+                "close": round(float(row["close"]), 2)
             })
     except Exception as e:
         print(f"Error fetching IHSG history: {e}")
