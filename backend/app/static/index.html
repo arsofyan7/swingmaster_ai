@@ -2189,6 +2189,7 @@
             if (_activeChartRefs.histSeries) _activeChartRefs.histSeries.applyOptions({ visible: false });
             if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: false });
             if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: false });
+            if (_activeChartRefs.rsiSeries) _activeChartRefs.rsiSeries.applyOptions({ visible: false });
             if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: true }); // Default Show
             
             // Hide markers if they exist
@@ -2221,6 +2222,8 @@
                     if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: true });
                     if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: true });
                 } else if (strategy === 'SR') {
+                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                    if (_activeChartRefs.rsiSeries) _activeChartRefs.rsiSeries.applyOptions({ visible: true });
                     if (!_activeChartRefs.markersPlugin) {
                         try {
                             _activeChartRefs.markersPlugin = LightweightCharts.createSeriesMarkers(_activeChartRefs.candleSeries, _activeChartRefs.pivotMarkers);
@@ -2347,7 +2350,27 @@
                 });
                 ema200Series.setData(calculateEMA(formattedOhlcvData, 200));
 
-                const pivotMarkers = calculatePivotLows(formattedOhlcvData, calculateRSI(formattedOhlcvData, 14), 8);
+                const rsiDataArray = calculateRSI(formattedOhlcvData, 14);
+                const pivotMarkers = calculatePivotLows(formattedOhlcvData, rsiDataArray, 8);
+
+                const rsiSeries = chart.addSeries(LightweightCharts.LineSeries, {
+                    color: '#a855f7', // purple-500
+                    lineWidth: 1.5,
+                    visible: false,
+                    priceScaleId: 'rsi'
+                });
+                rsiSeries.priceScale().applyOptions({ scaleMargins: { top: 0.75, bottom: 0 } });
+                rsiSeries.setData(rsiDataArray);
+
+                // Add threshold line at RSI 50
+                rsiSeries.createPriceLine({
+                    price: 50,
+                    color: 'rgba(156, 163, 175, 0.5)',
+                    lineWidth: 1,
+                    lineStyle: 2, // Dotted
+                    axisLabelVisible: true,
+                    title: 'RSI 50'
+                });
 
                 // --- Subpane Indicators (MACD, OBV, ADL) ---
                 const macdSeries = chart.addSeries(LightweightCharts.LineSeries, { color: '#2962FF', lineWidth: 1.5, visible: false, priceScaleId: 'macd' });
@@ -2383,6 +2406,7 @@
                     histSeries,
                     obvSeries,
                     adlSeries,
+                    rsiSeries,
                     pivotMarkers
                 };
 
