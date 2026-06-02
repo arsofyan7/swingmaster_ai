@@ -234,14 +234,19 @@ def sync_historical_data(tickers: list[str]):
                     ohlcv_data = res_json.get("data", [])
                     records = []
                     for bar in ohlcv_data:
+                        low_val = float(bar["low"])
+                        vol_val = int(bar["volume"])
+                        if low_val == 0 or vol_val == 0:
+                            continue  # Skip holiday/weekend rows
+                            
                         records.append((
                             bar["date"], 
                             ticker_upper, 
                             float(bar["open"]), 
                             float(bar["high"]), 
-                            float(bar["low"]), 
+                            low_val, 
                             float(bar["close"]), 
-                            int(bar["volume"])
+                            vol_val
                         ))
                     
                     if records:
