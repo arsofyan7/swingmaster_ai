@@ -236,8 +236,8 @@ def sync_historical_data(tickers: list[str]):
                     for bar in ohlcv_data:
                         low_val = float(bar["low"])
                         vol_val = int(bar["volume"])
-                        if low_val == 0 or vol_val == 0:
-                            continue  # Skip holiday/weekend rows
+                        if ticker_upper != 'COMPOSITE' and (low_val == 0 or vol_val == 0):
+                            continue  # Skip holiday/weekend rows for normal stocks
                             
                         records.append((
                             bar["date"], 
