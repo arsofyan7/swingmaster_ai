@@ -1,17 +1,28 @@
 version: '3.8'
 
 services:
-  backend:
+  swingmaster:
     build: .
     container_name: swingmaster_backend
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "127.0.0.1:8000:8000" # Expose only to localhost for Reverse Proxy
     deploy:
       resources:
         limits:
           memory: 512M
     volumes:
       - ./market_data.db:/app/market_data.db
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swingmaster.rule=Host(`misc4.siberhub.id`)"
+      - "traefik.http.routers.swingmaster.entrypoints=websecure"
+      - "traefik.http.routers.swingmaster.tls.certresolver=myresolver"
+      - "traefik.http.services.swingmaster.loadbalancer.server.port=8000"
+      - "traefik.docker.network=web"
+
+networks:
+  web:
+    external: true

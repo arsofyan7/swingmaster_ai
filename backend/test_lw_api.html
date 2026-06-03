@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/root/swingmaster_ai/backend/app/static/js/lightweight-charts.js"></script>
+</head>
+<body>
+<script>
+    const fs = require('fs');
+    let output = "API Keys:\n" + Object.keys(LightweightCharts).join(', ') + "\n\n";
+    fs.writeFileSync('/root/swingmaster_ai/backend/api_dump.txt', output);
+</script>
+</body>
+</html>
