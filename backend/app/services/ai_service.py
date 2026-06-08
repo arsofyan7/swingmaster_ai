@@ -78,7 +78,7 @@ def _call_ai_with_fallback(prompt: str, config: types.GenerateContentConfig) -> 
     # ⚙️ STRATEGI BERLAPIS: FALLBACK ENGINE LIST
     models_to_try = [
         # 'gemini-3.5-flash',  # Prioritas Utama
-        'gemini-2.5-flash',  # Cadangan Kesatu
+        # 'gemini-2.5-flash',  # Cadangan Kesatu
         'gemma-4-31b-it'     # Benteng Terakhir
     ]
     

@@ -13,6 +13,9 @@ services:
           memory: 512M
     volumes:
       - ./market_data.db:/app/market_data.db
+      - ./screener_cache.db:/app/screener_cache.db
+      - ./stock_data.db:/app/stock_data.db
+      - ./data.db:/app/data.db
     networks:
       - web
     labels:
