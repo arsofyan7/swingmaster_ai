@@ -538,18 +538,81 @@
             <button id="alert-tab-history" onclick="switchAlertTab('history')" class="px-4 py-2 font-medium text-sm text-gray-500 hover:text-gray-700 border-b-2 border-transparent dark:text-gray-400 dark:hover:text-gray-300 transition">Riwayat Alert</button>
         </div>
 
-        <!-- Alert Summary Bar -->
-        <div id="alert-summary-bar" class="flex flex-wrap gap-4 mb-6 bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-200 dark:border-darkborder">
-            <div class="flex items-center">
+        <!-- Strategy Education Panel & Summary -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+            <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200">
+                <i class="fas fa-book-reader text-blue-500 mr-2"></i> Strategy Education Panel
+            </h3>
+            <div class="mt-2 sm:mt-0 bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder px-4 py-2 rounded-lg shadow-sm">
                 <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 mr-2">Total Alerts:</span>
                 <span id="summary-total-alerts" class="text-lg font-bold text-gray-900 dark:text-white">0</span>
             </div>
-            <div class="hidden sm:block border-l border-gray-300 dark:border-gray-700"></div>
-            <div class="flex flex-wrap items-center gap-4 text-sm">
-                <div><span class="font-medium text-blue-600 dark:text-blue-400">V8 Pullback:</span> <span id="summary-v8" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
-                <div><span class="font-medium text-green-600 dark:text-green-400">V3 Breakout:</span> <span id="summary-v3" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
-                <div><span class="font-medium text-purple-600 dark:text-purple-400">V6 Bandar:</span> <span id="summary-v6" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
-                <div><span class="font-medium text-gray-600 dark:text-gray-400">Swing Reversal:</span> <span id="summary-swing" class="font-bold text-gray-800 dark:text-gray-200">0</span></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg">V8 Pullback</h4>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded dark:bg-blue-900 dark:text-blue-300"><span id="summary-v8">0</span> Alert</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Buy on Weakness di Support Kuat"</p>
+                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Makro:</b> Harga di atas EMA 200</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Koreksi Sehat:</b> Candle merah menyentuh support EMA 20</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Kering:</b> Volume transaksi di bawah rata-rata 20 hari</li>
+                </ul>
+            </div>
+            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
+                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-green-600 dark:text-green-400 text-lg">V3 Breakout</h4>
+                    <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded dark:bg-green-900 dark:text-green-300"><span id="summary-v3">0</span> Alert</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Momentum Ledakan Harga & Volume"</p>
+                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Spike:</b> Volume melesat > 2x lipat VMA 20</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Breakout Resistance:</b> Harga close menembus EMA 20</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>MACD Menanjak:</b> Histogram & Line MACD slope positif</li>
+                </ul>
+            </div>
+            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
+                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg">V6 Bandar</h4>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded dark:bg-purple-900 dark:text-purple-300"><span id="summary-v6">0</span> Alert</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Follow the Smart Money"</p>
+                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Terjaga:</b> Close > EMA 200</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Nempel Support:</b> Rebound di sekitar EMA 20</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Akumulasi Masif:</b> OBV dan ADL > EMA 20</li>
+                </ul>
+            </div>
+            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
+                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg">Swing Reversal</h4>
+                    <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded dark:bg-orange-900 dark:text-orange-300"><span id="summary-swing">0</span> Alert</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Rebound dari Titik Terendah"</p>
+                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>RSI Filter:</b> RSI kemarin < 50 (Oversold/Moderate)</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Pivot Low:</b> Low kemarin adalah titik terendah dibanding 3 hari terakhir</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Konfirmasi Reversal:</b> Close menembus High kemarin</li>
+                </ul>
+            </div>
+            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition">
+                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">SMC Mode</h4>
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded dark:bg-indigo-900 dark:text-indigo-300"><span id="summary-smc">0</span> Alert</span>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Smart Money Concepts (H1)"</p>
+                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>CHoCH:</b> Breakout struktur mikro</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Order Block / Fair Value Gap (FVG):</b> Jejak institusi di area base</li>
+                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Pullback:</b> Entry Buy saat harga kembali ke OB / FVG</li>
+                </ul>
             </div>
         </div>
 
@@ -585,51 +648,6 @@
                         <!-- Injected by JS -->
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- Strategy Education Panel -->
-        <h3 class="font-bold text-lg mb-4 text-gray-800 dark:text-gray-200"><i class="fas fa-book-reader text-blue-500 mr-2"></i> Strategy Education Panel</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"><i class="fas fa-undo"></i></div>
-                <h4 class="font-bold text-blue-600 dark:text-blue-400 mb-2 text-lg">V8 Pullback</h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Buy on Weakness di Support Kuat"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Makro:</b> Harga di atas EMA 200</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Koreksi Sehat:</b> Candle merah menyentuh support EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Kering:</b> Volume transaksi di bawah rata-rata 20 hari</li>
-                </ul>
-            </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"><i class="fas fa-rocket"></i></div>
-                <h4 class="font-bold text-green-600 dark:text-green-400 mb-2 text-lg">V3 Breakout</h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Momentum Ledakan Harga & Volume"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Spike:</b> Volume melesat > 2x lipat VMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Breakout Resistance:</b> Harga close menembus EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>MACD Menanjak:</b> Histogram & Line MACD slope positif</li>
-                </ul>
-            </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"><i class="fas fa-user-tie"></i></div>
-                <h4 class="font-bold text-purple-600 dark:text-purple-400 mb-2 text-lg">V6 Bandar</h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Follow the Smart Money"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Terjaga:</b> Close > EMA 200</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Nempel Support:</b> Rebound di sekitar EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Akumulasi Masif:</b> OBV dan ADL > EMA 20</li>
-                </ul>
-            </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
-                <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"><i class="fas fa-chart-line"></i></div>
-                <h4 class="font-bold text-orange-600 dark:text-orange-400 mb-2 text-lg">Swing Reversal</h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Rebound dari Titik Terendah"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>RSI Filter:</b> RSI kemarin < 50 (Oversold/Moderate)</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Pivot Low:</b> Low kemarin adalah titik terendah dibanding 3 hari terakhir</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Konfirmasi Reversal:</b> Close menembus High kemarin</li>
-                </ul>
             </div>
         </div>
     </main>
@@ -3308,12 +3326,13 @@
             tbody.innerHTML = '';
             
             // Update Summary Bar
-            let countV8 = 0, countV3 = 0, countV6 = 0, countSwing = 0;
+            let countV8 = 0, countV3 = 0, countV6 = 0, countSwing = 0, countSMC = 0;
             alerts.forEach(alert => {
                 if (alert.strategy_name === 'V8_Pullback') countV8++;
                 else if (alert.strategy_name === 'V3_Breakout') countV3++;
                 else if (alert.strategy_name === 'V6_Bandar') countV6++;
                 else if (alert.strategy_name === 'Swing_Reversal') countSwing++;
+                else if (alert.strategy_name && alert.strategy_name.startsWith('SMC_H1')) countSMC++;
             });
             
             const elTotal = document.getElementById('summary-total-alerts');
@@ -3321,12 +3340,14 @@
             const elV3 = document.getElementById('summary-v3');
             const elV6 = document.getElementById('summary-v6');
             const elSwing = document.getElementById('summary-swing');
+            const elSMC = document.getElementById('summary-smc');
             
             if (elTotal) elTotal.textContent = alerts.length;
             if (elV8) elV8.textContent = countV8;
             if (elV3) elV3.textContent = countV3;
             if (elV6) elV6.textContent = countV6;
             if (elSwing) elSwing.textContent = countSwing;
+            if (elSMC) elSMC.textContent = countSMC;
 
             if (alerts.length === 0) {
                 const msg = date ? `Belum ada alert yang ter-trigger pada ${date}.` : `Belum ada alert yang ter-trigger hari ini.`;
@@ -3342,8 +3363,13 @@
                     strategyBadge = `<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded text-xs font-bold border border-green-200 dark:border-green-800">V3 Breakout</span>`;
                 } else if (alert.strategy_name === 'V6_Bandar') {
                     strategyBadge = `<span class="px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded text-xs font-bold border border-purple-200 dark:border-purple-800">V6 Bandar</span>`;
+                } else if (alert.strategy_name.startsWith('SMC_H1_')) {
+                    const timeStr = alert.strategy_name.split('_')[2] || 'H1';
+                    strategyBadge = `<span class="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 rounded text-xs font-bold border border-orange-200 dark:border-orange-800">SMC Jam ${timeStr}</span>`;
+                } else if (alert.strategy_name === 'Swing_Reversal') {
+                    strategyBadge = `<span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 rounded text-xs font-bold border border-gray-200 dark:border-gray-800">Swing Reversal</span>`;
                 } else {
-                    strategyBadge = `<span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 rounded text-xs font-bold">${alert.strategy_name}</span>`;
+                    strategyBadge = `<span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 rounded text-xs font-bold">${alert.strategy_name.replace(/_/g, ' ')}</span>`;
                 }
 
                 const itemObj = {

@@ -148,8 +148,8 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
     
     return None
 
-async def run_daily_alerts():
-    logger.info("[ALERT ENGINE] Starting daily alert generation...")
+async def run_daily_alerts(target_date: str = None):
+    logger.info(f"[ALERT ENGINE] Starting daily alert generation for {target_date or 'today'}...")
     try:
         # Load Matrix
         with open('matrix_saham.json', 'r') as f:
@@ -163,7 +163,7 @@ async def run_daily_alerts():
         tickers = [row[0] for row in cursor.fetchall()]
         
         alerts_to_insert = []
-        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_str = target_date if target_date else datetime.now().strftime("%Y-%m-%d")
 
         # Delete today's existing alerts before re-generating (idempotent)
         cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ?", (today_str,))
@@ -175,13 +175,22 @@ async def run_daily_alerts():
                 continue
 
             # Fetch last 250 days for accurate EMA200
-            query = f"""
-            SELECT date, open, high, low, close, volume 
-            FROM daily_prices 
-            WHERE ticker = '{ticker}' 
-            ORDER BY date DESC 
-            LIMIT 250
-            """
+            if target_date:
+                query = f"""
+                SELECT date, open, high, low, close, volume 
+                FROM daily_prices 
+                WHERE ticker = '{ticker}' AND date <= '{target_date}'
+                ORDER BY date DESC 
+                LIMIT 250
+                """
+            else:
+                query = f"""
+                SELECT date, open, high, low, close, volume 
+                FROM daily_prices 
+                WHERE ticker = '{ticker}' 
+                ORDER BY date DESC 
+                LIMIT 250
+                """
             df = pd.read_sql_query(query, conn)
             
             if len(df) < 30:

@@ -678,12 +678,13 @@ showTargetLabels = input.bool(true, title="Show Entry/SL/TP Labels", group="Adve
 tradeDirection   = input.string("Both", title="Trading Direction", options=["Both", "Buy Only", "Sell Only"], group="Adventurer SMC Signals")
 
 useSession       = input.bool(true, title="Use Session Filter (Killzones)", group="Adventurer Sessions", tooltip="Matikan fitur ini jika trading saham lokal (BEI).")
+sessionZone      = input.string("Asia/Jakarta", title="Session Timezone", group="Adventurer Sessions", tooltip="Timezone untuk session (Asia/Jakarta = WIB / GMT+7)")
 londonSession    = input.session("1400-2200", title="London Session", group="Adventurer Sessions")
 nySession        = input.session("1900-0200", title="New York Session", group="Adventurer Sessions")
 
 // --- SESSION BOX LOGIC ---
-inLondon = not na(time(timeframe.period, londonSession))
-inNY     = not na(time(timeframe.period, nySession))
+inLondon = not na(time(timeframe.period, londonSession, sessionZone))
+inNY     = not na(time(timeframe.period, nySession, sessionZone))
 
 var box londonBox = na
 var float lonTop = na
@@ -811,4 +812,23 @@ if fireSell
 // --- ALERTS ---
 alertcondition(fireBuy,  title="🚀 Adventurer SMC BUY",  message='{"pair": "{{ticker}}", "action": "BUY", "setup": "CHoCH Pullback to OB/FVG"}')
 alertcondition(fireSell, title="🚀 Adventurer SMC SELL", message='{"pair": "{{ticker}}", "action": "SELL", "setup": "CHoCH Pullback to OB/FVG"}')
+
+// ====================================================================================================================
+// CUSTOM EMAs
+// ====================================================================================================================
+showEma = input.bool(true, title="Show EMAs", group="Custom EMAs")
+ema1Length = input.int(9, title="EMA 1 Length", group="Custom EMAs")
+ema2Length = input.int(21, title="EMA 2 Length", group="Custom EMAs")
+ema3Length = input.int(50, title="EMA 3 Length", group="Custom EMAs")
+ema4Length = input.int(200, title="EMA 4 Length", group="Custom EMAs")
+
+ema1 = ta.ema(close, ema1Length)
+ema2 = ta.ema(close, ema2Length)
+ema3 = ta.ema(close, ema3Length)
+ema4 = ta.ema(close, ema4Length)
+
+plot(showEma ? ema1 : na, color=color.new(color.blue, 0), title="EMA 1")
+plot(showEma ? ema2 : na, color=color.new(color.orange, 0), title="EMA 2")
+plot(showEma ? ema3 : na, color=color.new(color.yellow, 0), title="EMA 3")
+plot(showEma ? ema4 : na, color=color.new(color.white, 0), title="EMA 4")
 // ====================================================================================================================
