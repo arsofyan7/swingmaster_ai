@@ -47,11 +47,7 @@ def run_h1_alerts_job():
         
         alerts_to_insert = []
         telegram_lines = []
-        current_time_str = datetime.now().strftime("%H:%M")
         current_date_str = datetime.now().strftime("%Y-%m-%d")
-        
-        # Format strategy label yang jelas memisahkan H1 dari Daily
-        strategy_label = f"SMC_H1_{current_time_str}"
         
         h1_records = []
         
@@ -88,6 +84,9 @@ def run_h1_alerts_job():
             
             signal = get_smc_buy_signals(ticker_df)
             if signal:
+                candle_time_str = ticker_df.index[-1].strftime("%H:%M")
+                strategy_label = f"SMC_H1_{candle_time_str}"
+                
                 alerts_to_insert.append((
                     t,
                     strategy_label,
@@ -100,10 +99,10 @@ def run_h1_alerts_job():
                 
                 # Format pesan Telegram
                 telegram_lines.append(
-                    f"🚀 <b>{t}</b> | {signal['price_at_signal']}\n"
+                    f"🚀 <b>{t}</b> | {signal['price_at_signal']} (Jam {candle_time_str})\n"
                     f"└ TP: {signal['target_price']} | SL: {signal['stop_loss']}"
                 )
-                logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']}")
+                logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
         # 3. Update database h1_prices
         if h1_records:
@@ -117,7 +116,8 @@ def run_h1_alerts_job():
         # 4. Simpan ke database daily_alerts
         if alerts_to_insert:
             # Delete old alerts with exact same time/date (idempotent)
-            cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ? AND strategy_name = ?", (current_date_str, strategy_label))
+            for alert in alerts_to_insert:
+                cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (alert[2], alert[0], alert[1]))
             
             cursor.executemany('''
                 INSERT INTO daily_alerts (ticker, strategy_name, signal_date, price_at_signal, target_price, stop_loss, status)
@@ -127,7 +127,8 @@ def run_h1_alerts_job():
             logger.info(f"[SMC H1] Disimpan {len(alerts_to_insert)} alert ke database.")
             
             # 5. Kirim notifikasi Telegram
-            msg = f"<b>🔔 SMC H1 ALERTS ({current_time_str})</b>\n\n" + "\n\n".join(telegram_lines)
+            run_time_str = datetime.now().strftime("%H:%M")
+            msg = f"<b>🔔 SMC H1 ALERTS ({run_time_str})</b>\n\n" + "\n\n".join(telegram_lines)
             send_telegram_message(msg)
         else:
             logger.info("[SMC H1] Tidak ada alert SMC H1 pada jam ini.")

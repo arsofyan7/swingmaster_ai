@@ -21,6 +21,7 @@ class LoginRequest(BaseModel):
 
 class PortfolioCreateRequest(BaseModel):
     name: str
+    portfolio_type: str = "saham"
     initial_balance: float = 100000000.0
 
 class PortfolioSettingsRequest(BaseModel):
@@ -57,8 +58,8 @@ def register_user(request: Request, payload: RegisterRequest):
         
         # Create Main Portfolio
         cursor.execute(
-            "INSERT INTO portfolios (user_id, name, initial_balance, current_balance) VALUES (?, ?, ?, ?)",
-            (user_id, "Main Portfolio", 100000000.0, 100000000.0)
+            "INSERT INTO portfolios (user_id, name, portfolio_type, initial_balance, current_balance) VALUES (?, ?, ?, ?, ?)",
+            (user_id, "Main Portfolio", "saham", 100000000.0, 100000000.0)
         )
         conn.commit()
     except sqlite3.IntegrityError:
@@ -115,8 +116,8 @@ def create_portfolio(user_id: int, payload: PortfolioCreateRequest):
         raise HTTPException(status_code=404, detail="User tidak ditemukan.")
         
     cursor.execute(
-        "INSERT INTO portfolios (user_id, name, initial_balance, current_balance) VALUES (?, ?, ?, ?)",
-        (user_id, payload.name, payload.initial_balance, payload.initial_balance)
+        "INSERT INTO portfolios (user_id, name, portfolio_type, initial_balance, current_balance) VALUES (?, ?, ?, ?, ?)",
+        (user_id, payload.name, payload.portfolio_type, payload.initial_balance, payload.initial_balance)
     )
     portfolio_id = cursor.lastrowid
     conn.commit()

@@ -254,7 +254,7 @@
                 <div id="dashboard-alerts" class="mb-6 space-y-2"></div>
 
                 <!-- TradingView Widget IHSG -->
-                <div
+                <div id="ihsg_widget_container"
                     class="mb-8 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder h-[300px]">
                     <div id="ihsg_chart_container" style="height:100%;width:100%"></div>
                 </div>
@@ -325,7 +325,7 @@
                             <thead>
                                 <tr
                                     class="bg-gray-100 dark:bg-gray-800/50 border-b border-gray-200 dark:border-darkborder text-gray-600 dark:text-gray-400">
-                                    <th class="p-3 font-semibold">Ticker</th>
+                                    <th class="p-3 font-semibold" id="ap-ticker-header">Ticker</th>
                                     <th class="p-3 font-semibold">Avg</th>
                                     <th class="p-3 font-semibold">Last</th>
                                     <th class="p-3 font-semibold">TP</th>
@@ -549,8 +549,8 @@
             </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
+        <div id="strategy-education-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div id="edu-card-v8" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg">V8 Pullback</h4>
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded dark:bg-blue-900 dark:text-blue-300"><span id="summary-v8">0</span> Alert</span>
@@ -562,7 +562,7 @@
                     <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Kering:</b> Volume transaksi di bawah rata-rata 20 hari</li>
                 </ul>
             </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
+            <div id="edu-card-v3" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold text-green-600 dark:text-green-400 text-lg">V3 Breakout</h4>
@@ -575,7 +575,7 @@
                     <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>MACD Menanjak:</b> Histogram & Line MACD slope positif</li>
                 </ul>
             </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
+            <div id="edu-card-v6" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg">V6 Bandar</h4>
@@ -588,7 +588,7 @@
                     <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Akumulasi Masif:</b> OBV dan ADL > EMA 20</li>
                 </ul>
             </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
+            <div id="edu-card-swing" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg">Swing Reversal</h4>
@@ -601,7 +601,7 @@
                     <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Konfirmasi Reversal:</b> Close menembus High kemarin</li>
                 </ul>
             </div>
-            <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition">
+            <div id="edu-card-smc" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">SMC Mode</h4>
@@ -912,6 +912,35 @@
 
     <!-- ================= MODALS ================= -->
 
+    <!-- Create Portfolio Modal -->
+    <div id="createPortfolioModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-white dark:bg-darkcard w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-darkborder p-6">
+            <h3 class="text-xl font-bold mb-4">Buat Portofolio Baru</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nama Portofolio</label>
+                    <input type="text" id="cp_name" class="w-full bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Portofolio Saham A">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tipe Portofolio</label>
+                    <select id="cp_type" class="w-full bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        <option value="saham">Saham</option>
+                        <option value="forex">Forex</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Modal Awal (Rp)</label>
+                    <input type="number" id="cp_balance" class="w-full bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" value="100000000">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeCreatePortfolioModal()" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">Batal</button>
+                <button onclick="submitCreatePortfolio()" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-md">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Action Menu Modal -->
     <div id="actionModal"
         class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
@@ -963,7 +992,7 @@
                             oninput="calcBuyModal()">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Jumlah Lot</label>
+                        <label id="lbl-input-lot" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Jumlah Lot</label>
                         <input type="number" id="inputLot"
                             class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-darkborder text-gray-900 dark:text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                             oninput="calcBuyModal(true)">
@@ -1231,15 +1260,14 @@
                     renderPortfolioDropdown();
 
                     // Reload active tab
-                    const tabs = ['dashboard', 'screener', 'watchlist', 'journal', 'profile'];
-                    for (const t of tabs) {
-                        const view = document.getElementById(`view-${t}`);
-                        if (view && !view.classList.contains('hidden')) {
-                            if (t === 'dashboard') fetchDashboard();
-                            if (t === 'watchlist') fetchWatchlists();
-                            if (t === 'journal') fetchJournals();
-                            if (t === 'profile') fetchProfile();
-                            break;
+                    if (activePortfolio) {
+                        const tabs = ['dashboard', 'screener', 'alerts', 'watchlist', 'journal', 'profile'];
+                        for (const t of tabs) {
+                            const view = document.getElementById(`view-${t}`);
+                            if (view && !view.classList.contains('hidden')) {
+                                switchNav(t);
+                                break;
+                            }
                         }
                     }
                 }
@@ -1251,7 +1279,18 @@
         function renderHeaderPortfolio() {
             if (!activePortfolio) return;
             const label = document.getElementById("active-portfolio-label");
-            label.textContent = `${activePortfolio.name} - Rp ${activePortfolio.current_balance.toLocaleString('id-ID')}`;
+            const typeStr = activePortfolio.portfolio_type === 'forex' ? 'Forex' : 'Saham';
+            label.textContent = `${activePortfolio.name} (${typeStr}) - Rp ${activePortfolio.current_balance.toLocaleString('id-ID')}`;
+            
+            // Toggle IHSG Widget Visibility
+            const ihsgContainer = document.getElementById('ihsg_widget_container');
+            if (ihsgContainer) {
+                if (activePortfolio.portfolio_type === 'forex') {
+                    ihsgContainer.style.display = 'none';
+                } else {
+                    ihsgContainer.style.display = 'block';
+                }
+            }
         }
 
         function renderPortfolioDropdown() {
@@ -1263,7 +1302,8 @@
                 const a = document.createElement("a");
                 a.href = "#";
                 a.className = `block px-4 py-2 text-sm ${cls}`;
-                a.textContent = p.name;
+                const typeStr = p.portfolio_type === 'forex' ? 'Forex' : 'Saham';
+                a.textContent = `${p.name} (${typeStr})`;
                 a.onclick = (e) => {
                     e.preventDefault();
                     switchPortfolio(p.id);
@@ -1280,26 +1320,34 @@
             togglePortfolioDropdown();
 
             // Reload active tab
-            const tabs = ['dashboard', 'screener', 'watchlist', 'journal', 'profile'];
+            const tabs = ['dashboard', 'screener', 'alerts', 'watchlist', 'journal', 'profile'];
             for (const t of tabs) {
                 const view = document.getElementById(`view-${t}`);
                 if (view && !view.classList.contains('hidden')) {
-                    if (t === 'dashboard') fetchDashboard();
-                    if (t === 'watchlist') fetchWatchlists();
-                    if (t === 'journal') fetchJournals();
-                    if (t === 'profile') fetchProfile();
+                    switchNav(t);
                     break;
                 }
             }
         }
 
-        async function promptCreatePortfolio() {
+        function promptCreatePortfolio() {
             togglePortfolioDropdown();
-            const name = prompt("Masukkan nama Portofolio Baru:");
-            if (!name) return;
-            const balanceStr = prompt("Masukkan Modal Awal (contoh: 50000000):", "100000000");
-            if (!balanceStr) return;
+            document.getElementById('createPortfolioModal').classList.remove('hidden');
+        }
 
+        function closeCreatePortfolioModal() {
+            document.getElementById('createPortfolioModal').classList.add('hidden');
+            document.getElementById('cp_name').value = '';
+            document.getElementById('cp_type').value = 'saham';
+            document.getElementById('cp_balance').value = '100000000';
+        }
+
+        async function submitCreatePortfolio() {
+            const name = document.getElementById('cp_name').value;
+            const type = document.getElementById('cp_type').value;
+            const balanceStr = document.getElementById('cp_balance').value;
+
+            if (!name) return alert("Nama portofolio tidak boleh kosong!");
             const balance = parseFloat(balanceStr);
             if (isNaN(balance)) return alert("Modal harus berupa angka!");
 
@@ -1307,9 +1355,10 @@
                 const res = await fetch(`/api/v1/users/${activeUser.id}/portfolios`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, initial_balance: balance })
+                    body: JSON.stringify({ name: name, portfolio_type: type, initial_balance: balance })
                 });
                 if (res.ok) {
+                    closeCreatePortfolioModal();
                     await loadPortfolios();
                     const data = await res.json();
                     switchPortfolio(data.portfolio.id);
@@ -1673,6 +1722,29 @@
                     view.classList.add('hidden');
                 }
             });
+            
+            if (activePortfolio && activePortfolio.portfolio_type === 'forex' && (nav === 'screener' || nav === 'watchlist')) {
+                const view = document.getElementById(`view-${nav}`);
+                Array.from(view.children).forEach(c => c.style.display = 'none');
+                let msgDiv = document.getElementById(`forex-msg-${nav}`);
+                if (!msgDiv) {
+                    msgDiv = document.createElement('div');
+                    msgDiv.id = `forex-msg-${nav}`;
+                    msgDiv.className = "p-8 text-center text-gray-500 font-bold text-lg mt-10";
+                    msgDiv.textContent = "Mode Forex Aktif: Fungsi ini tidak bisa diakses";
+                    view.appendChild(msgDiv);
+                } else {
+                    msgDiv.style.display = 'block';
+                }
+                return;
+            } else if (nav === 'screener' || nav === 'watchlist') {
+                const view = document.getElementById(`view-${nav}`);
+                Array.from(view.children).forEach(c => {
+                    if (!c.id || !c.id.startsWith('forex-msg')) c.style.display = '';
+                });
+                const msgDiv = document.getElementById(`forex-msg-${nav}`);
+                if (msgDiv) msgDiv.style.display = 'none';
+            }
 
             if (nav === 'dashboard') {
                 fetchDashboard();
@@ -1785,6 +1857,10 @@
         }
 
         function renderDashboardPositions(positions) {
+            const isForex = activePortfolio && activePortfolio.portfolio_type === 'forex';
+            const headerTh = document.getElementById('ap-ticker-header');
+            if (headerTh) headerTh.textContent = isForex ? 'Pair' : 'Ticker';
+
             const tbody = document.getElementById('activePositionsTable');
             tbody.innerHTML = '';
             if (!positions || positions.length === 0) {
@@ -1809,20 +1885,21 @@
                 tr.className = `transition ${rowColorClass}`;
 
                 const pnlColor = p.floating_pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                const currency = isForex ? '$' : 'Rp ';
                 const pnlSign = p.floating_pnl >= 0 ? '+' : '';
 
-                const investedRp = p.buy_price * p.total_lot * 100;
+                const investedRp = isForex ? (p.buy_price * p.total_lot * 100000) : (p.buy_price * p.total_lot * 100);
                 const pnlPct = investedRp > 0 ? (p.floating_pnl / investedRp) * 100 : 0;
 
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-blue-600 dark:text-blue-400 hover:text-indigo-500 hover:underline cursor-pointer" onclick="fetchAndOpenChart('${p.ticker}')">${p.ticker}</td>
-                    <td class="p-3">${p.buy_price.toLocaleString('id-ID')}</td>
-                    <td class="p-3 font-semibold">${p.current_price.toLocaleString('id-ID')}</td>
-                    <td class="p-3 text-green-600 dark:text-green-400">${p.target_tp ? p.target_tp.toLocaleString('id-ID') : '-'}</td>
-                    <td class="p-3 text-red-600 dark:text-red-400">${p.target_sl ? p.target_sl.toLocaleString('id-ID') : '-'}</td>
-                    <td class="p-3">${p.total_lot.toLocaleString('id-ID')}</td>
-                    <td class="p-3">${investedRp.toLocaleString('id-ID')}</td>
-                    <td class="p-3 font-bold ${pnlColor}">${pnlSign}Rp ${p.floating_pnl.toLocaleString('id-ID')}</td>
+                    <td class="p-3">${p.buy_price.toLocaleString('id-ID', {maximumFractionDigits: 5})}</td>
+                    <td class="p-3 font-semibold">${p.current_price.toLocaleString('id-ID', {maximumFractionDigits: 5})}</td>
+                    <td class="p-3 text-green-600 dark:text-green-400">${p.target_tp ? p.target_tp.toLocaleString('id-ID', {maximumFractionDigits: 5}) : '-'}</td>
+                    <td class="p-3 text-red-600 dark:text-red-400">${p.target_sl ? p.target_sl.toLocaleString('id-ID', {maximumFractionDigits: 5}) : '-'}</td>
+                    <td class="p-3">${p.total_lot.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    <td class="p-3">${investedRp.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    <td class="p-3 font-bold ${pnlColor}">${pnlSign}${currency}${p.floating_pnl.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                     <td class="p-3 font-semibold ${pnlColor}">${pnlSign}${pnlPct.toFixed(2)}%</td>
                     <td class="p-3 text-center">
                         ${(() => {
@@ -2602,6 +2679,9 @@
             document.getElementById('inputBuyPrice').value = buyPrice;
             document.getElementById('inputTP').value = tp;
             document.getElementById('inputSL').value = sl;
+            const isForex = activePortfolio && activePortfolio.portfolio_type === 'forex';
+            document.getElementById('lbl-input-lot').textContent = isForex ? 'Lot Size' : 'Jumlah Lot';
+            document.getElementById('inputLot').step = isForex ? '0.01' : '1';
             document.getElementById('inputLot').value = ""; // Let calcBuyModal calculate it dynamically
 
             calcBuyModal();
@@ -2625,24 +2705,27 @@
             const maxLossRp = balance * (riskPct / 100);
             document.getElementById('maxRiskInfo').textContent = `Maksimal Toleransi Risiko: Rp ${maxLossRp.toLocaleString('id-ID')}`;
             
-            let lot = parseInt(document.getElementById('inputLot').value) || 0;
-            
-            // Dynamic position sizing if not overridden manually in this tick
+            let lot = parseFloat(document.getElementById('inputLot').value) || 0;
+            const isForex = activePortfolio && activePortfolio.portfolio_type === 'forex';
+
             if (!isManualLotOverride) {
-                const slDistance = bp - sl;
-                if (slDistance > 0 && bp > 0) {
-                    const totalLembar = maxLossRp / slDistance;
-                    lot = Math.floor(totalLembar / 100);
-                    if (lot < 0) lot = 0;
+                if (bp > 0 && sl > 0 && sl < bp) {
+                    if (isForex) {
+                        lot = 0.01; // default micro lot
+                    } else {
+                        const maxLembar = maxLossRp / (bp - sl);
+                        lot = Math.floor(maxLembar / 100);
+                        if (lot < 0) lot = 0;
+                    }
                 } else {
                     lot = 0;
                 }
                 document.getElementById('inputLot').value = lot;
             }
 
-            const totalInvest = bp * lot * 100;
-            const cuan = (tp - bp) * lot * 100;
-            const rugi = (bp - sl) * lot * 100;
+            const totalInvest = isForex ? (bp * lot * 100000) : (bp * lot * 100);
+            const cuan = isForex ? ((tp - bp) * lot * 100000) : ((tp - bp) * lot * 100);
+            const rugi = isForex ? ((bp - sl) * lot * 100000) : ((bp - sl) * lot * 100);
 
             const investEl = document.getElementById('buyTotalInvest');
             investEl.textContent = `Rp ${totalInvest.toLocaleString('id-ID')}`;
@@ -2669,7 +2752,7 @@
             if (!selectedStockData || !activePortfolio) return;
 
             const bp = parseFloat(document.getElementById('inputBuyPrice').value) || 0;
-            const lot = parseInt(document.getElementById('inputLot').value) || 0;
+            const lot = parseFloat(document.getElementById('inputLot').value) || 0;
             const tp = parseFloat(document.getElementById('inputTP').value) || 0;
             const sl = parseFloat(document.getElementById('inputSL').value) || 0;
 
@@ -2921,7 +3004,7 @@
                     </td>
                     <td class="p-3">${j.total_lot} Lot</td>
                     <td class="p-3 ${pnlColor}">
-                        <div>${pnlSign}Rp ${j.pnl_amount.toLocaleString('id-ID')}</div>
+                        <div>${pnlSign}${activePortfolio && activePortfolio.portfolio_type === 'forex' ? '$' : 'Rp '}${j.pnl_amount.toLocaleString('id-ID', {maximumFractionDigits: 2})}</div>
                         <div class="text-xs font-semibold">${pnlSign}${j.pnl_percentage.toFixed(2)}%</div>
                     </td>
                     <td class="p-3 text-center ${rColor}">${rSign}${j.r_multiple}R</td>
@@ -3246,7 +3329,11 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.status === 'success') {
-                    currentAlertsData = data.data;
+                    if (activePortfolio && activePortfolio.portfolio_type === 'forex') {
+                        currentAlertsData = data.data.filter(a => a.strategy_name && a.strategy_name.toLowerCase().includes('forex'));
+                    } else {
+                        currentAlertsData = data.data.filter(a => !(a.strategy_name && a.strategy_name.toLowerCase().includes('forex')));
+                    }
                     renderAlertsTable(currentAlertsData, date);
                 } else {
                     console.error("Failed to fetch alerts:", data.message);
@@ -3332,7 +3419,7 @@
                 else if (alert.strategy_name === 'V3_Breakout') countV3++;
                 else if (alert.strategy_name === 'V6_Bandar') countV6++;
                 else if (alert.strategy_name === 'Swing_Reversal') countSwing++;
-                else if (alert.strategy_name && alert.strategy_name.startsWith('SMC_H1')) countSMC++;
+                else if (alert.strategy_name && alert.strategy_name.toLowerCase().includes('smc')) countSMC++;
             });
             
             const elTotal = document.getElementById('summary-total-alerts');
@@ -3348,6 +3435,25 @@
             if (elV6) elV6.textContent = countV6;
             if (elSwing) elSwing.textContent = countSwing;
             if (elSMC) elSMC.textContent = countSMC;
+
+            // Toggle Strategy Education Panels based on portfolio type
+            if (activePortfolio && activePortfolio.portfolio_type === 'forex') {
+                const hideIds = ['edu-card-v8', 'edu-card-v3', 'edu-card-v6', 'edu-card-swing'];
+                hideIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+                const grid = document.getElementById('strategy-education-grid');
+                if (grid) grid.className = "grid grid-cols-1 gap-6 mb-8";
+            } else {
+                const showIds = ['edu-card-v8', 'edu-card-v3', 'edu-card-v6', 'edu-card-swing'];
+                showIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'block';
+                });
+                const grid = document.getElementById('strategy-education-grid');
+                if (grid) grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8";
+            }
 
             if (alerts.length === 0) {
                 const msg = date ? `Belum ada alert yang ter-trigger pada ${date}.` : `Belum ada alert yang ter-trigger hari ini.`;

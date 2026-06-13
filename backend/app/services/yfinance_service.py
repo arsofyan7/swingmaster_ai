@@ -124,6 +124,7 @@ def get_db_connection():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             name TEXT NOT NULL,
+            portfolio_type TEXT DEFAULT 'saham',
             initial_balance REAL DEFAULT 100000000,
             current_balance REAL DEFAULT 100000000,
             risk_per_trade_pct REAL DEFAULT 10.0,
@@ -172,6 +173,11 @@ def get_db_connection():
         conn.execute("ALTER TABLE trade_journals ADD COLUMN notes TEXT")
     except sqlite3.OperationalError:
         pass # Columns already exist
+        
+    try:
+        conn.execute("ALTER TABLE portfolios ADD COLUMN portfolio_type TEXT DEFAULT 'saham'")
+    except sqlite3.OperationalError:
+        pass # Column already exists
     conn.execute('''
         CREATE TABLE IF NOT EXISTS equity_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
