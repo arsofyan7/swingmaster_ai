@@ -90,7 +90,7 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
         cond2 = (latest['low'] <= latest['EMA_20']) and (latest['close'] >= latest['EMA_20']) and (latest['close'] <= (latest['EMA_20'] * 1.02))
         cond3 = latest['close'] < latest['close_prev']
         cond4 = latest['volume'] < latest['VMA_20']
-        cond5 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        cond5 = latest['VMA_20'] >= 5_000_000  # Minimum liquidity filter based on VMA
         return cond1 and cond2 and cond3 and cond4 and cond5
 
     # V3_Breakout Logic
@@ -98,7 +98,7 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
         cond1 = latest['volume'] >= (2 * latest['VMA_20'])
         cond2 = (latest['close'] > latest['EMA_20']) and (latest['close_prev'] <= latest['EMA_20_prev'])
         cond3 = latest['MACD'] > latest['MACD_prev']
-        cond4 = latest['volume'] >= 5_000_000  # Minimum volume filter
+        cond4 = latest['VMA_20'] >= 5_000_000
         return cond1 and cond2 and cond3 and cond4
 
     # V6_Bandar Logic
@@ -163,10 +163,16 @@ async def run_daily_alerts(target_date: str = None):
         tickers = [row[0] for row in cursor.fetchall()]
         
         alerts_to_insert = []
-        today_str = target_date if target_date else datetime.now().strftime("%Y-%m-%d")
+        
+        # Get the latest date from daily_prices to handle weekends gracefully
+        cursor.execute("SELECT MAX(date) FROM daily_prices")
+        max_date_row = cursor.fetchone()
+        latest_market_date = max_date_row[0] if max_date_row and max_date_row[0] else datetime.now().strftime("%Y-%m-%d")
+        
+        today_str = target_date if target_date else latest_market_date
 
-        # Delete today's existing alerts before re-generating (idempotent)
-        cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ?", (today_str,))
+        # Delete today's existing daily alerts before re-generating (exclude SMC alerts)
+        cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ? AND strategy_name NOT LIKE 'SMC%'", (today_str,))
         conn.commit()
         logger.info(f"[ALERT ENGINE] Cleared existing alerts for {today_str}, re-generating...")
 

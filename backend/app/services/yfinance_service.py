@@ -218,55 +218,126 @@ def sync_historical_data(tickers: list[str]):
     cursor = conn.cursor()
     today = datetime.date.today()
     
+    stale_tickers = []
+    
     for ticker in tickers:
         ticker_upper = ticker.upper().replace(".JK", "")
         
         cursor.execute("SELECT MAX(date) FROM daily_prices WHERE ticker = ?", (ticker_upper,))
         max_date_str = cursor.fetchone()[0]
         
-        try:
-            is_stale = True
-            if max_date_str:
-                max_date = datetime.datetime.strptime(max_date_str, '%Y-%m-%d').date()
-                if max_date >= today:
-                    is_stale = False
-            
-            if is_stale:
-                logger.info(f"[OUTBOUND GOOGLE HUB] Fetch history for {ticker_upper}")
-                res = requests.get(settings.GOOGLE_WEBAPP_URL, params={"action": "fetch_history", "ticker": ticker_upper}, timeout=40)
-                res_json = res.json()
+        is_stale = True
+        if max_date_str:
+            max_date = datetime.datetime.strptime(max_date_str, '%Y-%m-%d').date()
+            if max_date >= today:
+                is_stale = False
                 
-                if res_json.get("status") == "success":
-                    ohlcv_data = res_json.get("data", [])
-                    records = []
-                    for bar in ohlcv_data:
-                        low_val = float(bar["low"])
-                        vol_val = int(bar["volume"])
-                        if ticker_upper != 'COMPOSITE' and (low_val == 0 or vol_val == 0):
-                            continue  # Skip holiday/weekend rows for normal stocks
-                            
-                        records.append((
-                            bar["date"], 
-                            ticker_upper, 
-                            float(bar["open"]), 
-                            float(bar["high"]), 
-                            low_val, 
-                            float(bar["close"]), 
-                            vol_val
-                        ))
-                    
-                    if records:
-                        cursor.executemany('''
-                            INSERT OR IGNORE INTO daily_prices (date, ticker, open, high, low, close, volume)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
-                        ''', records)
-                        conn.commit()
-                else:
-                    logger.warning(f"Failed to fetch {ticker_upper} from Google Hub: {res_json.get('message')}")
-                    
-        except Exception as e:
-            print(f"Error syncing {ticker_upper}: {e}")
+        if is_stale:
+            stale_tickers.append(ticker_upper)
             
+    if not stale_tickers:
+        conn.close()
+        return
+        
+    tickers_for_yf_fallback = []
+    
+    for ticker_upper in stale_tickers:
+        logger.info(f"[OUTBOUND GOOGLE HUB] Fetch history for {ticker_upper}")
+        try:
+            res = requests.get(settings.GOOGLE_WEBAPP_URL, params={"action": "fetch_history", "ticker": ticker_upper}, timeout=40)
+            res_json = res.json()
+            
+            if res_json.get("status") == "success":
+                ohlcv_data = res_json.get("data", [])
+                records = []
+                has_zero_volume = False
+                
+                for bar in ohlcv_data:
+                    low_val = float(bar["low"])
+                    vol_val = int(bar["volume"])
+                    if ticker_upper != 'COMPOSITE' and (low_val == 0 or vol_val == 0):
+                        has_zero_volume = True
+                        break  # Langsung masuk fallback
+                        
+                    records.append((
+                        bar["date"], 
+                        ticker_upper, 
+                        float(bar["open"]), 
+                        float(bar["high"]), 
+                        low_val, 
+                        float(bar["close"]), 
+                        vol_val
+                    ))
+                
+                if has_zero_volume:
+                    logger.warning(f"[{ticker_upper}] Google Hub ngasih volume 0, masukin antrean yfinance batch...")
+                    tickers_for_yf_fallback.append(ticker_upper)
+                elif records:
+                    cursor.executemany('''
+                        INSERT OR IGNORE INTO daily_prices (date, ticker, open, high, low, close, volume)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', records)
+                    conn.commit()
+            else:
+                logger.warning(f"Failed to fetch {ticker_upper} from Google Hub: {res_json.get('message')}")
+                tickers_for_yf_fallback.append(ticker_upper)
+                
+        except Exception as e:
+            print(f"Error syncing {ticker_upper} dari Google Hub: {e}")
+            tickers_for_yf_fallback.append(ticker_upper)
+            
+    # YFINANCE BATCH FALLBACK
+    if tickers_for_yf_fallback:
+        logger.info(f"[YFINANCE FALLBACK] Memulai batch download untuk {len(tickers_for_yf_fallback)} emiten...")
+        try:
+            import yfinance as yf
+            yf_tickers = [f"{t}.JK" for t in tickers_for_yf_fallback]
+            
+            df = yf.download(yf_tickers, period="1mo", group_by='ticker', progress=False)
+            
+            fallback_records = []
+            for t in tickers_for_yf_fallback:
+                yf_t = f"{t}.JK"
+                
+                if len(yf_tickers) == 1:
+                    ticker_df = df
+                else:
+                    if yf_t not in df.columns.levels[0]:
+                        continue
+                    ticker_df = df[yf_t]
+                    
+                ticker_df = ticker_df.dropna(subset=['Close'])
+                if ticker_df.empty:
+                    continue
+                    
+                for dt, row in ticker_df.iterrows():
+                    date_str = dt.strftime("%Y-%m-%d")
+                    vol_val = int(row['Volume'])
+                    low_val = float(row['Low'])
+                    
+                    if t != 'COMPOSITE' and (low_val == 0 or vol_val == 0):
+                        continue
+                        
+                    fallback_records.append((
+                        date_str,
+                        t,
+                        float(row['Open']),
+                        float(row['High']),
+                        low_val,
+                        float(row['Close']),
+                        vol_val
+                    ))
+                    
+            if fallback_records:
+                cursor.executemany('''
+                    INSERT OR REPLACE INTO daily_prices (date, ticker, open, high, low, close, volume)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', fallback_records)
+                conn.commit()
+                logger.info(f"[YFINANCE FALLBACK] Berhasil fallback dan menyimpan {len(fallback_records)} baris data.")
+        except Exception as e:
+            logger.error(f"[YFINANCE FALLBACK] Gagal melakukan batch download: {e}")
+
     conn.close()
 
 def analyze_stock(ticker: str) -> dict:

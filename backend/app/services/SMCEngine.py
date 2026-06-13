@@ -4,229 +4,405 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def find_swings(df, order=5):
-    """
-    Menemukan swing highs dan swing lows dalam dataframe dengan pandas rolling.
-    """
-    # Swing High: titik tertinggi dalam window (kiri dan kanan sejauh 'order')
-    high_roll = df['High'].rolling(window=2*order+1, center=True).max()
-    swing_highs = df.index[df['High'] == high_roll].tolist()
-    
-    # Swing Low: titik terendah dalam window
-    low_roll = df['Low'].rolling(window=2*order+1, center=True).min()
-    swing_lows = df.index[df['Low'] == low_roll].tolist()
-    
-    # Konversi indeks datetime/int menjadi integer posisional
-    sh_indices = [df.index.get_loc(idx) for idx in swing_highs]
-    sl_indices = [df.index.get_loc(idx) for idx in swing_lows]
-    
-    return sorted(list(set(sh_indices))), sorted(list(set(sl_indices)))
+# ─── Constants (mirrors smc.pine defaults) ────────────────────────────────────
+BULLISH     = 1
+BEARISH     = -1
+BULLISH_LEG = 1
+BEARISH_LEG = 0
+NO_LEG      = -1
 
-def get_smc_buy_signals(df):
+INTERNAL_SIZE    = 5    # Pine: getCurrentStructure(5, internal=true)
+SWING_SIZE       = 50   # Pine: getCurrentStructure(50)
+OB_MAX_COUNT     = 100
+BUY_COOLDOWN     = 5    # bars
+SELL_COOLDOWN    = 5
+MIN_SL_PCT       = 0.005  # 0.5% minimum risk
+RR_RATIO         = 2.0
+
+
+def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
     """
-    Menjalankan logika SMC pada data H1.
-    Mendeteksi: CHoCH + OB/FVG Pullback.
-    Returns signal dict atau None.
+    Core Pine Script SMC state machine translated 1:1 to Python.
+    Runs bar-by-bar through all n bars and returns signals list.
+
+    direction: "BUY" | "SELL" | "BOTH"
+
+    Signal dict keys:
+        idx, entry, sl, tp
     """
-    if len(df) < 50:
+    # ── Pre-compute ATR (RMA-200, matches ta.atr(200)) ──
+    tr = np.empty(n)
+    tr[0] = highs[0] - lows[0]
+    for i in range(1, n):
+        tr[i] = max(highs[i] - lows[i],
+                    abs(highs[i] - closes[i - 1]),
+                    abs(lows[i] - closes[i - 1]))
+    alpha = 1.0 / 200
+    atr = np.zeros(n)
+    atr[0] = tr[0]
+    for i in range(1, n):
+        atr[i] = alpha * tr[i] + (1 - alpha) * atr[i - 1]
+
+    # Pine: parsedHighs / parsedLows (high-volatility bar filter)
+    parsed_highs = np.where((highs - lows) >= (2 * np.maximum(atr, 1e-9)), lows, highs)
+    parsed_lows  = np.where((highs - lows) >= (2 * np.maximum(atr, 1e-9)), highs, lows)
+
+    # ── Rolling max/min for leg detection ──
+    hs = pd.Series(highs)
+    ls = pd.Series(lows)
+    roll_max_5  = hs.rolling(INTERNAL_SIZE, min_periods=INTERNAL_SIZE).max().values
+    roll_min_5  = ls.rolling(INTERNAL_SIZE, min_periods=INTERNAL_SIZE).min().values
+    roll_max_50 = hs.rolling(SWING_SIZE,    min_periods=SWING_SIZE).max().values
+    roll_min_50 = ls.rolling(SWING_SIZE,    min_periods=SWING_SIZE).min().values
+
+    # ── Pivot state: [current_level, last_level, crossed(0/1), bar_index] ──
+    int_hi = np.array([0.0, 0.0, 0.0, 0.0])
+    int_lo = np.array([0.0, 0.0, 0.0, 0.0])
+    sw_hi  = np.array([0.0, 0.0, 0.0, 0.0])
+    sw_lo  = np.array([0.0, 0.0, 0.0, 0.0])
+
+    int_trend = 0
+    sw_trend  = 0
+    int_leg   = NO_LEG
+    sw_leg    = NO_LEG
+
+    # Internal Order Blocks: [bar_high, bar_low, bar_index, bias]
+    int_obs: list = []
+
+    # CHoCH state machine (Adventurer section)
+    active_bull_choch = False
+    active_bear_choch = False
+
+    last_buy_bar  = -999
+    last_sell_bar = -999
+    signals       = []
+
+    for i in range(n):
+        # ── Reset per-bar alerts ──
+        int_bull_choch = False
+        int_bear_choch = False
+        int_bull_bos   = False
+        int_bear_bos   = False
+        sw_bull_choch  = False
+        sw_bear_choch  = False
+        sw_bull_bos    = False
+        sw_bear_bos    = False
+
+        # ══════════════════════════════════════════════════════════════
+        # 1) getCurrentStructure() — update swing & internal pivots
+        # ══════════════════════════════════════════════════════════════
+
+        # --- Swing (size=50) ---
+        if i >= SWING_SIZE and not np.isnan(roll_max_50[i]):
+            piv_idx = i - SWING_SIZE
+            new_leg_high = highs[piv_idx] > roll_max_50[i]
+            new_leg_low  = lows[piv_idx]  < roll_min_50[i]
+            new_sw_leg   = sw_leg
+            if new_leg_high:
+                new_sw_leg = BEARISH_LEG
+            elif new_leg_low:
+                new_sw_leg = BULLISH_LEG
+
+            if new_sw_leg != sw_leg and new_sw_leg != NO_LEG:
+                if new_sw_leg == BULLISH_LEG:
+                    sw_lo[1] = sw_lo[0]
+                    sw_lo[0] = lows[piv_idx]
+                    sw_lo[2] = 0.0
+                    sw_lo[3] = piv_idx
+                else:
+                    sw_hi[1] = sw_hi[0]
+                    sw_hi[0] = highs[piv_idx]
+                    sw_hi[2] = 0.0
+                    sw_hi[3] = piv_idx
+                sw_leg = new_sw_leg
+
+        # --- Internal (size=5) ---
+        if i >= INTERNAL_SIZE and not np.isnan(roll_max_5[i]):
+            piv_idx = i - INTERNAL_SIZE
+            new_leg_high = highs[piv_idx] > roll_max_5[i]
+            new_leg_low  = lows[piv_idx]  < roll_min_5[i]
+            new_int_leg  = int_leg
+            if new_leg_high:
+                new_int_leg = BEARISH_LEG
+            elif new_leg_low:
+                new_int_leg = BULLISH_LEG
+
+            if new_int_leg != int_leg and new_int_leg != NO_LEG:
+                if new_int_leg == BULLISH_LEG:
+                    int_lo[1] = int_lo[0]
+                    int_lo[0] = lows[piv_idx]
+                    int_lo[2] = 0.0
+                    int_lo[3] = piv_idx
+                else:
+                    int_hi[1] = int_hi[0]
+                    int_hi[0] = highs[piv_idx]
+                    int_hi[2] = 0.0
+                    int_hi[3] = piv_idx
+                int_leg = new_int_leg
+
+        # ══════════════════════════════════════════════════════════════
+        # 2) displayStructure() — detect breaks, classify BOS/CHoCH,
+        #    store Internal Order Blocks
+        # ══════════════════════════════════════════════════════════════
+
+        if i < 1:
+            continue
+
+        c  = closes[i]
+        pc = closes[i - 1]
+        h  = highs[i]
+        lo = lows[i]
+
+        # ── Internal Bullish Break ──
+        level = int_hi[0]
+        extra = (int_hi[0] != sw_hi[0])          # Pine confluence filter
+        if level > 0 and c > level and pc <= level and int_hi[2] == 0.0 and extra:
+            tag_choch = (int_trend == BEARISH)
+            if tag_choch:
+                int_bull_choch = True
+            else:
+                int_bull_bos = True
+            int_hi[2]  = 1.0
+            int_trend  = BULLISH
+            # Store bullish internal OB (parsedLow min in range)
+            start = int(int_hi[3])
+            end   = min(i, n)
+            if 0 <= start < end:
+                seg  = parsed_lows[start:end]
+                pidx = start + int(np.argmin(seg))
+                ob   = [parsed_highs[pidx], parsed_lows[pidx], pidx, BULLISH]
+                if len(int_obs) >= OB_MAX_COUNT:
+                    int_obs.pop()
+                int_obs.insert(0, ob)
+
+        # ── Internal Bearish Break ──
+        level = int_lo[0]
+        extra = (int_lo[0] != sw_lo[0])
+        if level > 0 and c < level and pc >= level and int_lo[2] == 0.0 and extra:
+            tag_choch = (int_trend == BULLISH)
+            if tag_choch:
+                int_bear_choch = True
+            else:
+                int_bear_bos = True
+            int_lo[2]  = 1.0
+            int_trend  = BEARISH
+            start = int(int_lo[3])
+            end   = min(i, n)
+            if 0 <= start < end:
+                seg  = parsed_highs[start:end]
+                pidx = start + int(np.argmax(seg))
+                ob   = [parsed_highs[pidx], parsed_lows[pidx], pidx, BEARISH]
+                if len(int_obs) >= OB_MAX_COUNT:
+                    int_obs.pop()
+                int_obs.insert(0, ob)
+
+        # ── Swing Bullish Break ──
+        level = sw_hi[0]
+        if level > 0 and c > level and pc <= level and sw_hi[2] == 0.0:
+            if sw_trend == BEARISH:
+                sw_bull_choch = True
+            else:
+                sw_bull_bos = True
+            sw_hi[2]  = 1.0
+            sw_trend  = BULLISH
+
+        # ── Swing Bearish Break ──
+        level = sw_lo[0]
+        if level > 0 and c < level and pc >= level and sw_lo[2] == 0.0:
+            if sw_trend == BULLISH:
+                sw_bear_choch = True
+            else:
+                sw_bear_bos = True
+            sw_lo[2]  = 1.0
+            sw_trend  = BEARISH
+
+        # ══════════════════════════════════════════════════════════════
+        # 3) deleteOrderBlocks() — mitigate OBs via High/Low
+        # ══════════════════════════════════════════════════════════════
+
+        j = len(int_obs) - 1
+        while j >= 0:
+            ob = int_obs[j]
+            if h > ob[0] and ob[3] == BEARISH:
+                int_obs.pop(j)
+            elif lo < ob[1] and ob[3] == BULLISH:
+                int_obs.pop(j)
+            j -= 1
+
+        # ══════════════════════════════════════════════════════════════
+        # 4) CHoCH State Machine (Adventurer section)
+        # ══════════════════════════════════════════════════════════════
+
+        if int_bull_choch or sw_bull_choch:
+            active_bull_choch = True
+            active_bear_choch = False
+
+        if int_bear_choch or sw_bear_choch:
+            active_bear_choch = True
+            active_bull_choch = False
+
+        if int_bull_bos or sw_bull_bos:
+            active_bull_choch = False
+
+        if int_bear_bos or sw_bear_bos:
+            active_bear_choch = False
+
+        # ══════════════════════════════════════════════════════════════
+        # 5) Signal Check — BUY
+        # ══════════════════════════════════════════════════════════════
+
+        if direction in ("BUY", "BOTH") and active_bull_choch:
+            if (i - last_buy_bar) > BUY_COOLDOWN:
+                # Bullish reversal candle
+                bull_reversal = (c > opens[i]) and (c > pc)
+                if bull_reversal:
+                    # POI check: price inside a live bullish Internal OB
+                    inside_bull_poi = False
+                    bull_distal     = 1e18
+
+                    for ob in int_obs:
+                        if ob[3] == BULLISH and lo <= ob[0] and h >= ob[1]:
+                            inside_bull_poi = True
+                            if ob[1] < bull_distal:
+                                bull_distal = ob[1]
+
+                    if inside_bull_poi:
+                        if bull_distal >= 1e18:
+                            bull_distal = lo
+
+                        entry_price = c
+                        sl_price    = bull_distal
+                        risk        = entry_price - sl_price
+
+                        # Fallback SL to last swing low if too tight
+                        if risk <= 0 or (risk / entry_price) < MIN_SL_PCT:
+                            sl_price = sw_lo[0]
+                            risk     = entry_price - sl_price
+
+                        if risk > 0:
+                            tp_price    = entry_price + (risk * RR_RATIO)
+                            last_buy_bar = i
+                            signals.append({
+                                'idx':       i,
+                                'type':      'BUY',
+                                'entry':     entry_price,
+                                'sl':        sl_price,
+                                'tp':        tp_price,
+                            })
+
+        # ══════════════════════════════════════════════════════════════
+        # 6) Signal Check — SELL
+        # ══════════════════════════════════════════════════════════════
+
+        if direction in ("SELL", "BOTH") and active_bear_choch:
+            if (i - last_sell_bar) > SELL_COOLDOWN:
+                bear_reversal = (c < opens[i]) and (c < pc)
+                if bear_reversal:
+                    inside_bear_poi = False
+                    bear_distal     = 0.0
+
+                    for ob in int_obs:
+                        if ob[3] == BEARISH and h >= ob[1] and lo <= ob[0]:
+                            inside_bear_poi = True
+                            if ob[0] > bear_distal:
+                                bear_distal = ob[0]
+
+                    if inside_bear_poi:
+                        if bear_distal <= 0:
+                            bear_distal = h
+
+                        entry_price = c
+                        sl_price    = bear_distal
+                        risk        = sl_price - entry_price
+
+                        # Fallback SL to last swing high if too tight
+                        if risk <= 0 or (risk / entry_price) < MIN_SL_PCT:
+                            sl_price = sw_hi[0]
+                            risk     = sl_price - entry_price
+
+                        if risk > 0:
+                            tp_price     = entry_price - (risk * RR_RATIO)
+                            last_sell_bar = i
+                            signals.append({
+                                'idx':   i,
+                                'type':  'SELL',
+                                'entry': entry_price,
+                                'sl':    sl_price,
+                                'tp':    tp_price,
+                            })
+
+    return signals
+
+
+# ─── Public API (called by AlertEngine) ───────────────────────────────────────
+
+def get_smc_buy_signals(df: pd.DataFrame) -> dict | None:
+    """
+    Run SMC engine on H1 DataFrame (columns: Open/High/Low/Close).
+    Returns BUY signal dict if current bar (last row) triggers, else None.
+
+    Expected columns (case-insensitive): Open, High, Low, Close
+    """
+    if len(df) < SWING_SIZE + 10:
         return None
-        
-    # Pastikan data clean dan terurut
+
     df = df.copy()
     df.reset_index(drop=True, inplace=True)
-    
-    swing_highs, swing_lows = find_swings(df, order=4)
-    
-    if len(swing_highs) < 2 or len(swing_lows) < 2:
-        return None
-        
-    last_swing_low_idx = swing_lows[-1]
-    
-    # Cari swing high valid terakhir sebelum swing low ini
-    sh_before_sl = [idx for idx in swing_highs if idx < last_swing_low_idx]
-    if not sh_before_sl:
-        return None
-        
-    last_swing_high_idx = sh_before_sl[-1]
-    last_sh_price = df['High'].iloc[last_swing_high_idx]
-    last_sl_price = df['Low'].iloc[last_swing_low_idx]
-    
-    # 1. Deteksi CHoCH (Change of Character)
-    # Harga harus close di atas last_sh_price setelah last_swing_low_idx
-    choch_idx = None
-    for i in range(last_swing_low_idx + 1, len(df)):
-        if df['Close'].iloc[i] > last_sh_price:
-            choch_idx = i
-            break
-            
-    if not choch_idx:
-        return None # Belum ada CHoCH valid
-        
-    # 2. Cari Bullish Order Block (OB)
-    # Candle bearish terakhir sebelum CHoCH impulse (mulai dari last SL sampai CHoCH)
-    ob_idx = None
-    for i in range(choch_idx - 1, max(-1, last_swing_low_idx - 1), -1):
-        if df['Close'].iloc[i] < df['Open'].iloc[i]: # Bearish candle
-            ob_idx = i
-            break
-            
-    if ob_idx is None:
-        # Jika tidak ada candle merah, ambil candle terendah (swing low itu sendiri)
-        ob_idx = last_swing_low_idx
-        
-    ob_high = df['High'].iloc[ob_idx]
-    ob_low = df['Low'].iloc[ob_idx]
-    
-    # 3. Cari Fair Value Gap (FVG) Bullish setelah OB
-    # FVG Bullish terjadi jika Low candle ke-3 lebih tinggi dari High candle ke-1
-    fvg_top = None
-    fvg_bottom = None
-    
-    # Kita cari FVG dari candle setelah OB sampai candle sebelum current
-    for i in range(ob_idx + 1, len(df) - 1):
-        # i adalah middle candle dari FVG
-        # Pastikan kita punya cukup data untuk i-1 dan i+1
-        if i - 1 >= ob_idx and i + 1 < len(df):
-            c1_high = df['High'].iloc[i-1]
-            c3_low = df['Low'].iloc[i+1]
-            
-            if c3_low > c1_high:
-                # FVG Bullish ditemukan!
-                fvg_top = c3_low
-                fvg_bottom = c1_high
-                # Terus loop agar kita dapat FVG terbaru jika ada beberapa
-                
-    # 4. Cek apakah harga SAAT INI sedang berada di area Pullback (Masuk ke OB atau FVG)
-    current_idx = len(df) - 1
-    current_low = df['Low'].iloc[current_idx]
-    current_close = df['Close'].iloc[current_idx]
-    
-    # Entry zone: dari batas bawah OB sampai batas atas area FVG (jika ada FVG), 
-    # atau sampai batas atas OB jika tidak ada FVG. Kita beri sedikit toleransi.
-    highest_entry_point = ob_high
-    if fvg_top is not None:
-        highest_entry_point = max(ob_high, fvg_top)
-        
-    tolerance = highest_entry_point * 1.01 # +1% toleransi
-    
-    # Syarat Pullback: 
-    # 1. Harga menyentuh/masuk ke area tolerance (OB / FVG)
-    # 2. Harga belum menembus ke bawah ob_low (belum invalidate struktur)
-    if ob_low <= current_low <= tolerance:
-        if current_close > ob_low: 
-            sl = ob_low * 0.99
-            tp = current_close + ((current_close - sl) * 2) # Risk Reward 1:2
-            
-            strategy_name = "SMC_CHoCH_OB_FVG" if fvg_top else "SMC_CHoCH_OB"
-            
-            return {
-                "strategy_name": strategy_name,
-                "price_at_signal": current_close,
-                "target_price": round(tp, 5),
-                "stop_loss": round(sl, 5),
-                "type": "BUY"
-            }
-            
+
+    # Normalise column names
+    col_map = {c.lower(): c for c in df.columns}
+    opens  = df[col_map.get('open',  'Open')].values.astype(np.float64)
+    highs  = df[col_map.get('high',  'High')].values.astype(np.float64)
+    lows   = df[col_map.get('low',   'Low')].values.astype(np.float64)
+    closes = df[col_map.get('close', 'Close')].values.astype(np.float64)
+    n      = len(df)
+
+    signals = _run_smc_engine(opens, highs, lows, closes, n, direction="BUY")
+
+    # Only care if the LAST bar triggered
+    if signals and signals[-1]['idx'] == n - 1:
+        sig = signals[-1]
+        fvg_tag = "SMC_CHoCH_OB"  # FVG not separately tracked (Pine default off)
+        return {
+            "strategy_name":   fvg_tag,
+            "price_at_signal": sig['entry'],
+            "target_price":    round(sig['tp'], 5),
+            "stop_loss":       round(sig['sl'], 5),
+            "type":            "BUY",
+        }
+
     return None
 
-def get_smc_sell_signals(df):
+
+def get_smc_sell_signals(df: pd.DataFrame) -> dict | None:
     """
-    Menjalankan logika SMC Bearish pada data H1.
-    Mendeteksi: Bearish CHoCH + Bearish OB/FVG Pullback.
-    Returns signal dict atau None.
+    Run SMC engine on H1 DataFrame.
+    Returns SELL signal dict if current bar triggers, else None.
+    Only used for forex pairs.
     """
-    if len(df) < 50:
+    if len(df) < SWING_SIZE + 10:
         return None
-        
+
     df = df.copy()
     df.reset_index(drop=True, inplace=True)
-    
-    swing_highs, swing_lows = find_swings(df, order=4)
-    
-    if len(swing_highs) < 2 or len(swing_lows) < 2:
-        return None
-        
-    last_swing_high_idx = swing_highs[-1]
-    
-    # Cari swing low valid terakhir sebelum swing high ini
-    sl_before_sh = [idx for idx in swing_lows if idx < last_swing_high_idx]
-    if not sl_before_sh:
-        return None
-        
-    last_swing_low_idx = sl_before_sh[-1]
-    last_sh_price = df['High'].iloc[last_swing_high_idx]
-    last_sl_price = df['Low'].iloc[last_swing_low_idx]
-    
-    # 1. Deteksi Bearish CHoCH (Change of Character)
-    # Harga harus close di bawah last_sl_price setelah last_swing_high_idx
-    choch_idx = None
-    for i in range(last_swing_high_idx + 1, len(df)):
-        if df['Close'].iloc[i] < last_sl_price:
-            choch_idx = i
-            break
-            
-    if not choch_idx:
-        return None # Belum ada CHoCH valid
-        
-    # 2. Cari Bearish Order Block (OB)
-    # Candle bullish terakhir sebelum CHoCH impulse (mulai dari last SH sampai CHoCH)
-    ob_idx = None
-    for i in range(choch_idx - 1, max(-1, last_swing_high_idx - 1), -1):
-        if df['Close'].iloc[i] > df['Open'].iloc[i]: # Bullish candle
-            ob_idx = i
-            break
-            
-    if ob_idx is None:
-        # Jika tidak ada candle hijau, ambil candle tertinggi (swing high itu sendiri)
-        ob_idx = last_swing_high_idx
-        
-    ob_high = df['High'].iloc[ob_idx]
-    ob_low = df['Low'].iloc[ob_idx]
-    
-    # 3. Cari Bearish Fair Value Gap (FVG) setelah OB
-    # FVG Bearish terjadi jika High candle ke-3 lebih rendah dari Low candle ke-1
-    fvg_top = None
-    fvg_bottom = None
-    
-    for i in range(ob_idx + 1, len(df) - 1):
-        if i - 1 >= ob_idx and i + 1 < len(df):
-            c1_low = df['Low'].iloc[i-1]
-            c3_high = df['High'].iloc[i+1]
-            
-            if c3_high < c1_low:
-                # FVG Bearish ditemukan!
-                fvg_top = c1_low
-                fvg_bottom = c3_high
-                
-    # 4. Cek apakah harga SAAT INI sedang berada di area Pullback (Masuk ke OB atau FVG)
-    current_idx = len(df) - 1
-    current_high = df['High'].iloc[current_idx]
-    current_close = df['Close'].iloc[current_idx]
-    
-    # Entry zone: dari batas atas OB sampai batas bawah area FVG (jika ada FVG), 
-    # atau sampai batas bawah OB jika tidak ada FVG. Kita beri sedikit toleransi.
-    lowest_entry_point = ob_low
-    if fvg_bottom is not None:
-        lowest_entry_point = min(ob_low, fvg_bottom)
-        
-    tolerance = lowest_entry_point * 0.99 # -1% toleransi
-    
-    # Syarat Pullback: 
-    # 1. Harga menyentuh/masuk ke area tolerance (OB / FVG)
-    # 2. Harga belum menembus ke atas ob_high (belum invalidate struktur)
-    if tolerance <= current_high <= ob_high:
-        if current_close < ob_high: 
-            sl = ob_high * 1.01
-            tp = current_close - ((sl - current_close) * 2) # Risk Reward 1:2
-            
-            strategy_name = "SMC_Bearish_CHoCH_OB_FVG" if fvg_bottom else "SMC_Bearish_CHoCH_OB"
-            
-            return {
-                "strategy_name": strategy_name,
-                "price_at_signal": current_close,
-                "target_price": round(tp, 5),
-                "stop_loss": round(sl, 5),
-                "type": "SELL"
-            }
-            
+
+    col_map = {c.lower(): c for c in df.columns}
+    opens  = df[col_map.get('open',  'Open')].values.astype(np.float64)
+    highs  = df[col_map.get('high',  'High')].values.astype(np.float64)
+    lows   = df[col_map.get('low',   'Low')].values.astype(np.float64)
+    closes = df[col_map.get('close', 'Close')].values.astype(np.float64)
+    n      = len(df)
+
+    signals = _run_smc_engine(opens, highs, lows, closes, n, direction="SELL")
+
+    if signals and signals[-1]['idx'] == n - 1:
+        sig = signals[-1]
+        return {
+            "strategy_name":   "SMC_Bearish_CHoCH_OB",
+            "price_at_signal": sig['entry'],
+            "target_price":    round(sig['tp'], 5),
+            "stop_loss":       round(sig['sl'], 5),
+            "type":            "SELL",
+        }
+
     return None

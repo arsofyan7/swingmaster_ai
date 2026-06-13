@@ -47,7 +47,6 @@ def run_h1_alerts_job():
         
         alerts_to_insert = []
         telegram_lines = []
-        current_date_str = datetime.now().strftime("%Y-%m-%d")
         
         h1_records = []
         
@@ -84,13 +83,15 @@ def run_h1_alerts_job():
             
             signal = get_smc_buy_signals(ticker_df)
             if signal:
-                candle_time_str = ticker_df.index[-1].strftime("%H:%M")
+                last_candle_dt = ticker_df.index[-1]
+                candle_date_str = last_candle_dt.strftime("%Y-%m-%d")
+                candle_time_str = last_candle_dt.strftime("%H:%M")
                 strategy_label = f"SMC_H1_{candle_time_str}"
                 
                 alerts_to_insert.append((
                     t,
                     strategy_label,
-                    current_date_str,
+                    candle_date_str,
                     signal['price_at_signal'],
                     signal['target_price'],
                     signal['stop_loss'],

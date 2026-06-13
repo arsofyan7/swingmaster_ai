@@ -14,7 +14,12 @@ async def trigger_run_alerts():
     """
     try:
         from app.services.AlertEngine import run_daily_alerts
+        from app.services.run_h1_alerts import run_h1_alerts_job
+        
         await run_daily_alerts()
+        # Jalankan juga SMC H1 Alerts secara sinkron
+        run_h1_alerts_job()
+        
         return {"status": "success", "message": "Alert generation completed successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -61,13 +66,17 @@ def get_daily_alerts(date: Optional[str] = None):
                 ORDER BY signal_date DESC
             ''', (date,))
         else:
-            today_str = datetime.now().strftime("%Y-%m-%d")
+            # Default ke tanggal alert terbaru yang ada di database (handle weekend)
+            cursor.execute("SELECT MAX(signal_date) FROM daily_alerts")
+            max_date_row = cursor.fetchone()
+            latest_alert_date = max_date_row[0] if max_date_row and max_date_row[0] else datetime.now().strftime("%Y-%m-%d")
+            
             cursor.execute('''
                 SELECT id, ticker, strategy_name, signal_date, price_at_signal, target_price, stop_loss, status
                 FROM daily_alerts
                 WHERE signal_date = ?
                 ORDER BY signal_date DESC
-            ''', (today_str,))
+            ''', (latest_alert_date,))
             
         rows = cursor.fetchall()
         conn.close()

@@ -1056,11 +1056,15 @@
                     </div>
                     <h3 id="chartModalTitle" class="text-xl font-bold text-white tracking-wide">Analisis Teknikal</h3>
                 </div>
-                <div class="flex gap-2 mx-4 overflow-x-auto hide-scrollbar flex-1 justify-center">
-                    <button id="toggleV8" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V8')">V8 Pullback</button>
-                    <button id="toggleV3" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V3')">V3 Breakout</button>
-                    <button id="toggleV6" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('V6')">V6 Bandar</button>
-                    <button id="toggleSR" class="px-3 py-1 text-xs font-semibold rounded border border-gray-600 text-gray-400 hover:bg-gray-800 transition" onclick="toggleStrategyIndicator('SR')">Swing Reversal</button>
+                <div class="flex gap-2 mx-4 flex-1 justify-center relative">
+                    <select id="strategyDropdown" onchange="toggleStrategyIndicator(this.value)" class="bg-[#1e222d] text-gray-300 border border-gray-600 rounded px-3 py-1 text-xs font-semibold focus:outline-none focus:border-blue-500 w-full max-w-[200px] cursor-pointer">
+                        <option value="">-- Pilih Indikator --</option>
+                        <option value="V8">V8 Pullback</option>
+                        <option value="V3">V3 Breakout</option>
+                        <option value="V6">V6 Bandar</option>
+                        <option value="SR">Swing Reversal</option>
+                        <option value="SMC">SMC Mode</option>
+                    </select>
                 </div>
                 <button onclick="closeChartModal()" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
             </div>
@@ -2261,23 +2265,377 @@
             return adlData;
         }
 
+        function calculateSMC(data, ticker) {
+            const markers = [];
+            const boxes = [];
+            const zigZag = [];
+            if (data.length < 50) return { chochMarkers: markers, boxes: boxes, zigZag: zigZag };
+            
+            const isForex = ticker && ticker.includes('=X');
+            
+            const swings = { highs: [], lows: [] };
+            const order = 4;
+            for (let i = order; i < data.length - order; i++) {
+                let isHigh = true;
+                let isLow = true;
+                for (let j = 1; j <= order; j++) {
+                    if (data[i].high <= data[i-j].high || data[i].high <= data[i+j].high) isHigh = false;
+                    if (data[i].low >= data[i-j].low || data[i].low >= data[i+j].low) isLow = false;
+                }
+                if (isHigh) swings.highs.push(i);
+                if (isLow) swings.lows.push(i);
+            }
+            
+            if (swings.highs.length < 2 || swings.lows.length < 2) return { chochMarkers: markers, boxes: boxes, zigZag: zigZag };
+            
+            const allSwings = [];
+            swings.highs.forEach(i => allSwings.push({ idx: i, price: data[i].high, type: 'SH' }));
+            swings.lows.forEach(i => allSwings.push({ idx: i, price: data[i].low, type: 'SL' }));
+            allSwings.sort((a,b) => a.idx - b.idx);
+            
+            let lastH = null, lastL = null;
+            allSwings.forEach(s => {
+                if (zigZag.length === 0 || zigZag[zigZag.length-1].time !== data[s.idx].time) {
+                    zigZag.push({ time: data[s.idx].time, value: s.price });
+                    
+                    let text = '', color = '', position = '', shape = '';
+                    if (s.type === 'SH') {
+                        text = (lastH === null || s.price > lastH) ? 'HH' : 'LH';
+                        lastH = s.price;
+                        color = '#3b82f6';
+                        position = 'aboveBar';
+                        shape = 'arrowDown';
+                    } else {
+                        text = (lastL === null || s.price > lastL) ? 'HL' : 'LL';
+                        lastL = s.price;
+                        color = '#ef4444';
+                        position = 'belowBar';
+                        shape = 'arrowUp';
+                    }
+                    markers.push({ time: data[s.idx].time, position: position, color: color, shape: shape, text: text });
+                }
+            });
+            
+            // --- BULLISH SETUP (BUY) - FIND ALL HISTORICAL CHoCHs ---
+            swings.lows.forEach(slIdx => {
+                const shBeforeSl = swings.highs.filter(idx => idx < slIdx);
+                if (shBeforeSl.length > 0) {
+                    const shIdx = shBeforeSl[shBeforeSl.length - 1];
+                    const shPrice = data[shIdx].high;
+                    
+                    let chochIdx = null;
+                    for (let i = slIdx + 1; i < data.length; i++) {
+                        if (data[i].close < data[slIdx].low) break; // invalidated
+                        if (data[i].close > shPrice) {
+                            chochIdx = i;
+                            break;
+                        }
+                    }
+                    
+                    if (chochIdx && chochIdx < data.length - 1) {
+                        boxes.push({
+                            start: data[shIdx].time,
+                            end: data[chochIdx].time,
+                            top: shPrice,
+                            bottom: shPrice,
+                            color: '#10b981',
+                            fill: 'transparent',
+                            title: 'Bull CHoCH'
+                        });
+                        
+                        let obIdx = slIdx;
+                        for (let i = chochIdx - 1; i >= Math.max(0, slIdx - 1); i--) {
+                            if (data[i].close < data[i].open) {
+                                obIdx = i;
+                                break;
+                            }
+                        }
+                        const obHigh = data[obIdx].high;
+                        const obLow = data[obIdx].low;
+                        
+                        let endIdx = data.length - 1;
+                        for (let i = obIdx + 1; i < data.length; i++) {
+                            if (data[i].low < obLow) { // mitigated
+                                endIdx = i;
+                                break;
+                            }
+                        }
+                        
+                        boxes.push({
+                            start: data[obIdx].time,
+                            end: data[endIdx].time,
+                            top: obHigh,
+                            bottom: obLow,
+                            color: 'rgba(16, 185, 129, 0.5)',
+                            fill: 'rgba(16, 185, 129, 0.1)',
+                            title: 'Bull OB'
+                        });
+                        
+                        for (let i = obIdx + 1; i < Math.min(chochIdx + 3, data.length - 1); i++) {
+                            if (i - 1 >= obIdx && i + 1 < data.length) {
+                                const c1High = data[i-1].high;
+                                const c3Low = data[i+1].low;
+                                if (c3Low > c1High) {
+                                    const fvgTop = c3Low;
+                                    const fvgBottom = c1High;
+                                    
+                                    let fvgEndIdx = data.length - 1;
+                                    for (let j = i + 1; j < data.length; j++) {
+                                        if (data[j].low < fvgBottom) { // mitigated
+                                            fvgEndIdx = j;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    boxes.push({
+                                        start: data[i].time,
+                                        end: data[fvgEndIdx].time,
+                                        top: fvgTop,
+                                        bottom: fvgBottom,
+                                        color: 'rgba(139, 92, 246, 0.5)',
+                                        fill: 'rgba(139, 92, 246, 0.1)',
+                                        title: 'Bull FVG'
+                                    });
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Draw current unmitigated Weak High
+            const lastSwingLowIdx = swings.lows[swings.lows.length - 1];
+            const shBeforeSl = swings.highs.filter(idx => idx < lastSwingLowIdx);
+            if (shBeforeSl.length > 0) {
+                const lastSwingHighIdx = shBeforeSl[shBeforeSl.length - 1];
+                const lastShPrice = data[lastSwingHighIdx].high;
+                
+                let chochIdx = null;
+                for (let i = lastSwingLowIdx + 1; i < data.length; i++) {
+                    if (data[i].close > lastShPrice) {
+                        chochIdx = i;
+                        break;
+                    }
+                }
+                
+                if (!chochIdx) {
+                    boxes.push({
+                        start: data[lastSwingHighIdx].time,
+                        end: data[data.length-1].time,
+                        top: lastShPrice,
+                        bottom: lastShPrice,
+                        color: 'rgba(255, 255, 255, 0.3)',
+                        fill: 'transparent',
+                        title: 'Weak High'
+                    });
+                }
+            }
+            
+            // --- BEARISH SETUP (SELL) - ONLY IF FOREX ---
+            if (isForex) {
+                swings.highs.forEach(shIdx => {
+                    const slBeforeSh = swings.lows.filter(idx => idx < shIdx);
+                    if (slBeforeSh.length > 0) {
+                        const slIdx = slBeforeSh[slBeforeSh.length - 1];
+                        const slPrice = data[slIdx].low;
+                        
+                        let chochIdx = null;
+                        for (let i = shIdx + 1; i < data.length; i++) {
+                            if (data[i].close > data[shIdx].high) break; // invalidated
+                            if (data[i].close < slPrice) {
+                                chochIdx = i;
+                                break;
+                            }
+                        }
+                        
+                        if (chochIdx && chochIdx < data.length - 1) {
+                            boxes.push({
+                                start: data[slIdx].time,
+                                end: data[chochIdx].time,
+                                top: slPrice,
+                                bottom: slPrice,
+                                color: '#ef4444',
+                                fill: 'transparent',
+                                title: 'Bear CHoCH'
+                            });
+                            
+                            let obIdx = shIdx;
+                            for (let i = chochIdx - 1; i >= Math.max(0, shIdx - 1); i--) {
+                                if (data[i].close > data[i].open) {
+                                    obIdx = i;
+                                    break;
+                                }
+                            }
+                            const obHigh = data[obIdx].high;
+                            const obLow = data[obIdx].low;
+                            
+                            let endIdx = data.length - 1;
+                            for (let i = obIdx + 1; i < data.length; i++) {
+                                if (data[i].high > obHigh) { // mitigated
+                                    endIdx = i;
+                                    break;
+                                }
+                            }
+                            
+                            boxes.push({
+                                start: data[obIdx].time,
+                                end: data[endIdx].time,
+                                top: obHigh,
+                                bottom: obLow,
+                                color: 'rgba(239, 68, 68, 0.5)',
+                                fill: 'rgba(239, 68, 68, 0.1)',
+                                title: 'Bear OB'
+                            });
+                            
+                            for (let i = obIdx + 1; i < Math.min(chochIdx + 3, data.length - 1); i++) {
+                                if (i - 1 >= obIdx && i + 1 < data.length) {
+                                    const c1Low = data[i-1].low;
+                                    const c3High = data[i+1].high;
+                                    if (c1Low > c3High) {
+                                        const fvgBottom = c1Low;
+                                        const fvgTop = c3High;
+                                        
+                                        let fvgEndIdx = data.length - 1;
+                                        for (let j = i + 1; j < data.length; j++) {
+                                            if (data[j].high > fvgTop) { // mitigated
+                                                fvgEndIdx = j;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        boxes.push({
+                                            start: data[i].time,
+                                            end: data[fvgEndIdx].time,
+                                            top: fvgTop,
+                                            bottom: fvgBottom,
+                                            color: 'rgba(245, 158, 11, 0.5)',
+                                            fill: 'rgba(245, 158, 11, 0.1)',
+                                            title: 'Bear FVG'
+                                        });
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Draw current unmitigated Weak Low
+                const lastSwingHighIdx = swings.highs[swings.highs.length - 1];
+                const slBeforeSh = swings.lows.filter(idx => idx < lastSwingHighIdx);
+                if (slBeforeSh.length > 0) {
+                    const lastSwingLowIdx = slBeforeSh[slBeforeSh.length - 1];
+                    const lastSlPrice = data[lastSwingLowIdx].low;
+                    
+                    let chochIdx = null;
+                    for (let i = lastSwingHighIdx + 1; i < data.length; i++) {
+                        if (data[i].close < lastSlPrice) {
+                            chochIdx = i;
+                            break;
+                        }
+                    }
+                    
+                    if (!chochIdx) {
+                        boxes.push({
+                            start: data[lastSwingLowIdx].time,
+                            end: data[data.length-1].time,
+                            top: lastSlPrice,
+                            bottom: lastSlPrice,
+                            color: 'rgba(255, 255, 255, 0.3)',
+                            fill: 'transparent',
+                            title: 'Weak Low'
+                        });
+                    }
+                }
+            }
+            
+            return { chochMarkers: markers, boxes: boxes, zigZag: zigZag };
+        }
+
+        function drawSMCData() {
+            if (!_activeChartRefs.smcData) return;
+            const data = _activeChartRefs.smcData;
+            const markers = [];
+            _activeChartRefs.smcBoxSeries = [];
+            
+            if (data.zigZag && data.zigZag.length > 0) {
+                const zzSeries = _activeChartRefs.chart.addSeries(LightweightCharts.LineSeries, {
+                    color: 'rgba(255, 255, 255, 0.2)',
+                    lineWidth: 1,
+                    lineStyle: 1,
+                    crosshairMarkerVisible: false,
+                    lastValueVisible: false,
+                    priceLineVisible: false,
+                });
+                zzSeries.setData(data.zigZag);
+                _activeChartRefs.smcBoxSeries.push(zzSeries);
+            }
+            
+            if (data.chochMarkers) markers.push(...data.chochMarkers);
+            if (markers.length > 0) {
+                markers.sort((a,b) => a.time.localeCompare(b.time));
+                const uniqueM = [];
+                markers.forEach(m => {
+                    if (uniqueM.length === 0 || uniqueM[uniqueM.length-1].time !== m.time) {
+                        uniqueM.push(m);
+                    } else {
+                        uniqueM[uniqueM.length-1].text += ' | ' + m.text;
+                    }
+                });
+                try {
+                    if (!_activeChartRefs.markersPlugin) {
+                        _activeChartRefs.markersPlugin = LightweightCharts.createSeriesMarkers(_activeChartRefs.candleSeries, uniqueM);
+                    } else {
+                        _activeChartRefs.markersPlugin.setMarkers(uniqueM);
+                    }
+                } catch(e){}
+            }
+            
+            if (data.boxes) {
+                data.boxes.forEach(box => {
+                    if (box.top === box.bottom) {
+                        const series = _activeChartRefs.chart.addSeries(LightweightCharts.LineSeries, {
+                            color: box.color,
+                            lineWidth: 2,
+                            lineStyle: 2,
+                            crosshairMarkerVisible: false,
+                            priceLineVisible: false,
+                            lastValueVisible: false,
+                            title: box.title
+                        });
+                        series.setData([
+                            { time: box.start, value: box.top },
+                            { time: box.end, value: box.top }
+                        ]);
+                        _activeChartRefs.smcBoxSeries.push(series);
+                    } else {
+                        const series = _activeChartRefs.chart.addSeries(LightweightCharts.BaselineSeries, {
+                            baseValue: { type: 'price', price: box.bottom },
+                            topLineColor: box.color,
+                            topFillColor1: box.fill,
+                            topFillColor2: box.fill,
+                            bottomLineColor: box.color,
+                            bottomFillColor1: box.fill,
+                            bottomFillColor2: box.fill,
+                            lineWidth: 1,
+                            crosshairMarkerVisible: false,
+                            priceLineVisible: false,
+                            lastValueVisible: false
+                        });
+                        series.setData([
+                            { time: box.start, value: box.top },
+                            { time: box.end, value: box.top }
+                        ]);
+                        _activeChartRefs.smcBoxSeries.push(series);
+                    }
+                });
+            }
+        }
+
         function toggleStrategyIndicator(strategy) {
             if (!_activeChartRefs.candleSeries) return;
 
-            const btn = document.getElementById(`toggle${strategy}`);
-            const isActive = btn.classList.contains('bg-blue-600');
-
-            // Reset all buttons
-            ['V8','V3','V6','SR'].forEach(s => {
-                const b = document.getElementById(`toggle${s}`);
-                if (b) {
-                    b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
-                    b.classList.add('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
-                }
-            });
-
-            // Hide all overlays first
-            // Hide all overlays and subpanes first
             _activeChartRefs.ema20Series.applyOptions({ visible: false });
             _activeChartRefs.ema200Series.applyOptions({ visible: false });
             if (_activeChartRefs.macdSeries) _activeChartRefs.macdSeries.applyOptions({ visible: false });
@@ -2286,54 +2644,51 @@
             if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: false });
             if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: false });
             if (_activeChartRefs.rsiSeries) _activeChartRefs.rsiSeries.applyOptions({ visible: false });
-            if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: true }); // Default Show
+            if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: true });
             
-            // Hide markers if they exist
             if (_activeChartRefs.markersPlugin) {
-                try {
-                    _activeChartRefs.markersPlugin.setMarkers([]);
-                } catch (e) {
-                    console.error("Error clearing markers:", e);
-                }
+                try { _activeChartRefs.markersPlugin.setMarkers([]); } catch (e) {}
+            }
+            if (_activeChartRefs.smcLines) {
+                _activeChartRefs.smcLines.forEach(l => { try { _activeChartRefs.candleSeries.removePriceLine(l); } catch(e){} });
+                _activeChartRefs.smcLines = [];
+            } else {
+                _activeChartRefs.smcLines = [];
+            }
+            if (_activeChartRefs.smcBoxSeries) {
+                _activeChartRefs.smcBoxSeries.forEach(s => { try { _activeChartRefs.chart.removeSeries(s); } catch(e){} });
+                _activeChartRefs.smcBoxSeries = [];
+            } else {
+                _activeChartRefs.smcBoxSeries = [];
             }
 
-            if (!isActive) {
-                // Turn on
-                btn.classList.remove('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
-                btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+            if (!strategy) return;
 
-                if (strategy === 'V8') {
-                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
-                    _activeChartRefs.ema200Series.applyOptions({ visible: true });
-                } else if (strategy === 'V3') {
-                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
-                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
-                    if (_activeChartRefs.macdSeries) _activeChartRefs.macdSeries.applyOptions({ visible: true });
-                    if (_activeChartRefs.signalSeries) _activeChartRefs.signalSeries.applyOptions({ visible: true });
-                    if (_activeChartRefs.histSeries) _activeChartRefs.histSeries.applyOptions({ visible: true });
-                } else if (strategy === 'V6') {
-                    _activeChartRefs.ema20Series.applyOptions({ visible: true });
-                    _activeChartRefs.ema200Series.applyOptions({ visible: true });
-                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
-                    if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: true });
-                    if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: true });
-                } else if (strategy === 'SR') {
-                    if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
-                    if (_activeChartRefs.rsiSeries) _activeChartRefs.rsiSeries.applyOptions({ visible: true });
-                    if (!_activeChartRefs.markersPlugin) {
-                        try {
-                            _activeChartRefs.markersPlugin = LightweightCharts.createSeriesMarkers(_activeChartRefs.candleSeries, _activeChartRefs.pivotMarkers);
-                        } catch (e) {
-                            console.error("Marker plugin error:", e);
-                        }
-                    } else {
-                        try {
-                            _activeChartRefs.markersPlugin.setMarkers(_activeChartRefs.pivotMarkers);
-                        } catch (e) {
-                            console.error("Marker plugin error:", e);
-                        }
-                    }
+            if (strategy === 'V8') {
+                _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                _activeChartRefs.ema200Series.applyOptions({ visible: true });
+            } else if (strategy === 'V3') {
+                _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                if (_activeChartRefs.macdSeries) _activeChartRefs.macdSeries.applyOptions({ visible: true });
+                if (_activeChartRefs.signalSeries) _activeChartRefs.signalSeries.applyOptions({ visible: true });
+                if (_activeChartRefs.histSeries) _activeChartRefs.histSeries.applyOptions({ visible: true });
+            } else if (strategy === 'V6') {
+                _activeChartRefs.ema20Series.applyOptions({ visible: true });
+                _activeChartRefs.ema200Series.applyOptions({ visible: true });
+                if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                if (_activeChartRefs.obvSeries) _activeChartRefs.obvSeries.applyOptions({ visible: true });
+                if (_activeChartRefs.adlSeries) _activeChartRefs.adlSeries.applyOptions({ visible: true });
+            } else if (strategy === 'SR') {
+                if (_activeChartRefs.volumeSeries) _activeChartRefs.volumeSeries.applyOptions({ visible: false });
+                if (_activeChartRefs.rsiSeries) _activeChartRefs.rsiSeries.applyOptions({ visible: true });
+                if (!_activeChartRefs.markersPlugin) {
+                    try { _activeChartRefs.markersPlugin = LightweightCharts.createSeriesMarkers(_activeChartRefs.candleSeries, _activeChartRefs.pivotMarkers); } catch (e) {}
+                } else {
+                    try { _activeChartRefs.markersPlugin.setMarkers(_activeChartRefs.pivotMarkers); } catch (e) {}
                 }
+            } else if (strategy === 'SMC') {
+                drawSMCData();
             }
         }
 
@@ -2348,13 +2703,8 @@
             _activeChartRefs = {};
 
             // Reset toggles
-            ['V8','V3','V6','SR'].forEach(s => {
-                const b = document.getElementById(`toggle${s}`);
-                if (b) {
-                    b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
-                    b.classList.add('border-gray-600', 'text-gray-400', 'hover:bg-gray-800');
-                }
-            });
+            const stratDrop = document.getElementById('strategyDropdown');
+            if (stratDrop) stratDrop.value = "";
 
             const ticker = selectedStockData.ticker;
             
@@ -2503,7 +2853,8 @@
                     obvSeries,
                     adlSeries,
                     rsiSeries,
-                    pivotMarkers
+                    pivotMarkers,
+                    smcData: calculateSMC(formattedOhlcvData, ticker)
                 };
 
                 chart.timeScale().fitContent();
