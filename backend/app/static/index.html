@@ -254,9 +254,84 @@
                 <div id="dashboard-alerts" class="mb-6 space-y-2"></div>
 
                 <!-- TradingView Widget IHSG -->
-                <div id="ihsg_widget_container"
-                    class="mb-8 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder h-[300px]">
-                    <div id="ihsg_chart_container" style="height:100%;width:100%"></div>
+                <div id="ihsg_widget_container" class="mb-8 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder h-[400px]">
+                    <div class="tradingview-widget-container" style="height:100%;width:100%">
+                        <div id="tv_ihsg" style="height:calc(100% - 32px);width:100%"></div>
+                        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                        <script type="text/javascript">
+                            window.addEventListener('DOMContentLoaded', () => {
+                                new TradingView.widget({
+                                    "autosize": true,
+                                    "symbol": "IDX:COMPOSITE",
+                                    "interval": "D",
+                                    "timezone": "Asia/Jakarta",
+                                    "theme": "dark",
+                                    "style": "1",
+                                    "locale": "en",
+                                    "enable_publishing": false,
+                                    "backgroundColor": "rgba(17, 24, 39, 1)",
+                                    "gridColor": "rgba(31, 41, 55, 1)",
+                                    "hide_top_toolbar": false,
+                                    "hide_legend": false,
+                                    "save_image": false,
+                                    "container_id": "tv_ihsg"
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+
+                <!-- TradingView Widget Forex Dashboard (Initially Hidden) -->
+                <div id="forex_widget_container" style="display: none;" class="mb-8">
+                    <div class="flex flex-col gap-4">
+                        <!-- Top Row: XAUUSD -->
+                        <div class="w-full h-[400px] rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder relative">
+                            <div id="tv_xauusd" style="height:100%;width:100%"></div>
+                        </div>
+                        <!-- Bottom Row: 2x2 Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- EURUSD -->
+                            <div class="h-[300px] rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder relative">
+                                <div id="tv_eurusd" style="height:100%;width:100%"></div>
+                            </div>
+                            <!-- GBPUSD -->
+                            <div class="h-[300px] rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder relative">
+                                <div id="tv_gbpusd" style="height:100%;width:100%"></div>
+                            </div>
+                            <!-- USDCHF -->
+                            <div class="h-[300px] rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder relative">
+                                <div id="tv_usdchf" style="height:100%;width:100%"></div>
+                            </div>
+                            <!-- USDJPY -->
+                            <div class="h-[300px] rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-darkborder relative">
+                                <div id="tv_usdjpy" style="height:100%;width:100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- TradingView Scripts -->
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                        const tvCommonOpts = {
+                            "autosize": true,
+                            "interval": "60",
+                            "timezone": "Asia/Jakarta",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "en",
+                            "enable_publishing": false,
+                            "backgroundColor": "rgba(17, 24, 39, 1)",
+                            "gridColor": "rgba(31, 41, 55, 1)",
+                            "hide_top_toolbar": true,
+                            "hide_legend": false,
+                            "save_image": false
+                        };
+                        
+                        new TradingView.widget(Object.assign({}, tvCommonOpts, { "symbol": "OANDA:XAUUSD", "container_id": "tv_xauusd", "hide_top_toolbar": false }));
+                        new TradingView.widget(Object.assign({}, tvCommonOpts, { "symbol": "OANDA:EURUSD", "container_id": "tv_eurusd" }));
+                        new TradingView.widget(Object.assign({}, tvCommonOpts, { "symbol": "OANDA:GBPUSD", "container_id": "tv_gbpusd" }));
+                        new TradingView.widget(Object.assign({}, tvCommonOpts, { "symbol": "OANDA:USDCHF", "container_id": "tv_usdchf" }));
+                        new TradingView.widget(Object.assign({}, tvCommonOpts, { "symbol": "OANDA:USDJPY", "container_id": "tv_usdjpy" }));
+                    </script>
                 </div>
 
                 <!-- Summary Cards -->
@@ -1286,13 +1361,16 @@
             const typeStr = activePortfolio.portfolio_type === 'forex' ? 'Forex' : 'Saham';
             label.textContent = `${activePortfolio.name} (${typeStr}) - Rp ${activePortfolio.current_balance.toLocaleString('id-ID')}`;
             
-            // Toggle IHSG Widget Visibility
+            // Toggle Widget Visibility (IHSG vs Forex)
             const ihsgContainer = document.getElementById('ihsg_widget_container');
-            if (ihsgContainer) {
+            const forexContainer = document.getElementById('forex_widget_container');
+            if (ihsgContainer && forexContainer) {
                 if (activePortfolio.portfolio_type === 'forex') {
                     ihsgContainer.style.display = 'none';
+                    forexContainer.style.display = 'block';
                 } else {
                     ihsgContainer.style.display = 'block';
+                    forexContainer.style.display = 'none';
                 }
             }
         }
@@ -1780,58 +1858,7 @@
                     renderDashboardPositions(data.active_positions);
                     renderCharts(data.equity_curve, data.sector_allocation);
 
-                    // Initialize IHSG Lightweight Chart
-                    const ihsgContainer = document.getElementById('ihsg_chart_container');
-                    if (ihsgContainer) {
-                        ihsgContainer.innerHTML = '';
-                        const isDark = document.documentElement.classList.contains('dark');
-                        const chartOptions = {
-                            layout: {
-                                background: { type: 'solid', color: isDark ? '#111827' : '#ffffff' },
-                                textColor: isDark ? '#9CA3AF' : '#4B5563'
-                            },
-                            grid: {
-                                vertLines: { color: isDark ? '#1F2937' : '#E5E7EB', style: 1 },
-                                horzLines: { color: isDark ? '#1F2937' : '#E5E7EB', style: 1 }
-                            },
-                            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-                            rightPriceScale: { borderColor: isDark ? '#374151' : '#E5E7EB' },
-                            timeScale: { borderColor: isDark ? '#374151' : '#E5E7EB', timeVisible: true },
-                            watermark: {
-                                color: isDark ? 'rgba(55, 65, 81, 0.4)' : 'rgba(229, 231, 235, 0.6)',
-                                visible: true,
-                                text: 'IHSG',
-                                fontSize: 48,
-                                horzAlign: 'center',
-                                vertAlign: 'center'
-                            },
-                            width: ihsgContainer.clientWidth || 800,
-                            height: 300
-                        };
-                        const chart = LightweightCharts.createChart(ihsgContainer, chartOptions);
-                        const ihsgSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
-                            upColor: '#22c55e',
-                            downColor: '#ef4444',
-                            borderVisible: false,
-                            wickUpColor: '#22c55e',
-                            wickDownColor: '#ef4444'
-                        });
-
-                        const sortedData = (data.ihsg_history || []).sort((a, b) => a.time.localeCompare(b.time));
-                        ihsgSeries.setData(sortedData);
-                        chart.timeScale().fitContent();
-
-                        // Handle resize
-                        if (window.ihsgResizeObserver) {
-                            window.ihsgResizeObserver.disconnect();
-                        }
-                        window.ihsgResizeObserver = new ResizeObserver(entries => {
-                            if (entries.length === 0) return;
-                            const newWidth = entries[0].contentRect.width;
-                            chart.resize(newWidth, 300);
-                        });
-                        window.ihsgResizeObserver.observe(ihsgContainer);
-                    }
+                    // IHSG Lightweight Chart has been replaced by TradingView Widget.
                 }
             } catch (e) {
                 console.error("Failed to load dashboard", e);
