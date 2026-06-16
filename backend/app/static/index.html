@@ -251,6 +251,34 @@
 
             <div id="dashboard-content">
                 <!-- Alert Banner Container -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                    <div></div>
+                    <!-- <button onclick="testTelegramAlert()" id="btnTestTelegram" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors text-sm shadow-sm">
+                        <i class="fas fa-paper-plane"></i> Test Telegram
+                    </button> -->
+                </div>
+                <script>
+                async function testTelegramAlert() {
+                    const btn = document.getElementById('btnTestTelegram');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                    btn.disabled = true;
+                    try {
+                        const response = await fetch('/alerts/test-telegram', { method: 'POST' });
+                        const result = await response.json();
+                        if (response.ok) {
+                            alert(result.message);
+                        } else {
+                            alert('Error: ' + result.detail);
+                        }
+                    } catch (error) {
+                        alert('Network error while testing Telegram.');
+                    } finally {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                }
+                </script>
                 <div id="dashboard-alerts" class="mb-6 space-y-2"></div>
 
                 <!-- TradingView Widget IHSG -->

@@ -99,9 +99,17 @@ def run_h1_alerts_job():
                 ))
                 
                 # Format pesan Telegram
+                entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
+                tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
+                sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
+                
                 telegram_lines.append(
-                    f"🚀 <b>{t}</b> | {signal['price_at_signal']} (Jam {candle_time_str})\n"
-                    f"└ TP: {signal['target_price']} | SL: {signal['stop_loss']}"
+                    f"<b>{len(telegram_lines)+1}. {t}</b> (SMC H1 - {candle_time_str})\n"
+                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                    f"💰 <b>Entry:</b> {entry}\n"
+                    f"🎯 <b>TP:</b> {tp}\n"
+                    f"🛑 <b>SL:</b> {sl}\n"
+                    f"────────────────────"
                 )
                 logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
@@ -129,7 +137,9 @@ def run_h1_alerts_job():
             
             # 5. Kirim notifikasi Telegram
             run_time_str = datetime.now().strftime("%H:%M")
-            msg = f"<b>🔔 SMC H1 ALERTS ({run_time_str})</b>\n\n" + "\n\n".join(telegram_lines)
+            header = f"<b>⏱️ SMC H1 ALERTS ⏱️</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
+            footer = f"\n💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+            msg = header + "\n".join(telegram_lines) + footer
             send_telegram_message(msg)
         else:
             logger.info("[SMC H1] Tidak ada alert SMC H1 pada jam ini.")

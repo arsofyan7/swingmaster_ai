@@ -4,6 +4,7 @@ import json
 import asyncio
 from datetime import datetime
 from app.core.logger import logger
+from app.services.telegram_service import send_telegram_message
 
 def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -233,6 +234,32 @@ async def run_daily_alerts(target_date: str = None):
             ''', alerts_to_insert)
             conn.commit()
             logger.info(f"[ALERT ENGINE] Successfully saved {len(alerts_to_insert)} alerts to database.")
+            
+            # Send Telegram Notification
+            msg_lines = [
+                "<b>🚀 SWINGMASTER AI ALERTS 🚀</b>",
+                f"<i>📅 Date: {today_str}</i>\n"
+            ]
+            
+            for idx, alert in enumerate(alerts_to_insert, 1):
+                ticker = alert[0]
+                strategy = alert[1]
+                entry = f"{alert[3]:,.0f}" if alert[3] >= 100 else f"{alert[3]:.2f}"
+                tp = f"{alert[4]:,.0f}" if alert[4] >= 100 else f"{alert[4]:.2f}"
+                sl = f"{alert[5]:,.0f}" if alert[5] >= 100 else f"{alert[5]:.2f}"
+                
+                msg_lines.append(f"<b>{idx}. {ticker}</b> ({strategy})")
+                msg_lines.append(f"🏷️ <b>Current Price:</b> {entry}")
+                msg_lines.append(f"💰 <b>Entry:</b> {entry}")
+                msg_lines.append(f"🎯 <b>TP:</b> {tp}")
+                msg_lines.append(f"🛑 <b>SL:</b> {sl}")
+                msg_lines.append("────────────────────")
+                
+            msg_lines.append(f"\n💡 <i>Total Alerts Today: {len(alerts_to_insert)}</i>")
+            msg_lines.append("⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>")
+            
+            send_telegram_message("\n".join(msg_lines))
+            
         else:
             logger.info("[ALERT ENGINE] No alerts triggered today.")
             

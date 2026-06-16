@@ -24,6 +24,43 @@ async def trigger_run_alerts():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/test-telegram")
+async def test_telegram_alert():
+    """
+    Dummy endpoint to test Telegram message sending.
+    """
+    try:
+        from app.services.telegram_service import send_telegram_message
+        
+        # Sample cool format for testing
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        msg = f"""<b>🚀 SWINGMASTER AI ALERTS 🚀</b>
+<i>📅 Date: {today_str}</i>
+
+<b>1. BBCA</b> (V3_Breakout)
+🏷️ <b>Current Price:</b> 10,000
+💰 <b>Entry:</b> 10,000
+🎯 <b>TP:</b> 10,500
+🛑 <b>SL:</b> 9,500
+────────────────────
+<b>2. GOTO</b> (Swing_Reversal)
+🏷️ <b>Current Price:</b> 60
+💰 <b>Entry:</b> 60
+🎯 <b>TP:</b> 65
+🛑 <b>SL:</b> 55
+────────────────────
+
+💡 <i>Total Alerts Today: 2 (TEST MODE)</i>
+⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"""
+        
+        success = send_telegram_message(msg)
+        if success:
+            return {"status": "success", "message": "Pesan test terkirim ke Telegram!"}
+        else:
+            raise HTTPException(status_code=500, detail="Gagal mengirim pesan (periksa token/chat_id).")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/dates")
 def get_alert_dates():
     """

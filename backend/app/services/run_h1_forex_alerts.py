@@ -104,9 +104,17 @@ def run_h1_forex_alerts_job():
                         buy_signal['stop_loss'],
                         'open'
                     ))
+                    entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
+                    tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
+                    sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
+                    
                     telegram_lines.append(
-                        f"🟢 <b>BUY {db_ticker}</b> | {buy_signal['price_at_signal']} (Jam {candle_time_str})\n"
-                        f"└ TP: {buy_signal['target_price']} | SL: {buy_signal['stop_loss']}"
+                        f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC Forex BUY - {candle_time_str})\n"
+                        f"🏷️ <b>Current Price:</b> {entry}\n"
+                        f"🟢 <b>Entry:</b> {entry}\n"
+                        f"🎯 <b>TP:</b> {tp}\n"
+                        f"🛑 <b>SL:</b> {sl}\n"
+                        f"────────────────────"
                     )
                     logger.info(f"[SMC FOREX H1] BUY TRIGGERED: {db_ticker} at {buy_signal['price_at_signal']} ({candle_time_str})")
                     
@@ -123,9 +131,17 @@ def run_h1_forex_alerts_job():
                         sell_signal['stop_loss'],
                         'open'
                     ))
+                    entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
+                    tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
+                    sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
+                    
                     telegram_lines.append(
-                        f"🔴 <b>SELL {db_ticker}</b> | {sell_signal['price_at_signal']} (Jam {candle_time_str})\n"
-                        f"└ TP: {sell_signal['target_price']} | SL: {sell_signal['stop_loss']}"
+                        f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC Forex SELL - {candle_time_str})\n"
+                        f"🏷️ <b>Current Price:</b> {entry}\n"
+                        f"🔴 <b>Entry:</b> {entry}\n"
+                        f"🎯 <b>TP:</b> {tp}\n"
+                        f"🛑 <b>SL:</b> {sl}\n"
+                        f"────────────────────"
                     )
                     logger.info(f"[SMC FOREX H1] SELL TRIGGERED: {db_ticker} at {sell_signal['price_at_signal']} ({candle_time_str})")
                     
@@ -147,7 +163,9 @@ def run_h1_forex_alerts_job():
             
             # Kirim notifikasi Telegram
             run_time_str = datetime.now().strftime("%H:%M")
-            msg = f"<b>🔔 SMC FOREX H1 ALERTS ({run_time_str})</b>\n\n" + "\n\n".join(telegram_lines)
+            header = f"<b>🌍 SMC FOREX H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
+            footer = f"\n💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+            msg = header + "\n".join(telegram_lines) + footer
             send_telegram_message(msg)
         else:
             logger.info("[SMC FOREX H1] Tidak ada alert SMC Forex H1 pada jam ini.")
