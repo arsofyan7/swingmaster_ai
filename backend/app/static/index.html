@@ -947,10 +947,20 @@
                     <div id="profileInitialBalance" class="text-sm text-gray-600 dark:text-gray-300">Initial Balance: Rp
                         0</div>
                 </div>
-                <button onclick="promptCreatePortfolio()"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-sm whitespace-nowrap">
-                    + Create New Portfolio
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="deleteActivePortfolio()"
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-sm whitespace-nowrap">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <button onclick="promptCreatePortfolio()"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-sm whitespace-nowrap">
+                        + Create
+                    </button>
+                    <button onclick="openManagePortfoliosModal()"
+                        class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-sm whitespace-nowrap">
+                        <i class="fas fa-list"></i> List
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1040,6 +1050,21 @@
             <div class="flex justify-end gap-3 mt-6">
                 <button onclick="closeCreatePortfolioModal()" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">Batal</button>
                 <button onclick="submitCreatePortfolio()" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-md">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Portfolios Modal -->
+    <div id="managePortfoliosModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-white dark:bg-darkcard w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-darkborder flex flex-col max-h-[80vh]">
+            <div class="p-6 border-b border-gray-100 dark:border-darkborder flex justify-between items-center">
+                <h3 class="text-xl font-bold">Manage Portfolios</h3>
+                <button onclick="closeManagePortfoliosModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto" id="managePortfoliosList">
+                <!-- Loaded via JS -->
             </div>
         </div>
     </div>
@@ -1440,9 +1465,88 @@
             }
         }
 
+        async function deleteActivePortfolio() {
+            if (!activePortfolio) return;
+            if (portfolios.length <= 1) {
+                alert("Anda tidak bisa menghapus satu-satunya portfolio yang ada. Buat portfolio baru terlebih dahulu.");
+                return;
+            }
+            if (!confirm(`Apakah Anda yakin ingin menghapus portfolio '${activePortfolio.name}' beserta seluruh datanya (jurnal, watchlist, open positions)? Tindakan ini tidak dapat dibatalkan.`)) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/v1/portfolios/${activePortfolio.id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    localStorage.removeItem("active_portfolio");
+                    await loadPortfolios();
+                } else {
+                    alert(data.detail || "Gagal menghapus portfolio");
+                }
+            } catch (e) {
+                alert("Terjadi kesalahan jaringan.");
+            }
+        }
+
         function promptCreatePortfolio() {
             togglePortfolioDropdown();
             document.getElementById('createPortfolioModal').classList.remove('hidden');
+        }
+
+        function openManagePortfoliosModal() {
+            const listContainer = document.getElementById('managePortfoliosList');
+            listContainer.innerHTML = '';
+            
+            portfolios.forEach(p => {
+                const isActive = activePortfolio && p.id === activePortfolio.id;
+                const typeStr = p.portfolio_type === 'forex' ? 'Forex' : 'Saham';
+                
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 mb-2 rounded-lg border border-gray-200 dark:border-darkborder bg-gray-50 dark:bg-darkbg';
+                item.innerHTML = `
+                    <div>
+                        <div class="font-bold text-gray-900 dark:text-white">${p.name} <span class="text-xs font-normal text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full ml-2">${typeStr}</span> ${isActive ? '<span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full ml-1">Active</span>' : ''}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Balance: Rp ${p.current_balance.toLocaleString('id-ID')}</div>
+                    </div>
+                    <button onclick="deleteSpecificPortfolio(${p.id}, '${p.name}')" class="text-red-500 hover:text-red-700 p-2 transition" title="Delete Portfolio">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                listContainer.appendChild(item);
+            });
+            
+            document.getElementById('managePortfoliosModal').classList.remove('hidden');
+        }
+
+        function closeManagePortfoliosModal() {
+            document.getElementById('managePortfoliosModal').classList.add('hidden');
+        }
+
+        async function deleteSpecificPortfolio(id, name) {
+            if (portfolios.length <= 1) {
+                alert("Anda tidak bisa menghapus satu-satunya portfolio yang ada.");
+                return;
+            }
+            if (!confirm(`Apakah Anda yakin ingin menghapus portfolio '${name}' beserta seluruh datanya? Tindakan ini tidak dapat dibatalkan.`)) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/v1/portfolios/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    if (activePortfolio && activePortfolio.id === id) {
+                        localStorage.removeItem("active_portfolio");
+                    }
+                    await loadPortfolios();
+                    openManagePortfoliosModal(); // refresh list
+                } else {
+                    alert(data.detail || "Gagal menghapus portfolio");
+                }
+            } catch (e) {
+                alert("Terjadi kesalahan jaringan.");
+            }
         }
 
         function closeCreatePortfolioModal() {

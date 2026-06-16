@@ -142,3 +142,23 @@ def update_portfolio_settings(id: int, payload: PortfolioSettingsRequest):
         raise HTTPException(status_code=404, detail="Portfolio tidak ditemukan.")
         
     return {"status": "success", "portfolio": dict(row)}
+
+@router.delete("/portfolios/{id}")
+def delete_portfolio(id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("DELETE FROM active_positions WHERE portfolio_id = ?", (id,))
+    cursor.execute("DELETE FROM trade_journals WHERE portfolio_id = ?", (id,))
+    cursor.execute("DELETE FROM equity_history WHERE portfolio_id = ?", (id,))
+    cursor.execute("DELETE FROM watchlists WHERE portfolio_id = ?", (id,))
+    
+    cursor.execute("DELETE FROM portfolios WHERE id = ?", (id,))
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Portfolio tidak ditemukan.")
+        
+    conn.commit()
+    conn.close()
+    
+    return {"status": "success", "message": "Portfolio beserta seluruh data terkait berhasil dihapus."}
