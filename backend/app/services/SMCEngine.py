@@ -236,10 +236,26 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
         if int_bull_choch or sw_bull_choch:
             active_bull_choch = True
             active_bear_choch = False
+            if direction in ("BUY", "BOTH"):
+                signals.append({
+                    'idx': i,
+                    'type': 'BUY_PHASE1',
+                    'entry': c,
+                    'sl': 0.0,
+                    'tp': 0.0
+                })
 
         if int_bear_choch or sw_bear_choch:
             active_bear_choch = True
             active_bull_choch = False
+            if direction in ("SELL", "BOTH"):
+                signals.append({
+                    'idx': i,
+                    'type': 'SELL_PHASE1',
+                    'entry': c,
+                    'sl': 0.0,
+                    'tp': 0.0
+                })
 
         if int_bull_bos or sw_bull_bos:
             active_bull_choch = False
@@ -336,10 +352,10 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
 
 # ─── Public API (called by AlertEngine) ───────────────────────────────────────
 
-def get_smc_buy_signals(df: pd.DataFrame) -> dict | None:
+def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
     """
     Run SMC engine on H1 DataFrame (columns: Open/High/Low/Close).
-    Returns BUY signal dict if current bar (last row) triggers, else None.
+    Returns list of BUY signal dicts if current bar (last row) triggers, else None.
 
     Expected columns (case-insensitive): Open, High, Low, Close
     """
@@ -360,24 +376,36 @@ def get_smc_buy_signals(df: pd.DataFrame) -> dict | None:
     signals = _run_smc_engine(opens, highs, lows, closes, n, direction="BUY")
 
     # Only care if the LAST bar triggered
-    if signals and signals[-1]['idx'] == n - 1:
-        sig = signals[-1]
-        fvg_tag = "SMC_CHoCH_OB"  # FVG not separately tracked (Pine default off)
-        return {
-            "strategy_name":   fvg_tag,
-            "price_at_signal": sig['entry'],
-            "target_price":    round(sig['tp'], 5),
-            "stop_loss":       round(sig['sl'], 5),
-            "type":            "BUY",
-        }
+    last_bar_signals = [sig for sig in signals if sig['idx'] == n - 1]
+    if not last_bar_signals:
+        return None
 
-    return None
+    results = []
+    for sig in last_bar_signals:
+        if sig['type'] == 'BUY_PHASE1':
+            results.append({
+                "strategy_name":   "SMC-Fase1",
+                "price_at_signal": sig['entry'],
+                "target_price":    0.0,
+                "stop_loss":       0.0,
+                "type":            "BUY_PHASE1",
+            })
+        elif sig['type'] == 'BUY':
+            results.append({
+                "strategy_name":   "SMC-Fase2",
+                "price_at_signal": sig['entry'],
+                "target_price":    round(sig['tp'], 5),
+                "stop_loss":       round(sig['sl'], 5),
+                "type":            "BUY",
+            })
+
+    return results if results else None
 
 
-def get_smc_sell_signals(df: pd.DataFrame) -> dict | None:
+def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
     """
     Run SMC engine on H1 DataFrame.
-    Returns SELL signal dict if current bar triggers, else None.
+    Returns list of SELL signal dicts if current bar triggers, else None.
     Only used for forex pairs.
     """
     if len(df) < SWING_SIZE + 10:
@@ -395,14 +423,27 @@ def get_smc_sell_signals(df: pd.DataFrame) -> dict | None:
 
     signals = _run_smc_engine(opens, highs, lows, closes, n, direction="SELL")
 
-    if signals and signals[-1]['idx'] == n - 1:
-        sig = signals[-1]
-        return {
-            "strategy_name":   "SMC_Bearish_CHoCH_OB",
-            "price_at_signal": sig['entry'],
-            "target_price":    round(sig['tp'], 5),
-            "stop_loss":       round(sig['sl'], 5),
-            "type":            "SELL",
-        }
+    last_bar_signals = [sig for sig in signals if sig['idx'] == n - 1]
+    if not last_bar_signals:
+        return None
 
-    return None
+    results = []
+    for sig in last_bar_signals:
+        if sig['type'] == 'SELL_PHASE1':
+            results.append({
+                "strategy_name":   "SMC-Fase1",
+                "price_at_signal": sig['entry'],
+                "target_price":    0.0,
+                "stop_loss":       0.0,
+                "type":            "SELL_PHASE1",
+            })
+        elif sig['type'] == 'SELL':
+            results.append({
+                "strategy_name":   "SMC-Fase2",
+                "price_at_signal": sig['entry'],
+                "target_price":    round(sig['tp'], 5),
+                "stop_loss":       round(sig['sl'], 5),
+                "type":            "SELL",
+            })
+
+    return results if results else None

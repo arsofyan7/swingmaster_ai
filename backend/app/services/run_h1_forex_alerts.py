@@ -91,59 +91,75 @@ def run_h1_forex_alerts_job():
                 df_smc.columns = [c.capitalize() for c in df_smc.columns]
                 df_smc = df_smc.dropna(subset=['Close'])
                 
-                buy_signal = get_smc_buy_signals(df_smc)
-                if buy_signal:
-                    candle_time_str = df_smc.index[-1].strftime("%H:%M")
-                    strategy_label_buy = f"SMC_Forex_Buy_{candle_time_str}"
-                    alerts_to_insert.append((
-                        db_ticker,
-                        strategy_label_buy,
-                        current_date_str,
-                        buy_signal['price_at_signal'],
-                        buy_signal['target_price'],
-                        buy_signal['stop_loss'],
-                        'open'
-                    ))
-                    entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
-                    tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
-                    sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
+                buy_signals_list = get_smc_buy_signals(df_smc)
+                if buy_signals_list:
+                    for buy_signal in buy_signals_list:
+                        candle_time_str = df_smc.index[-1].strftime("%H:%M")
+                        strategy_label_buy = f"{buy_signal['strategy_name']}_Forex_Buy_{candle_time_str}"
+                        alerts_to_insert.append((
+                            db_ticker,
+                            strategy_label_buy,
+                            current_date_str,
+                            buy_signal['price_at_signal'],
+                            buy_signal['target_price'],
+                            buy_signal['stop_loss'],
+                            'open'
+                        ))
+                        entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
+                        
+                        if buy_signal['type'] == 'BUY_PHASE1':
+                            telegram_lines.append(
+                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC-Fase1 Forex BUY - {candle_time_str})\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
+                            )
+                        else:
+                            tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
+                            sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
+                            telegram_lines.append(
+                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC-Fase2 Forex BUY - {candle_time_str})\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"🟢 <b>Entry:</b> {entry}\n"
+                                f"🎯 <b>TP:</b> {tp}\n"
+                                f"🛑 <b>SL:</b> {sl}\n"
+                            )
+                        telegram_lines.append(f"────────────────────")
+                        logger.info(f"[SMC FOREX H1] BUY TRIGGERED: {db_ticker} at {buy_signal['price_at_signal']} ({candle_time_str})")
                     
-                    telegram_lines.append(
-                        f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC Forex BUY - {candle_time_str})\n"
-                        f"🏷️ <b>Current Price:</b> {entry}\n"
-                        f"🟢 <b>Entry:</b> {entry}\n"
-                        f"🎯 <b>TP:</b> {tp}\n"
-                        f"🛑 <b>SL:</b> {sl}\n"
-                        f"────────────────────"
-                    )
-                    logger.info(f"[SMC FOREX H1] BUY TRIGGERED: {db_ticker} at {buy_signal['price_at_signal']} ({candle_time_str})")
-                    
-                sell_signal = get_smc_sell_signals(df_smc)
-                if sell_signal:
-                    candle_time_str = df_smc.index[-1].strftime("%H:%M")
-                    strategy_label_sell = f"SMC_Forex_Sell_{candle_time_str}"
-                    alerts_to_insert.append((
-                        db_ticker,
-                        strategy_label_sell,
-                        current_date_str,
-                        sell_signal['price_at_signal'],
-                        sell_signal['target_price'],
-                        sell_signal['stop_loss'],
-                        'open'
-                    ))
-                    entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
-                    tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
-                    sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                    
-                    telegram_lines.append(
-                        f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC Forex SELL - {candle_time_str})\n"
-                        f"🏷️ <b>Current Price:</b> {entry}\n"
-                        f"🔴 <b>Entry:</b> {entry}\n"
-                        f"🎯 <b>TP:</b> {tp}\n"
-                        f"🛑 <b>SL:</b> {sl}\n"
-                        f"────────────────────"
-                    )
-                    logger.info(f"[SMC FOREX H1] SELL TRIGGERED: {db_ticker} at {sell_signal['price_at_signal']} ({candle_time_str})")
+                sell_signals_list = get_smc_sell_signals(df_smc)
+                if sell_signals_list:
+                    for sell_signal in sell_signals_list:
+                        candle_time_str = df_smc.index[-1].strftime("%H:%M")
+                        strategy_label_sell = f"{sell_signal['strategy_name']}_Forex_Sell_{candle_time_str}"
+                        alerts_to_insert.append((
+                            db_ticker,
+                            strategy_label_sell,
+                            current_date_str,
+                            sell_signal['price_at_signal'],
+                            sell_signal['target_price'],
+                            sell_signal['stop_loss'],
+                            'open'
+                        ))
+                        entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
+                        
+                        if sell_signal['type'] == 'SELL_PHASE1':
+                            telegram_lines.append(
+                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC-Fase1 Forex SELL - {candle_time_str})\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Sell Limit di Zona FVG atau Golden Fibo\n"
+                            )
+                        else:
+                            tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
+                            sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
+                            telegram_lines.append(
+                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC-Fase2 Forex SELL - {candle_time_str})\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"🔴 <b>Entry:</b> {entry}\n"
+                                f"🎯 <b>TP:</b> {tp}\n"
+                                f"🛑 <b>SL:</b> {sl}\n"
+                            )
+                        telegram_lines.append(f"────────────────────")
+                        logger.info(f"[SMC FOREX H1] SELL TRIGGERED: {db_ticker} at {sell_signal['price_at_signal']} ({candle_time_str})")
                     
             except Exception as e:
                 logger.error(f"[SMC FOREX H1] Error memproses {db_ticker}: {e}")

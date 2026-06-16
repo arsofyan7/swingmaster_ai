@@ -81,36 +81,46 @@ def run_h1_alerts_job():
             # SMCEngine expects standard columns
             ticker_df.columns = [c.capitalize() for c in ticker_df.columns]
             
-            signal = get_smc_buy_signals(ticker_df)
-            if signal:
-                last_candle_dt = ticker_df.index[-1]
-                candle_date_str = last_candle_dt.strftime("%Y-%m-%d")
-                candle_time_str = last_candle_dt.strftime("%H:%M")
-                strategy_label = f"SMC_H1_{candle_time_str}"
-                
-                alerts_to_insert.append((
-                    t,
-                    strategy_label,
-                    candle_date_str,
-                    signal['price_at_signal'],
-                    signal['target_price'],
-                    signal['stop_loss'],
-                    'open'
-                ))
-                
-                # Format pesan Telegram
-                entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
-                tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
-                sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                
-                telegram_lines.append(
-                    f"<b>{len(telegram_lines)+1}. {t}</b> (SMC H1 - {candle_time_str})\n"
-                    f"🏷️ <b>Current Price:</b> {entry}\n"
-                    f"💰 <b>Entry:</b> {entry}\n"
-                    f"🎯 <b>TP:</b> {tp}\n"
-                    f"🛑 <b>SL:</b> {sl}\n"
-                    f"────────────────────"
-                )
+            signals_list = get_smc_buy_signals(ticker_df)
+            if signals_list:
+                for signal in signals_list:
+                    last_candle_dt = ticker_df.index[-1]
+                    candle_date_str = last_candle_dt.strftime("%Y-%m-%d")
+                    candle_time_str = last_candle_dt.strftime("%H:%M")
+                    strategy_label = f"{signal['strategy_name']}_{candle_time_str}"
+                    
+                    alerts_to_insert.append((
+                        t,
+                        strategy_label,
+                        candle_date_str,
+                        signal['price_at_signal'],
+                        signal['target_price'],
+                        signal['stop_loss'],
+                        'open'
+                    ))
+                    
+                    # Format pesan Telegram
+                    entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
+                    
+                    if signal['type'] == 'BUY_PHASE1':
+                        telegram_lines.append(
+                            f"<b>{len(telegram_lines)+1}. {t}</b> (SMC-Fase1 {candle_time_str})\n"
+                            f"🏷️ <b>Current Price:</b> {entry}\n"
+                            f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
+                        )
+                    else:
+                        tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
+                        sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
+                        
+                        telegram_lines.append(
+                            f"<b>{len(telegram_lines)+1}. {t}</b> (SMC-Fase2 {candle_time_str})\n"
+                            f"🏷️ <b>Current Price:</b> {entry}\n"
+                            f"💰 <b>Entry:</b> {entry}\n"
+                            f"🎯 <b>TP:</b> {tp}\n"
+                            f"🛑 <b>SL:</b> {sl}\n"
+                        )
+                    
+                    telegram_lines.append(f"────────────────────")
                 logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
         # 3. Update database h1_prices
