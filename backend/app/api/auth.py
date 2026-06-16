@@ -27,6 +27,13 @@ class PortfolioCreateRequest(BaseModel):
 class PortfolioSettingsRequest(BaseModel):
     risk_per_trade_pct: float
 
+class AdminChangePasswordRequest(BaseModel):
+    new_password: str
+
+class AdminUpdateUserRequest(BaseModel):
+    username: str
+    email: str
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -162,3 +169,111 @@ def delete_portfolio(id: int):
     conn.close()
     
     return {"status": "success", "message": "Portfolio beserta seluruh data terkait berhasil dihapus."}
+
+@router.get("/admin/dashboard")
+def get_admin_dashboard(request: Request):
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # 1. Users
+    cursor.execute("SELECT COUNT(*) as count FROM users")
+    total_users = cursor.fetchone()['count']
+    
+    cursor.execute("SELECT id, username, email, created_at FROM users ORDER BY id ASC")
+    users = [dict(row) for row in cursor.fetchall()]
+    
+    # 2. Portfolios total
+    cursor.execute("SELECT portfolio_type, COUNT(*) as count FROM portfolios GROUP BY portfolio_type")
+    portfolios_group = cursor.fetchall()
+    total_saham = 0
+    total_forex = 0
+    for row in portfolios_group:
+        if row['portfolio_type'] == 'saham':
+            total_saham = row['count']
+        elif row['portfolio_type'] == 'forex':
+            total_forex = row['count']
+            
+    # 3. Portfolios per user
+    cursor.execute("""
+        SELECT u.id as user_id, u.username, 
+               SUM(CASE WHEN p.portfolio_type = 'saham' THEN 1 ELSE 0 END) as saham_count,
+               SUM(CASE WHEN p.portfolio_type = 'forex' THEN 1 ELSE 0 END) as forex_count
+        FROM users u
+        LEFT JOIN portfolios p ON u.id = p.user_id
+        GROUP BY u.id, u.username
+        ORDER BY u.id ASC
+    """)
+    portfolio_stats = [dict(row) for row in cursor.fetchall()]
+    
+    conn.close()
+    
+    return {
+        "status": "success",
+        "data": {
+            "total_users": total_users,
+            "total_saham_portfolios": total_saham,
+            "total_forex_portfolios": total_forex,
+            "users": users,
+            "portfolio_stats": portfolio_stats
+        }
+    }
+
+@router.put("/admin/users/{user_id}/password")
+def admin_change_password(user_id: int, payload: AdminChangePasswordRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id FROM users WHERE id = ?", (user_id,))
+    if not cursor.fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="User tidak ditemukan.")
+        
+    hashed_pw = hash_password(payload.new_password)
+    cursor.execute("UPDATE users SET password = ? WHERE id = ?", (hashed_pw, user_id))
+    conn.commit()
+    conn.close()
+    
+    return {"status": "success", "message": "Password user berhasil diubah."}
+
+@router.put("/admin/users/{user_id}")
+def admin_update_user(user_id: int, payload: AdminUpdateUserRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE id = ?", (user_id,))
+    if not cursor.fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="User tidak ditemukan.")
+        
+    cursor.execute("UPDATE users SET username = ?, email = ? WHERE id = ?", (payload.username, payload.email, user_id))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "message": "Data user berhasil diperbarui."}
+
+@router.delete("/admin/users/{user_id}")
+def admin_delete_user(user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+    u = cursor.fetchone()
+    if not u:
+        conn.close()
+        raise HTTPException(status_code=404, detail="User tidak ditemukan.")
+    
+    if u[0] == 'admin':
+        conn.close()
+        raise HTTPException(status_code=400, detail="Tidak dapat menghapus akun admin utama.")
+        
+    cursor.execute("SELECT id FROM portfolios WHERE user_id = ?", (user_id,))
+    portfolios = cursor.fetchall()
+    for (p_id,) in portfolios:
+        cursor.execute("DELETE FROM active_positions WHERE portfolio_id = ?", (p_id,))
+        cursor.execute("DELETE FROM trade_journals WHERE portfolio_id = ?", (p_id,))
+        cursor.execute("DELETE FROM equity_history WHERE portfolio_id = ?", (p_id,))
+        cursor.execute("DELETE FROM watchlists WHERE portfolio_id = ?", (p_id,))
+    
+    cursor.execute("DELETE FROM portfolios WHERE user_id = ?", (user_id,))
+    cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "message": "User berhasil dihapus beserta seluruh datanya."}
