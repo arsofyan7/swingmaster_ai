@@ -1077,12 +1077,21 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Modal Awal (Rp)</label>
-                    <input type="number" id="cp_balance" class="w-full bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" value="100000000">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium">Modal Awal (Rp)</label>
+                        <div class="relative group cursor-pointer">
+                            <i class="fas fa-info-circle text-blue-500 hover:text-blue-600 transition"></i>
+                            <div class="absolute right-0 bottom-full mb-2 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-lg pointer-events-none">
+                                Jumlah modal ini nanti dipakai untuk menghitung alokasi posisi setiap trading secara otomatis dan bisa dijadikan pedoman perhitungan lot otomatis.<br><br>
+                                <strong>Cara Kerja:</strong> Aplikasi ini akan mencari Setup/Sinyal menggunakan Smart Money Concepts (SMC) dan memberikan Anda alert otomatis.
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" id="cp_balance" class="w-full bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" value="100.000.000" oninput="let v = this.value.replace(/\D/g, ''); this.value = v ? parseInt(v).toLocaleString('id-ID') : '';">
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-                <button onclick="closeCreatePortfolioModal()" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">Batal</button>
+                <button id="cp_cancel_btn" onclick="closeCreatePortfolioModal()" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">Batal</button>
                 <button onclick="submitCreatePortfolio()" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-md">Simpan</button>
             </div>
         </div>
@@ -1487,6 +1496,15 @@
                             }
                         }
                     }
+                } else {
+                    activePortfolio = null;
+                    localStorage.removeItem("active_portfolio");
+                    document.getElementById('active-portfolio-label').innerHTML = `<span class="text-red-500 font-bold">No Portfolio</span>`;
+                    document.getElementById('portfolio-list').innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Belum ada portofolio</div>';
+                    
+                    // Force user to create portfolio
+                    document.getElementById('cp_cancel_btn').classList.add('hidden'); // Hide cancel button
+                    document.getElementById('createPortfolioModal').classList.remove('hidden');
                 }
             } catch (e) {
                 console.error("Gagal load portfolio", e);
@@ -1576,6 +1594,7 @@
 
         function promptCreatePortfolio() {
             togglePortfolioDropdown();
+            document.getElementById('cp_cancel_btn').classList.remove('hidden');
             document.getElementById('createPortfolioModal').classList.remove('hidden');
         }
 
@@ -1638,13 +1657,13 @@
             document.getElementById('createPortfolioModal').classList.add('hidden');
             document.getElementById('cp_name').value = '';
             document.getElementById('cp_type').value = 'saham';
-            document.getElementById('cp_balance').value = '100000000';
+            document.getElementById('cp_balance').value = '100.000.000';
         }
 
         async function submitCreatePortfolio() {
             const name = document.getElementById('cp_name').value;
             const type = document.getElementById('cp_type').value;
-            const balanceStr = document.getElementById('cp_balance').value;
+            const balanceStr = document.getElementById('cp_balance').value.replace(/\./g, '');
 
             if (!name) return alert("Nama portofolio tidak boleh kosong!");
             const balance = parseFloat(balanceStr);

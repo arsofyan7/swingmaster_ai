@@ -63,11 +63,6 @@ def register_user(request: Request, payload: RegisterRequest):
         )
         user_id = cursor.lastrowid
         
-        # Create Main Portfolio
-        cursor.execute(
-            "INSERT INTO portfolios (user_id, name, portfolio_type, initial_balance, current_balance) VALUES (?, ?, ?, ?, ?)",
-            (user_id, "Main Portfolio", "saham", 100000000.0, 100000000.0)
-        )
         conn.commit()
     except sqlite3.IntegrityError:
         conn.close()
