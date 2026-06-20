@@ -40,7 +40,11 @@ async def scheduled_eod_price_sync():
                 records = []
                 for ticker, info in prices_data.items():
                     price = info.get("price", 0.0)
-                    records.append((today_str, ticker, price, price, price, price, 0))
+                    volume = info.get("volume", 0.0)
+                    open_price = info.get("open", price)
+                    high_price = info.get("high", price)
+                    low_price = info.get("low", price)
+                    records.append((today_str, ticker, open_price, high_price, low_price, price, volume))
                 
                 if records:
                     conn = sqlite3.connect('market_data.db')
