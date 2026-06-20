@@ -3307,7 +3307,7 @@
 
             let buyPrice = currentPrice;
             if (ai.rekomendasi_buy) {
-                const numbers = String(ai.rekomendasi_buy).match(/\d+/g);
+                const numbers = String(ai.rekomendasi_buy).match(/[\d.]+/g);
                 if (numbers && numbers.length > 0) {
                     buyPrice = Math.max(...numbers.map(Number));
                 }
@@ -3322,6 +3322,9 @@
             const isForex = activePortfolio && activePortfolio.portfolio_type === 'forex';
             document.getElementById('lbl-input-lot').textContent = isForex ? 'Lot Size' : 'Jumlah Lot';
             document.getElementById('inputLot').step = isForex ? '0.01' : '1';
+            document.getElementById('inputBuyPrice').step = isForex ? 'any' : '1';
+            document.getElementById('inputTP').step = isForex ? 'any' : '1';
+            document.getElementById('inputSL').step = isForex ? 'any' : '1';
             document.getElementById('inputLot').value = ""; // Let calcBuyModal calculate it dynamically
             
             const posType = selectedStockData.positionType || 'LONG';
