@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import sqlite3
 from datetime import date
 from app.services.yfinance_service import get_db_connection
+from app.api.trade import get_trade_multiplier
 
 router = APIRouter(prefix="/api/v1/portfolios", tags=["dashboard"])
 
@@ -24,6 +25,7 @@ def get_dashboard(portfolio_id: int):
         raise HTTPException(status_code=404, detail="Portfolio not found")
         
     current_balance = portfolio['current_balance']
+    p_type = portfolio['portfolio_type']
     
     # 2. Active Positions
     cursor.execute("SELECT * FROM active_positions WHERE portfolio_id = ?", (portfolio_id,))
@@ -51,12 +53,26 @@ def get_dashboard(portfolio_id: int):
         except:
             current_price = p['buy_price'] # fallback
             
-        invested = p['buy_price'] * p['total_lot'] * 100
-        current_value = current_price * p['total_lot'] * 100
-        floating_pnl = current_value - invested
+        multiplier = get_trade_multiplier(ticker, p_type)
         
-        dist_tp = ((p['target_tp'] - current_price) / current_price) * 100 if p['target_tp'] else 0
-        dist_sl = ((current_price - p['target_sl']) / current_price) * 100 if p['target_sl'] else 0
+        if p_type == 'forex':
+            leverage = 100
+            invested = (p['buy_price'] * p['total_lot'] * multiplier) / leverage
+        else:
+            invested = p['buy_price'] * p['total_lot'] * multiplier
+            
+        pos_type = p['position_type'] if 'position_type' in p.keys() else 'LONG'
+        
+        if pos_type == 'SHORT':
+            floating_pnl = (p['buy_price'] - current_price) * p['total_lot'] * multiplier
+            dist_tp = ((current_price - p['target_tp']) / current_price) * 100 if p['target_tp'] else 0
+            dist_sl = ((p['target_sl'] - current_price) / current_price) * 100 if p['target_sl'] else 0
+        else:
+            floating_pnl = (current_price - p['buy_price']) * p['total_lot'] * multiplier
+            dist_tp = ((p['target_tp'] - current_price) / current_price) * 100 if p['target_tp'] else 0
+            dist_sl = ((current_price - p['target_sl']) / current_price) * 100 if p['target_sl'] else 0
+        
+        current_value = invested + floating_pnl
         
         # Calculate days held
         buy_date_str = p['buy_date'] if p['buy_date'] else None
@@ -72,10 +88,11 @@ def get_dashboard(portfolio_id: int):
             "id": p['id'],
             "ticker": p['ticker'],
             "sector": p['sector'],
+            "position_type": pos_type,
             "buy_price": p['buy_price'],
             "buy_date": buy_date_str,
             "days_held": days_held,
-            "current_price": round(current_price, 2),
+            "current_price": round(current_price, 2) if p_type != 'forex' else round(current_price, 5),
             "total_lot": p['total_lot'],
             "target_tp": p['target_tp'],
             "target_sl": p['target_sl'],

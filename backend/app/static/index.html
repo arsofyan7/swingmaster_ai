@@ -2141,10 +2141,23 @@
                 let rowColorClass = "hover:bg-gray-50 dark:hover:bg-gray-800/50";
                 let actionBtn = `<button onclick="openClosePositionModal('${p.ticker}', ${p.current_price})" class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">Close</button>`;
 
-                if (p.current_price >= p.target_tp) {
+                const posType = p.position_type || 'LONG';
+                
+                let isTakeProfit = false;
+                let isStopLoss = false;
+                
+                if (posType === 'SHORT') {
+                    if (p.target_tp && p.current_price <= p.target_tp) isTakeProfit = true;
+                    if (p.target_sl && p.current_price >= p.target_sl) isStopLoss = true;
+                } else {
+                    if (p.target_tp && p.current_price >= p.target_tp) isTakeProfit = true;
+                    if (p.target_sl && p.current_price <= p.target_sl) isStopLoss = true;
+                }
+
+                if (isTakeProfit) {
                     rowColorClass = "bg-green-50 dark:bg-green-900/20";
                     actionBtn = `<button onclick="openClosePositionModal('${p.ticker}', ${p.current_price})" class="text-xs bg-green-500 text-white px-3 py-1 rounded animate-pulse shadow-sm">Take Profit!</button>`;
-                } else if (p.current_price <= p.target_sl) {
+                } else if (isStopLoss) {
                     rowColorClass = "bg-red-50 dark:bg-red-900/20";
                     actionBtn = `<button onclick="openClosePositionModal('${p.ticker}', ${p.current_price})" class="text-xs bg-red-500 text-white px-3 py-1 rounded animate-pulse shadow-sm">Stop Loss!</button>`;
                 }
@@ -2155,11 +2168,24 @@
                 const currency = isForex ? '$' : 'Rp ';
                 const pnlSign = p.floating_pnl >= 0 ? '+' : '';
 
-                const investedRp = isForex ? (p.buy_price * p.total_lot * 100000) : (p.buy_price * p.total_lot * 100);
+                let multiplier = 100;
+                if (isForex) {
+                    if (p.ticker === 'XAUUSD') multiplier = 100;
+                    else if (p.ticker === 'USDJPY') multiplier = 1000;
+                    else multiplier = 100000;
+                }
+                const leverage = isForex ? 100 : 1;
+
+                const investedRp = (p.buy_price * p.total_lot * multiplier) / leverage;
                 const pnlPct = investedRp > 0 ? (p.floating_pnl / investedRp) * 100 : 0;
+                
+                const badgeClass = posType === 'SHORT' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200';
 
                 tr.innerHTML = `
-                    <td class="p-3 font-bold text-blue-600 dark:text-blue-400 hover:text-indigo-500 hover:underline cursor-pointer" onclick="fetchAndOpenChart('${p.ticker}')">${p.ticker}</td>
+                    <td class="p-3 font-bold text-blue-600 dark:text-blue-400 hover:text-indigo-500 hover:underline cursor-pointer" onclick="fetchAndOpenChart('${p.ticker}')">
+                        ${p.ticker}
+                        <span class="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold border ${badgeClass}">${posType}</span>
+                    </td>
                     <td class="p-3">${p.buy_price.toLocaleString('id-ID', {maximumFractionDigits: 5})}</td>
                     <td class="p-3 font-semibold">${p.current_price.toLocaleString('id-ID', {maximumFractionDigits: 5})}</td>
                     <td class="p-3 text-green-600 dark:text-green-400">${p.target_tp ? p.target_tp.toLocaleString('id-ID', {maximumFractionDigits: 5}) : '-'}</td>
@@ -3297,6 +3323,16 @@
             document.getElementById('lbl-input-lot').textContent = isForex ? 'Lot Size' : 'Jumlah Lot';
             document.getElementById('inputLot').step = isForex ? '0.01' : '1';
             document.getElementById('inputLot').value = ""; // Let calcBuyModal calculate it dynamically
+            
+            const posType = selectedStockData.positionType || 'LONG';
+            const btnObj = document.querySelector('button[onclick="executePaperTrade()"]');
+            if (posType === 'SHORT') {
+                btnObj.innerHTML = '<i class="fas fa-arrow-down mr-2"></i> EXECUTE SHORT';
+                btnObj.className = "w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center uppercase";
+            } else {
+                btnObj.innerHTML = '<i class="fas fa-rocket mr-2"></i> EXECUTE BUY';
+                btnObj.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center uppercase";
+            }
 
             calcBuyModal();
             document.getElementById('buyModal').classList.remove('hidden');
@@ -3309,27 +3345,42 @@
         function calcBuyModal(isManualLotOverride = false) {
             if (!activePortfolio) return;
             const balance = activePortfolio.initial_balance || 100000000;
+            const isForex = activePortfolio.portfolio_type === 'forex';
+            const currencyPrefix = isForex ? '$ ' : 'Rp ';
             
             const riskPct = parseFloat(activePortfolio.risk_per_trade_pct) || 1;
             const bp = parseFloat(document.getElementById('inputBuyPrice').value) || 0;
             const tp = parseFloat(document.getElementById('inputTP').value) || 0;
             const sl = parseFloat(document.getElementById('inputSL').value) || 0;
             
+            const ticker = selectedStockData ? selectedStockData.ticker : '';
+            let multiplier = 100;
+            if (isForex) {
+                if (ticker === 'XAUUSD') multiplier = 100;
+                else if (ticker === 'USDJPY') multiplier = 1000;
+                else multiplier = 100000;
+            }
+            const leverage = isForex ? 100 : 1;
+            const posType = selectedStockData.positionType || 'LONG';
+            
             // Core Math
-            const maxLossRp = balance * (riskPct / 100);
-            document.getElementById('maxRiskInfo').textContent = `Maksimal Toleransi Risiko: Rp ${maxLossRp.toLocaleString('id-ID')}`;
+            const maxLossVal = balance * (riskPct / 100);
+            document.getElementById('maxRiskInfo').textContent = `Maksimal Toleransi Risiko: ${currencyPrefix}${maxLossVal.toLocaleString('id-ID')}`;
             
             let lot = parseFloat(document.getElementById('inputLot').value) || 0;
-            const isForex = activePortfolio && activePortfolio.portfolio_type === 'forex';
 
             if (!isManualLotOverride) {
-                if (bp > 0 && sl > 0 && sl < bp) {
-                    if (isForex) {
-                        lot = 0.01; // default micro lot
+                if (bp > 0 && sl > 0) {
+                    const riskPerLot = posType === 'SHORT' ? (sl - bp) * multiplier : (bp - sl) * multiplier;
+                    if (riskPerLot > 0) {
+                        if (isForex) {
+                            lot = 0.01; // default micro lot
+                        } else {
+                            lot = Math.floor(maxLossVal / riskPerLot);
+                            if (lot < 0) lot = 0;
+                        }
                     } else {
-                        const maxLembar = maxLossRp / (bp - sl);
-                        lot = Math.floor(maxLembar / 100);
-                        if (lot < 0) lot = 0;
+                        lot = 0;
                     }
                 } else {
                     lot = 0;
@@ -3337,17 +3388,17 @@
                 document.getElementById('inputLot').value = lot;
             }
 
-            const totalInvest = isForex ? (bp * lot * 100000) : (bp * lot * 100);
-            const cuan = isForex ? ((tp - bp) * lot * 100000) : ((tp - bp) * lot * 100);
-            const rugi = isForex ? ((bp - sl) * lot * 100000) : ((bp - sl) * lot * 100);
+            const totalInvest = (bp * lot * multiplier) / leverage;
+            const cuan = posType === 'SHORT' ? ((bp - tp) * lot * multiplier) : ((tp - bp) * lot * multiplier);
+            const rugi = posType === 'SHORT' ? ((sl - bp) * lot * multiplier) : ((bp - sl) * lot * multiplier);
 
             const investEl = document.getElementById('buyTotalInvest');
-            investEl.textContent = `Rp ${totalInvest.toLocaleString('id-ID')}`;
+            investEl.textContent = `${currencyPrefix}${totalInvest.toLocaleString('id-ID')}`;
             
             // Validation Safeguard
             const executeBtn = document.querySelector('button[onclick="executePaperTrade()"]');
             if (totalInvest > balance) {
-                investEl.innerHTML = `Rp ${totalInvest.toLocaleString('id-ID')} <br><span class="text-xs text-red-500 font-normal mt-1 block">Total Investasi melebihi kapasitas modal utama!</span>`;
+                investEl.innerHTML = `${currencyPrefix}${totalInvest.toLocaleString('id-ID')} <br><span class="text-xs text-red-500 font-normal mt-1 block">Margin melebihi kapasitas modal utama!</span>`;
                 executeBtn.disabled = true;
                 executeBtn.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
@@ -3356,10 +3407,10 @@
             }
 
             const cuanEl = document.getElementById('buyPotensiCuan');
-            cuanEl.textContent = `+Rp ${cuan > 0 ? cuan.toLocaleString('id-ID') : 0}`;
+            cuanEl.textContent = `+${currencyPrefix}${cuan > 0 ? cuan.toLocaleString('id-ID') : 0}`;
 
             const rugiEl = document.getElementById('buyRisikoRugi');
-            rugiEl.textContent = `-Rp ${rugi > 0 ? rugi.toLocaleString('id-ID') : 0}`;
+            rugiEl.textContent = `-${currencyPrefix}${rugi > 0 ? rugi.toLocaleString('id-ID') : 0}`;
         }
 
         async function executePaperTrade() {
@@ -3377,7 +3428,8 @@
                 buy_price: bp,
                 total_lot: lot,
                 target_tp: tp,
-                target_sl: sl
+                target_sl: sl,
+                position_type: selectedStockData.positionType || 'LONG'
             };
 
             try {
@@ -3506,9 +3558,10 @@
             });
         }
 
-        function triggerWatchlistBuy(ticker, buyArea, livePrice, tp, sl) {
+        function triggerWatchlistBuy(ticker, buyArea, livePrice, tp, sl, positionType = 'LONG') {
             selectedStockData = {
                 ticker: ticker,
+                positionType: positionType,
                 ai_analysis: {
                     rekomendasi_buy: buyArea,
                     take_profit: tp,
@@ -4208,8 +4261,9 @@
                     strategyBadge = `<span class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 rounded text-xs font-bold">${alert.strategy_name.replace(/_/g, ' ')}</span>`;
                 }
 
-                const itemObj = {
+                let itemObj = {
                     ticker: alert.ticker,
+                    strategy_name: alert.strategy_name,
                     filters: { price: { value: alert.price_at_signal } },
                     ai_analysis: {
                         rekomendasi_buy: alert.price_at_signal,
@@ -4217,19 +4271,36 @@
                         stop_loss: alert.stop_loss
                     }
                 };
+                
+                // Set position type based on strategy
+                if (alert.strategy_name.includes('Sell') || alert.strategy_name.includes('SELL')) {
+                    itemObj.positionType = 'SHORT';
+                } else {
+                    itemObj.positionType = 'LONG';
+                }
+                
                 const itemJsonStr = JSON.stringify(itemObj).replace(/"/g, '&quot;');
+                
+                // Check if portfolio is forex to remove Rp
+                const currencyPrefix = (activePortfolio && activePortfolio.portfolio_type === 'forex') ? '$' : 'Rp';
+                const formattedPrice = (activePortfolio && activePortfolio.portfolio_type === 'forex') ? alert.price_at_signal : alert.price_at_signal.toLocaleString('id-ID');
+                const formattedTP = (activePortfolio && activePortfolio.portfolio_type === 'forex') ? alert.target_price : alert.target_price.toLocaleString('id-ID');
+                const formattedSL = (activePortfolio && activePortfolio.portfolio_type === 'forex') ? alert.stop_loss : alert.stop_loss.toLocaleString('id-ID');
+
+                const actionLabel = itemObj.positionType === 'SHORT' ? 'SELL' : 'BUY';
+                const actionColor = itemObj.positionType === 'SHORT' ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700';
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition border-b border-gray-100 dark:border-gray-800";
                 tr.innerHTML = `
                     <td class="p-4 font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer underline" onclick="openActionMenu(${itemJsonStr})">${alert.ticker}</td>
                     <td class="p-4">${strategyBadge}</td>
-                    <td class="p-4 font-medium text-gray-700 dark:text-gray-300">Rp ${alert.price_at_signal.toLocaleString('id-ID')}</td>
-                    <td class="p-4 font-bold text-green-600 dark:text-green-400">Rp ${alert.target_price.toLocaleString('id-ID')}</td>
-                    <td class="p-4 font-bold text-red-600 dark:text-red-400">Rp ${alert.stop_loss.toLocaleString('id-ID')}</td>
+                    <td class="p-4 font-medium text-gray-700 dark:text-gray-300">${currencyPrefix} ${formattedPrice}</td>
+                    <td class="p-4 font-bold text-green-600 dark:text-green-400">${currencyPrefix} ${formattedTP}</td>
+                    <td class="p-4 font-bold text-red-600 dark:text-red-400">${currencyPrefix} ${formattedSL}</td>
                     <td class="p-4 font-bold text-blue-600 dark:text-blue-400">+${alert.potensi_cuan_pct}%</td>
                     <td class="p-4 text-center">
-                        <button onclick="openActionMenu(${itemJsonStr})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded transition shadow-sm font-medium">Action</button>
+                        <button onclick="openActionMenu(${itemJsonStr})" class="text-xs ${actionColor} text-white px-3 py-1.5 rounded transition shadow-sm font-medium">Action</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
