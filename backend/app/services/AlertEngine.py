@@ -15,6 +15,9 @@ def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     if len(df) == 0:
         return df
 
+    # Handle missing volumes (often 0 from intraday syncing)
+    df['volume'] = df['volume'].replace(0, pd.NA).ffill().fillna(0)
+
     # EMA 20 & 200
     df['EMA_20'] = df['close'].ewm(span=20, adjust=False).mean()
     df['EMA_200'] = df['close'].ewm(span=200, adjust=False).mean()
