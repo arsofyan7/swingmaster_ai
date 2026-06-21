@@ -10,7 +10,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from app.services.SMCEngine import get_smc_buy_signals, get_smc_sell_signals
-from app.services.telegram_service import send_telegram_message
+from app.services.telegram_service import broadcast_telegram_message
 
 logger = logging.getLogger(__name__)
 
@@ -218,7 +218,7 @@ def run_h1_forex_alerts_job():
             header = f"<b>🌍 SMC FOREX H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
             footer = f"\n💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
             msg = header + "\n".join(telegram_lines) + footer
-            send_telegram_message(msg)
+            broadcast_telegram_message(msg, category="forex")
         else:
             logger.info("[SMC FOREX H1] Tidak ada alert SMC Forex H1 pada jam ini.")
             

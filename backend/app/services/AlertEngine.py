@@ -4,7 +4,7 @@ import json
 import asyncio
 from datetime import datetime
 from app.core.logger import logger
-from app.services.telegram_service import send_telegram_message
+from app.services.telegram_service import broadcast_telegram_message
 
 def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -261,7 +261,7 @@ async def run_daily_alerts(target_date: str = None):
             msg_lines.append(f"\n💡 <i>Total Alerts Today: {len(alerts_to_insert)}</i>")
             msg_lines.append("⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>")
             
-            send_telegram_message("\n".join(msg_lines))
+            broadcast_telegram_message("\n".join(msg_lines), category="saham")
             
         else:
             logger.info("[ALERT ENGINE] No alerts triggered today.")

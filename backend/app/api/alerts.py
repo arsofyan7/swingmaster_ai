@@ -30,7 +30,7 @@ async def test_telegram_alert():
     Dummy endpoint to test Telegram message sending.
     """
     try:
-        from app.services.telegram_service import send_telegram_message
+        from app.services.telegram_service import broadcast_telegram_message
         
         # Sample cool format for testing
         today_str = datetime.now().strftime("%Y-%m-%d")
@@ -53,11 +53,11 @@ async def test_telegram_alert():
 💡 <i>Total Alerts Today: 2 (TEST MODE)</i>
 ⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"""
         
-        success = send_telegram_message(msg)
-        if success:
-            return {"status": "success", "message": "Pesan test terkirim ke Telegram!"}
-        else:
-            raise HTTPException(status_code=500, detail="Gagal mengirim pesan (periksa token/chat_id).")
+        try:
+            broadcast_telegram_message(msg, category="saham")
+            return {"status": "success", "message": "Pesan test terkirim (jika ada subscriber saham)!"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

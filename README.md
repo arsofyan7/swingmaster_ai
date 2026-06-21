@@ -100,6 +100,22 @@ python run.py
 
 ---
 
+## 🤖 Interactive Telegram Bot Guide
+
+Swingmaster AI features a fully interactive 2-way Telegram Bot that allows users to register, link accounts, and manage signal subscriptions directly from the chat interface.
+
+**How to connect as a new user:**
+1. Open your Telegram app and search for your configured Bot.
+2. Send the `/start` command.
+3. The bot will present an interactive inline menu:
+   - **`[🆕 Daftar Akun Baru]`**: Launches a step-by-step registration wizard (Username ➔ Email ➔ Password). Your account is instantly created and synced with the Web App.
+   - **`[🔗 Hubungkan Akun Web]`**: If you already registered via the web, simply enter your email and password to link your Telegram account.
+4. Once connected, the bot will ask which markets you want to activate. Clicking **Saham** or **Forex** will automatically provision a new simulated portfolio for you!
+5. **Main Menu**: Anytime you need to manage your alerts or add a new market, simply type `/menu` to access the interactive dashboard directly in chat.
+6. **Smart Broadcasts**: The system will automatically route Hourly (H1) and Daily signals as *Direct Messages* to your Telegram based on the portfolios you own. Each alert includes quick-action buttons to open the asset directly in TradingView.
+
+---
+
 ## 🔒 Secure Coding Practices
 This project adheres to [secure coding guidelines](secure_coding.md), ensuring that:
 - API keys, JWT secrets, and Telegram tokens are never hardcoded.

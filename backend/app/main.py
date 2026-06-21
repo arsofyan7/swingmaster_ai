@@ -143,6 +143,10 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(asyncio.to_thread(sync_historical_data, ["COMPOSITE"]))
     
     
+    logger.info("[CORE SCHEDULER] Starting Telegram Bot...")
+    from app.services.telegram_bot_handler import run_bot_in_thread
+    run_bot_in_thread()
+    
     yield
     
     logger.info("[CORE SCHEDULER] Shutting down APScheduler...")
