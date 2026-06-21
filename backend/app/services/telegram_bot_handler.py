@@ -94,7 +94,7 @@ def build_main_menu(user_id):
     else:
         markup.add(InlineKeyboardButton("➕ Tambah Portofolio Forex", callback_data="add_forex"))
         
-    markup.add(InlineKeyboardButton("🌐 Buka Web App", url="http://localhost:8000"))
+    markup.add(InlineKeyboardButton("🌐 Buka Web App", url="https://misc4.siberhub.id"))
     return markup
 
 if bot:
