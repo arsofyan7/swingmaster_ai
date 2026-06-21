@@ -73,8 +73,16 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
     active_bull_choch = False
     active_bear_choch = False
 
+    # BOS trend-following state machine
+    active_bull_bos = False
+    active_bear_bos = False
+    bos_fired_bull  = False   # only first BOS per trend cycle
+    bos_fired_bear  = False
+
     last_buy_bar  = -999
     last_sell_bar = -999
+    last_buy_trend_bar  = -999
+    last_sell_trend_bar = -999
     signals       = []
 
     for i in range(n):
@@ -236,6 +244,9 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
         if int_bull_choch or sw_bull_choch:
             active_bull_choch = True
             active_bear_choch = False
+            # Reset BOS tracking for new trend cycle
+            bos_fired_bull = False
+            active_bull_bos = False
             if direction in ("BUY", "BOTH"):
                 signals.append({
                     'idx': i,
@@ -248,6 +259,9 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
         if int_bear_choch or sw_bear_choch:
             active_bear_choch = True
             active_bull_choch = False
+            # Reset BOS tracking for new trend cycle
+            bos_fired_bear = False
+            active_bear_bos = False
             if direction in ("SELL", "BOTH"):
                 signals.append({
                     'idx': i,
@@ -259,9 +273,31 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
 
         if int_bull_bos or sw_bull_bos:
             active_bull_choch = False
+            # First BOS in bullish trend = trend continuation signal
+            if not bos_fired_bull and direction in ("BUY", "BOTH"):
+                bos_fired_bull = True
+                active_bull_bos = True
+                signals.append({
+                    'idx': i,
+                    'type': 'BUY_TREND_PHASE1',
+                    'entry': c,
+                    'sl': 0.0,
+                    'tp': 0.0
+                })
 
         if int_bear_bos or sw_bear_bos:
             active_bear_choch = False
+            # First BOS in bearish trend = trend continuation signal
+            if not bos_fired_bear and direction in ("SELL", "BOTH"):
+                bos_fired_bear = True
+                active_bear_bos = True
+                signals.append({
+                    'idx': i,
+                    'type': 'SELL_TREND_PHASE1',
+                    'entry': c,
+                    'sl': 0.0,
+                    'tp': 0.0
+                })
 
         # ══════════════════════════════════════════════════════════════
         # 5) Signal Check — BUY
@@ -307,7 +343,7 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
                             })
 
         # ══════════════════════════════════════════════════════════════
-        # 6) Signal Check — SELL
+        # 6) Signal Check — SELL (Reversal after CHoCH)
         # ══════════════════════════════════════════════════════════════
 
         if direction in ("SELL", "BOTH") and active_bear_choch:
@@ -342,6 +378,88 @@ def _run_smc_engine(opens, highs, lows, closes, n, direction="BUY"):
                             signals.append({
                                 'idx':   i,
                                 'type':  'SELL',
+                                'entry': entry_price,
+                                'sl':    sl_price,
+                                'tp':    tp_price,
+                            })
+
+        # ══════════════════════════════════════════════════════════════
+        # 7) Signal Check — BUY TREND (Continuation after BOS)
+        # ══════════════════════════════════════════════════════════════
+
+        if direction in ("BUY", "BOTH") and active_bull_bos:
+            if (i - last_buy_trend_bar) > BUY_COOLDOWN:
+                bull_reversal = (c > opens[i]) and (c > pc)
+                if bull_reversal:
+                    inside_bull_poi = False
+                    bull_distal     = 1e18
+
+                    for ob in int_obs:
+                        if ob[3] == BULLISH and lo <= ob[0] and h >= ob[1]:
+                            inside_bull_poi = True
+                            if ob[1] < bull_distal:
+                                bull_distal = ob[1]
+
+                    if inside_bull_poi:
+                        if bull_distal >= 1e18:
+                            bull_distal = lo
+
+                        entry_price = c
+                        sl_price    = bull_distal
+                        risk        = entry_price - sl_price
+
+                        if risk <= 0 or (risk / entry_price) < MIN_SL_PCT:
+                            sl_price = sw_lo[0]
+                            risk     = entry_price - sl_price
+
+                        if risk > 0:
+                            tp_price    = entry_price + (risk * RR_RATIO)
+                            last_buy_trend_bar = i
+                            active_bull_bos = False  # consumed
+                            signals.append({
+                                'idx':       i,
+                                'type':      'BUY_TREND',
+                                'entry':     entry_price,
+                                'sl':        sl_price,
+                                'tp':        tp_price,
+                            })
+
+        # ══════════════════════════════════════════════════════════════
+        # 8) Signal Check — SELL TREND (Continuation after BOS)
+        # ══════════════════════════════════════════════════════════════
+
+        if direction in ("SELL", "BOTH") and active_bear_bos:
+            if (i - last_sell_trend_bar) > SELL_COOLDOWN:
+                bear_reversal = (c < opens[i]) and (c < pc)
+                if bear_reversal:
+                    inside_bear_poi = False
+                    bear_distal     = 0.0
+
+                    for ob in int_obs:
+                        if ob[3] == BEARISH and h >= ob[1] and lo <= ob[0]:
+                            inside_bear_poi = True
+                            if ob[0] > bear_distal:
+                                bear_distal = ob[0]
+
+                    if inside_bear_poi:
+                        if bear_distal <= 0:
+                            bear_distal = h
+
+                        entry_price = c
+                        sl_price    = bear_distal
+                        risk        = sl_price - entry_price
+
+                        if risk <= 0 or (risk / entry_price) < MIN_SL_PCT:
+                            sl_price = sw_hi[0]
+                            risk     = sl_price - entry_price
+
+                        if risk > 0:
+                            tp_price     = entry_price - (risk * RR_RATIO)
+                            last_sell_trend_bar = i
+                            active_bear_bos = False  # consumed
+                            signals.append({
+                                'idx':   i,
+                                'type':  'SELL_TREND',
                                 'entry': entry_price,
                                 'sl':    sl_price,
                                 'tp':    tp_price,
@@ -384,7 +502,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
     for sig in last_bar_signals:
         if sig['type'] == 'BUY_PHASE1':
             results.append({
-                "strategy_name":   "SMC-Fase1",
+                "strategy_name":   "SMC_Reversal_Fase1",
                 "price_at_signal": sig['entry'],
                 "target_price":    0.0,
                 "stop_loss":       0.0,
@@ -392,11 +510,27 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
             })
         elif sig['type'] == 'BUY':
             results.append({
-                "strategy_name":   "SMC-Fase2",
+                "strategy_name":   "SMC_Reversal_Fase2",
                 "price_at_signal": sig['entry'],
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "BUY",
+            })
+        elif sig['type'] == 'BUY_TREND_PHASE1':
+            results.append({
+                "strategy_name":   "SMC_Trend_Fase1",
+                "price_at_signal": sig['entry'],
+                "target_price":    0.0,
+                "stop_loss":       0.0,
+                "type":            "BUY_TREND_PHASE1",
+            })
+        elif sig['type'] == 'BUY_TREND':
+            results.append({
+                "strategy_name":   "SMC_Trend_Fase2",
+                "price_at_signal": sig['entry'],
+                "target_price":    round(sig['tp'], 5),
+                "stop_loss":       round(sig['sl'], 5),
+                "type":            "BUY_TREND",
             })
 
     return results if results else None
@@ -431,7 +565,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
     for sig in last_bar_signals:
         if sig['type'] == 'SELL_PHASE1':
             results.append({
-                "strategy_name":   "SMC-Fase1",
+                "strategy_name":   "SMC_Reversal_Fase1",
                 "price_at_signal": sig['entry'],
                 "target_price":    0.0,
                 "stop_loss":       0.0,
@@ -439,11 +573,27 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
             })
         elif sig['type'] == 'SELL':
             results.append({
-                "strategy_name":   "SMC-Fase2",
+                "strategy_name":   "SMC_Reversal_Fase2",
                 "price_at_signal": sig['entry'],
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "SELL",
+            })
+        elif sig['type'] == 'SELL_TREND_PHASE1':
+            results.append({
+                "strategy_name":   "SMC_Trend_Fase1",
+                "price_at_signal": sig['entry'],
+                "target_price":    0.0,
+                "stop_loss":       0.0,
+                "type":            "SELL_TREND_PHASE1",
+            })
+        elif sig['type'] == 'SELL_TREND':
+            results.append({
+                "strategy_name":   "SMC_Trend_Fase2",
+                "price_at_signal": sig['entry'],
+                "target_price":    round(sig['tp'], 5),
+                "stop_loss":       round(sig['sl'], 5),
+                "type":            "SELL_TREND",
             })
 
     return results if results else None
