@@ -14,7 +14,7 @@
 ## 🚀 Key Features
 
 * **🤖 AI-Powered Technical Analysis:** Integrates with Google Gemini to automatically generate comprehensive technical analysis, summaries, and risk/reward calculations based on historical OHLCV data.
-* **🧠 Smart Money Concepts (SMC) Engine:** Built-in algorithmic engine to detect advanced price action patterns including **Break of Structure (BOS)**, **Change of Character (CHoCH)**, and **Fair Value Gaps (FVG)** across multiple timeframes.
+* **🧠 Smart Money Concepts (SMC) Engine:** Built-in algorithmic engine to detect advanced price action patterns. Features dual-mode alerts: **Reversal Signals** based on Change of Character (CHoCH) and **Trend Continuation Signals** based on Break of Structure (BOS), combined with Fair Value Gaps (FVG) and Order Blocks (OB).
 * **🌍 Multi-Market Support:** Dedicated support for both **Saham Lokal (IDX)** and **Forex/Gold (XAUUSD, EURUSD, GBPUSD, etc.)**, with separate dashboards and widgets.
 * **📱 Telegram Bot Integration:** Get instant notifications pushed directly to your Telegram! Features Daily End-of-Day (EOD) alerts and **Hourly (H1) SMC Alerts** for both Stocks and Forex.
 * **💼 Multi-Portfolio Management:** Create and manage multiple distinct portfolios (categorized by Stocks or Forex). Features real-time tracking, live PnL calculations, cascading data deletion, and risk-per-trade parameters.
