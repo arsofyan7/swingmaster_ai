@@ -653,44 +653,59 @@
         </div>
         
         <div id="strategy-education-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-            <div id="edu-card-v8" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
+            <div id="edu-card-v8" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg flex items-center gap-2">V8 Pullback <button onclick="openStrategyModal('v8')" class="text-gray-400 hover:text-blue-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg">V8 Pullback</h4>
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded dark:bg-blue-900 dark:text-blue-300"><span id="summary-v8">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Buy on Weakness di Support Kuat"</p>
+                <div class="flex justify-between items-end mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Buy on Weakness di Support Kuat"</p>
+                    <button onclick="openStrategyModal('v8')" class="text-gray-400 hover:text-blue-500 transition focus:outline-none"><i class="fas fa-info-circle text-lg"></i></button>
+                </div>
             </div>
-            <div id="edu-card-v3" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
+            <div id="edu-card-v3" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition flex flex-col justify-between">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-green-600 dark:text-green-400 text-lg flex items-center gap-2">V3 Breakout <button onclick="openStrategyModal('v3')" class="text-gray-400 hover:text-green-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
+                    <h4 class="font-bold text-green-600 dark:text-green-400 text-lg">V3 Breakout</h4>
                     <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded dark:bg-green-900 dark:text-green-300"><span id="summary-v3">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Momentum Ledakan Harga & Volume"</p>
+                <div class="flex justify-between items-end mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Momentum Ledakan Harga & Volume"</p>
+                    <button onclick="openStrategyModal('v3')" class="text-gray-400 hover:text-green-500 transition focus:outline-none"><i class="fas fa-info-circle text-lg"></i></button>
+                </div>
             </div>
-            <div id="edu-card-v6" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
+            <div id="edu-card-v6" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition flex flex-col justify-between">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg flex items-center gap-2">V6 Bandar <button onclick="openStrategyModal('v6')" class="text-gray-400 hover:text-purple-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
+                    <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg">V6 Bandar</h4>
                     <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded dark:bg-purple-900 dark:text-purple-300"><span id="summary-v6">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Follow the Smart Money"</p>
+                <div class="flex justify-between items-end mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Follow the Smart Money"</p>
+                    <button onclick="openStrategyModal('v6')" class="text-gray-400 hover:text-purple-500 transition focus:outline-none"><i class="fas fa-info-circle text-lg"></i></button>
+                </div>
             </div>
-            <div id="edu-card-swing" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
+            <div id="edu-card-swing" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition flex flex-col justify-between">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg flex items-center gap-2">Swing Reversal <button onclick="openStrategyModal('swing')" class="text-gray-400 hover:text-orange-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
+                    <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg">Swing Reversal</h4>
                     <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded dark:bg-orange-900 dark:text-orange-300"><span id="summary-swing">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Rebound dari Titik Terendah"</p>
+                <div class="flex justify-between items-end mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Rebound dari Titik Terendah"</p>
+                    <button onclick="openStrategyModal('swing')" class="text-gray-400 hover:text-orange-500 transition focus:outline-none"><i class="fas fa-info-circle text-lg"></i></button>
+                </div>
             </div>
-            <div id="edu-card-smc" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition">
+            <div id="edu-card-smc" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition flex flex-col justify-between">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg flex items-center gap-2">SMC Mode <button onclick="openStrategyModal('smc')" class="text-gray-400 hover:text-indigo-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
+                    <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">SMC Mode</h4>
                     <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded dark:bg-indigo-900 dark:text-indigo-300"><span id="summary-smc">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Smart Money Concepts (H1)"</p>
+                <div class="flex justify-between items-end mt-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Smart Money Concepts (H1)"</p>
+                    <button onclick="openStrategyModal('smc')" class="text-gray-400 hover:text-indigo-500 transition focus:outline-none"><i class="fas fa-info-circle text-lg"></i></button>
+                </div>
             </div>
         </div>
 
