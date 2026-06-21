@@ -655,67 +655,57 @@
         <div id="strategy-education-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             <div id="edu-card-v8" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-blue-500 transition">
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg">V8 Pullback</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400 text-lg flex items-center gap-2">V8 Pullback <button onclick="openStrategyModal('v8')" class="text-gray-400 hover:text-blue-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded dark:bg-blue-900 dark:text-blue-300"><span id="summary-v8">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Buy on Weakness di Support Kuat"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Makro:</b> Harga di atas EMA 200</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Koreksi Sehat:</b> Candle merah menyentuh support EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Kering:</b> Volume transaksi di bawah rata-rata 20 hari</li>
-                </ul>
+                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Buy on Weakness di Support Kuat"</p>
             </div>
             <div id="edu-card-v3" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-green-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-green-600 dark:text-green-400 text-lg">V3 Breakout</h4>
+                    <h4 class="font-bold text-green-600 dark:text-green-400 text-lg flex items-center gap-2">V3 Breakout <button onclick="openStrategyModal('v3')" class="text-gray-400 hover:text-green-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
                     <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded dark:bg-green-900 dark:text-green-300"><span id="summary-v3">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Momentum Ledakan Harga & Volume"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Volume Spike:</b> Volume melesat > 2x lipat VMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Breakout Resistance:</b> Harga close menembus EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>MACD Menanjak:</b> Histogram & Line MACD slope positif</li>
-                </ul>
+                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Momentum Ledakan Harga & Volume"</p>
             </div>
             <div id="edu-card-v6" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-purple-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg">V6 Bandar</h4>
+                    <h4 class="font-bold text-purple-600 dark:text-purple-400 text-lg flex items-center gap-2">V6 Bandar <button onclick="openStrategyModal('v6')" class="text-gray-400 hover:text-purple-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
                     <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded dark:bg-purple-900 dark:text-purple-300"><span id="summary-v6">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Follow the Smart Money"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Uptrend Terjaga:</b> Close > EMA 200</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Nempel Support:</b> Rebound di sekitar EMA 20</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Akumulasi Masif:</b> OBV dan ADL > EMA 20</li>
-                </ul>
+                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Follow the Smart Money"</p>
             </div>
             <div id="edu-card-swing" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-orange-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg">Swing Reversal</h4>
+                    <h4 class="font-bold text-orange-600 dark:text-orange-400 text-lg flex items-center gap-2">Swing Reversal <button onclick="openStrategyModal('swing')" class="text-gray-400 hover:text-orange-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
                     <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded dark:bg-orange-900 dark:text-orange-300"><span id="summary-swing">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Rebound dari Titik Terendah"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>RSI Filter:</b> RSI kemarin < 50 (Oversold/Moderate)</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Pivot Low:</b> Low kemarin adalah titik terendah dibanding 3 hari terakhir</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Konfirmasi Reversal:</b> Close menembus High kemarin</li>
-                </ul>
+                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Rebound dari Titik Terendah"</p>
             </div>
             <div id="edu-card-smc" class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden group hover:border-indigo-500 transition">
                 <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition text-4xl"></div>
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">SMC Mode</h4>
+                    <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-lg flex items-center gap-2">SMC Mode <button onclick="openStrategyModal('smc')" class="text-gray-400 hover:text-indigo-500 transition focus:outline-none"><i class="fas fa-info-circle"></i></button></h4>
                     <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded dark:bg-indigo-900 dark:text-indigo-300"><span id="summary-smc">0</span> Alert</span>
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium border-b border-gray-200 dark:border-gray-700 pb-2">"Smart Money Concepts (H1)"</p>
-                <ul class="text-xs space-y-2 text-gray-700 dark:text-gray-300">
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>CHoCH:</b> Breakout struktur mikro</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Order Block / Fair Value Gap (FVG):</b> Jejak institusi di area base</li>
-                    <li><i class="fas fa-check-circle text-green-500 mr-1"></i> <b>Pullback:</b> Entry Buy saat harga kembali ke OB / FVG</li>
-                </ul>
+                <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">"Smart Money Concepts (H1)"</p>
+            </div>
+        </div>
+
+        <!-- Strategy Info Modal -->
+        <div id="strategy-info-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity opacity-0 duration-300">
+            <div class="bg-white dark:bg-gray-900 w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl transform scale-95 transition-transform duration-300 border border-gray-200 dark:border-gray-700">
+                <div class="sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center z-10">
+                    <h3 id="strategy-modal-title" class="text-xl font-bold text-gray-900 dark:text-white"></h3>
+                    <button onclick="closeStrategyModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="strategy-modal-content" class="p-6 text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    <!-- Content injected here -->
+                </div>
             </div>
         </div>
 
@@ -4483,6 +4473,106 @@
                 grid.appendChild(dayBtn);
             }
         }
+
+        // --- Strategy Modal Logic ---
+        const strategyData = {
+            v8: {
+                title: "V8 Pullback",
+                content: `
+                    <p class="mb-4"><strong>"Buy on Weakness di Support Kuat"</strong></p>
+                    <p class="mb-4">Strategi V8 Pullback bertujuan untuk mencari titik pantul (rebound) optimal pada saham yang sedang berada dalam tren naik yang kuat, namun sedang mengalami koreksi sementara (pullback).</p>
+                    <ul class="space-y-3">
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Uptrend Makro:</b> Harga saham harus berada di atas Exponential Moving Average (EMA) 200. Ini memastikan kita hanya berbelanja di pasar yang secara keseluruhan sedang bullish.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Koreksi Sehat:</b> Harus terjadi koreksi harga (candle merah) yang menyentuh atau mendekati area support dinamis EMA 20. Ini adalah titik 'diskon' kita.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Volume Kering:</b> Saat harga turun menyentuh EMA 20, volume transaksi harus lebih rendah dari rata-rata volume 20 hari (Volume Moving Average). Ini menandakan tekanan jual sudah melemah (kering) dan bukan buangan besar (distribusi).</div></li>
+                    </ul>
+                `
+            },
+            v3: {
+                title: "V3 Breakout",
+                content: `
+                    <p class="mb-4"><strong>"Momentum Ledakan Harga & Volume"</strong></p>
+                    <p class="mb-4">Strategi V3 Breakout mencari saham yang baru saja menembus resisten atau titik keseimbangan barunya dengan dorongan volume yang sangat masif, menandakan partisipasi uang besar (smart money).</p>
+                    <ul class="space-y-3">
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Volume Spike:</b> Volume hari itu melonjak drastis, minimal lebih dari 2 kali lipat dari rata-rata volume (VMA 20). Tanpa volume, breakout rawan palsu (false breakout).</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Breakout Resistance:</b> Harga penutupan (Close) berhasil menembus EMA 20 dari bawah ke atas, menandakan perubahan tren jangka pendek menjadi positif.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>MACD Menanjak:</b> Indikator MACD (Moving Average Convergence Divergence) menunjukkan momentum positif, di mana histogram dan garis MACD mulai menanjak (slope positif) dan memotong garis sinyal (Golden Cross).</div></li>
+                    </ul>
+                `
+            },
+            v6: {
+                title: "V6 Bandar",
+                content: `
+                    <p class="mb-4"><strong>"Follow the Smart Money"</strong></p>
+                    <p class="mb-4">Strategi V6 Bandar berfokus pada analisis jejak akumulasi bandar atau institusi menggunakan indikator berbasis volume-harga, untuk mencari saham yang sedang 'dikumpulkan' diam-diam.</p>
+                    <ul class="space-y-3">
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Uptrend Terjaga:</b> Saham harus berada di fase uptrend jangka panjang, ditandai dengan harga Close di atas EMA 200.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Nempel Support:</b> Harga sedang konsolidasi atau rebound tepat di sekitar EMA 20, memberikan area risiko yang sangat rendah (Low Risk Entry).</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Akumulasi Masif (OBV & ADL):</b> Indikator On-Balance Volume (OBV) dan Accumulation/Distribution Line (ADL) harus menanjak tajam dan berada di atas garis rata-ratanya (EMA 20 OBV). Ini adalah bukti nyata bahwa saat harga sideways, bandar sedang borong barang.</div></li>
+                    </ul>
+                `
+            },
+            swing: {
+                title: "Swing Reversal",
+                content: `
+                    <p class="mb-4"><strong>"Rebound dari Titik Terendah"</strong></p>
+                    <p class="mb-4">Strategi Swing Reversal adalah teknik klasik untuk menangkap harga tepat pada titik baliknya (bottom fishing) setelah mengalami tekanan jual yang cukup dalam dalam beberapa hari terakhir.</p>
+                    <ul class="space-y-3">
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>RSI Filter:</b> Relative Strength Index (RSI) hari sebelumnya harus berada di bawah level 50, mengindikasikan kondisi oversold atau tekanan jual yang sudah moderat.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Pivot Low:</b> Harga terendah (Low) kemarin harus merupakan titik terendah absolut jika dibandingkan dengan 3 hari ke belakang. Ini membentuk formasi lembah (pivot).</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Konfirmasi Reversal:</b> Hari ini, harga penutupan (Close) berhasil menembus ke atas harga tertinggi (High) dari candle pembentuk lembah kemarin. Ini mengonfirmasi bahwa seller telah kehabisan barang dan buyer mengambil alih kendali.</div></li>
+                    </ul>
+                `
+            },
+            smc: {
+                title: "SMC Mode (Smart Money Concepts)",
+                content: `
+                    <p class="mb-4"><strong>"Membaca Jejak Likuiditas Institusi"</strong></p>
+                    <p class="mb-4">Strategi SMC Mode memetakan struktur pasar mikro (Timeframe H1) layaknya algoritma perbankan institusi besar, mencari anomali pergerakan untuk menemukan titik entri presisi tinggi.</p>
+                    <ul class="space-y-3">
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>CHoCH & BOS:</b> Mendeteksi <i>Change of Character (CHoCH)</i> sebagai sinyal awal pembalikan tren dari bearish ke bullish (Fase 1 Reversal), atau <i>Break of Structure (BOS)</i> sebagai konfirmasi tren berlanjut (Fase 1 Trend).</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Order Block (OB) & Fair Value Gap (FVG):</b> Sistem secara otomatis memetakan kotak area institusi di mana terdapat injeksi modal besar yang belum terserap sempurna (imbalance). Area ini akan menjadi magnet harga di masa depan.</div></li>
+                        <li class="flex"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><div><b>Pullback Entry (Fase 2):</b> Sinyal eksekusi (Fase 2) baru akan muncul saat harga kembali menguji (pullback) tepat ke dalam zona OB/FVG tersebut dan diiringi dengan candle reversal, memberikan <i>Risk to Reward Ratio</i> yang sangat ketat dan menguntungkan.</div></li>
+                    </ul>
+                `
+            }
+        };
+
+        function openStrategyModal(strategyKey) {
+            const data = strategyData[strategyKey];
+            if (!data) return;
+            
+            document.getElementById('strategy-modal-title').textContent = data.title;
+            document.getElementById('strategy-modal-content').innerHTML = data.content;
+            
+            const modal = document.getElementById('strategy-info-modal');
+            modal.classList.remove('hidden');
+            
+            // Animation tick
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.children[0].classList.remove('scale-95');
+                modal.children[0].classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeStrategyModal() {
+            const modal = document.getElementById('strategy-info-modal');
+            modal.classList.add('opacity-0');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Close modal when clicking outside content area
+        document.getElementById('strategy-info-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStrategyModal();
+            }
+        });
     </script>
 </body>
 
