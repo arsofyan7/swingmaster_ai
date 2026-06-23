@@ -46,6 +46,7 @@ def run_h1_forex_alerts_job():
         logger.info(f"[SMC FOREX H1] Mendownload data H1 untuk {len(forex_pairs)} pair...")
         
         alerts_to_insert = []
+        grouped_alerts = {}
         telegram_lines = []
         current_date_str = datetime.now().strftime("%Y-%m-%d")
         
@@ -106,42 +107,55 @@ def run_h1_forex_alerts_job():
                             'open'
                         ))
                         entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
+                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>{db_ticker}</a>"
+                        
+                        readable_type = ""
+                        msg = ""
                         
                         if buy_signal['type'] == 'BUY_PHASE1':
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Reversal_Fase1 Forex BUY - {candle_time_str})\n"
+                            readable_type = "SMC_Reversal_Fase1 Forex BUY"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
                             )
                         elif buy_signal['type'] == 'BUY':
+                            readable_type = "SMC_Reversal_Fase2 Forex BUY"
                             tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
                             sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Reversal_Fase2 Forex BUY - {candle_time_str})\n"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"🟢 <b>Entry:</b> {entry}\n"
                                 f"🎯 <b>TP:</b> {tp}\n"
                                 f"🛑 <b>SL:</b> {sl}\n"
                             )
                         elif buy_signal['type'] == 'BUY_TREND_PHASE1':
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Trend_Fase1 Forex BUY - {candle_time_str})\n"
+                            readable_type = "SMC_Trend_Fase1 Forex BUY"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
                             )
                         elif buy_signal['type'] == 'BUY_TREND':
+                            readable_type = "SMC_Trend_Fase2 Forex BUY"
                             tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
                             sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Trend_Fase2 Forex BUY - {candle_time_str})\n"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"📈 <b>BUY - Trend Continuation</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"🟢 <b>Entry:</b> {entry}\n"
                                 f"🎯 <b>TP:</b> {tp}\n"
                                 f"🛑 <b>SL:</b> {sl}\n"
                             )
-                        telegram_lines.append(f"────────────────────")
+                        
+                        if readable_type:
+                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
+                            if group_header not in grouped_alerts:
+                                grouped_alerts[group_header] = []
+                            grouped_alerts[group_header].append(msg)
                         logger.info(f"[SMC FOREX H1] BUY TRIGGERED: {db_ticker} at {buy_signal['price_at_signal']} ({candle_time_str})")
                     
                 sell_signals_list = get_smc_sell_signals(df_smc)
@@ -159,42 +173,55 @@ def run_h1_forex_alerts_job():
                             'open'
                         ))
                         entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
+                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>{db_ticker}</a>"
+                        
+                        readable_type = ""
+                        msg = ""
                         
                         if sell_signal['type'] == 'SELL_PHASE1':
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Reversal_Fase1 Forex SELL - {candle_time_str})\n"
+                            readable_type = "SMC_Reversal_Fase1 Forex SELL"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Sell Limit di Zona FVG atau Golden Fibo\n"
                             )
                         elif sell_signal['type'] == 'SELL':
+                            readable_type = "SMC_Reversal_Fase2 Forex SELL"
                             tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
                             sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Reversal_Fase2 Forex SELL - {candle_time_str})\n"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"🔴 <b>Entry:</b> {entry}\n"
                                 f"🎯 <b>TP:</b> {tp}\n"
                                 f"🛑 <b>SL:</b> {sl}\n"
                             )
                         elif sell_signal['type'] == 'SELL_TREND_PHASE1':
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Trend_Fase1 Forex SELL - {candle_time_str})\n"
+                            readable_type = "SMC_Trend_Fase1 Forex SELL"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"📉 <b>BOS Bearish - Trend Continuation</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Sell Limit\n"
                             )
                         elif sell_signal['type'] == 'SELL_TREND':
+                            readable_type = "SMC_Trend_Fase2 Forex SELL"
                             tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
                             sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                            telegram_lines.append(
-                                f"<b>{len(telegram_lines)+1}. {db_ticker}</b> (SMC_Trend_Fase2 Forex SELL - {candle_time_str})\n"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
                                 f"📉 <b>SELL - Trend Continuation</b>\n"
                                 f"🏷️ <b>Current Price:</b> {entry}\n"
                                 f"🔴 <b>Entry:</b> {entry}\n"
                                 f"🎯 <b>TP:</b> {tp}\n"
                                 f"🛑 <b>SL:</b> {sl}\n"
                             )
-                        telegram_lines.append(f"────────────────────")
+                        
+                        if readable_type:
+                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
+                            if group_header not in grouped_alerts:
+                                grouped_alerts[group_header] = []
+                            grouped_alerts[group_header].append(msg)
                         logger.info(f"[SMC FOREX H1] SELL TRIGGERED: {db_ticker} at {sell_signal['price_at_signal']} ({candle_time_str})")
                     
             except Exception as e:
@@ -214,9 +241,15 @@ def run_h1_forex_alerts_job():
             logger.info(f"[SMC FOREX H1] Disimpan {len(alerts_to_insert)} alert ke database.")
             
             # Kirim notifikasi Telegram
+            # Format pesan akhir
+            for header_title, msgs in grouped_alerts.items():
+                telegram_lines.append(header_title)
+                telegram_lines.append("\n\n".join(msgs))
+                telegram_lines.append("────────────────────\n")
+                
             run_time_str = datetime.now().strftime("%H:%M")
             header = f"<b>🌍 SMC FOREX H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
-            footer = f"\n💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+            footer = f"💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
             msg = header + "\n".join(telegram_lines) + footer
             broadcast_telegram_message(msg, category="forex")
         else:
