@@ -480,6 +480,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
     if len(df) < SWING_SIZE + 10:
         return None
 
+    df_original_index = df.index.copy()
     df = df.copy()
     df.reset_index(drop=True, inplace=True)
 
@@ -500,7 +501,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
 
     results = []
     for sig in last_bar_signals:
-        sig_time = df.index[sig['idx']]
+        sig_time = df_original_index[sig['idx']]
         if sig['type'] == 'BUY_PHASE1':
             results.append({
                 "strategy_name":   "SMC_Reversal_Fase1",
@@ -550,6 +551,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
     if len(df) < SWING_SIZE + 10:
         return None
 
+    df_original_index = df.index.copy()
     df = df.copy()
     df.reset_index(drop=True, inplace=True)
 
@@ -568,7 +570,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
 
     results = []
     for sig in last_bar_signals:
-        sig_time = df.index[sig['idx']]
+        sig_time = df_original_index[sig['idx']]
         if sig['type'] == 'SELL_PHASE1':
             results.append({
                 "strategy_name":   "SMC_Reversal_Fase1",
