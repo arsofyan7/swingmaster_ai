@@ -494,12 +494,13 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
     signals = _run_smc_engine(opens, highs, lows, closes, n, direction="BUY")
 
     # Only care if the LAST bar triggered
-    last_bar_signals = [sig for sig in signals if sig['idx'] == n - 1]
+    last_bar_signals = [sig for sig in signals if sig['idx'] >= n - 5]
     if not last_bar_signals:
         return None
 
     results = []
     for sig in last_bar_signals:
+        sig_time = df.index[sig['idx']]
         if sig['type'] == 'BUY_PHASE1':
             results.append({
                 "strategy_name":   "SMC_Reversal_Fase1",
@@ -507,6 +508,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    0.0,
                 "stop_loss":       0.0,
                 "type":            "BUY_PHASE1",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'BUY':
             results.append({
@@ -515,6 +517,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "BUY",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'BUY_TREND_PHASE1':
             results.append({
@@ -523,6 +526,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    0.0,
                 "stop_loss":       0.0,
                 "type":            "BUY_TREND_PHASE1",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'BUY_TREND':
             results.append({
@@ -531,6 +535,7 @@ def get_smc_buy_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "BUY_TREND",
+                "signal_time":     sig_time,
             })
 
     return results if results else None
@@ -557,12 +562,13 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
 
     signals = _run_smc_engine(opens, highs, lows, closes, n, direction="SELL")
 
-    last_bar_signals = [sig for sig in signals if sig['idx'] == n - 1]
+    last_bar_signals = [sig for sig in signals if sig['idx'] >= n - 5]
     if not last_bar_signals:
         return None
 
     results = []
     for sig in last_bar_signals:
+        sig_time = df.index[sig['idx']]
         if sig['type'] == 'SELL_PHASE1':
             results.append({
                 "strategy_name":   "SMC_Reversal_Fase1",
@@ -570,6 +576,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    0.0,
                 "stop_loss":       0.0,
                 "type":            "SELL_PHASE1",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'SELL':
             results.append({
@@ -578,6 +585,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "SELL",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'SELL_TREND_PHASE1':
             results.append({
@@ -586,6 +594,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    0.0,
                 "stop_loss":       0.0,
                 "type":            "SELL_TREND_PHASE1",
+                "signal_time":     sig_time,
             })
         elif sig['type'] == 'SELL_TREND':
             results.append({
@@ -594,6 +603,7 @@ def get_smc_sell_signals(df: pd.DataFrame) -> list | None:
                 "target_price":    round(sig['tp'], 5),
                 "stop_loss":       round(sig['sl'], 5),
                 "type":            "SELL_TREND",
+                "signal_time":     sig_time,
             })
 
     return results if results else None

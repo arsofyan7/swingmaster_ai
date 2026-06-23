@@ -85,11 +85,16 @@ def run_h1_alerts_job():
             signals_list = get_smc_buy_signals(ticker_df)
             if signals_list:
                 for signal in signals_list:
-                    last_candle_dt = ticker_df.index[-1]
-                    candle_date_str = last_candle_dt.strftime("%Y-%m-%d")
-                    candle_time_str = last_candle_dt.strftime("%H:%M")
+                    # Extrak waktu signal yang sebenarnya
+                    signal_time = signal.get('signal_time', ticker_df.index[-1])
+                    candle_date_str = signal_time.strftime("%Y-%m-%d")
+                    candle_time_str = signal_time.strftime("%H:%M")
                     strategy_label = f"{signal['strategy_name']}_{candle_time_str}"
                     
+                    # Cek duplikat di database sebelum alert
+                    cursor.execute("SELECT 1 FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (candle_date_str, t, strategy_label))
+                    is_duplicate = cursor.fetchone() is not None
+
                     alerts_to_insert.append((
                         t,
                         strategy_label,
@@ -100,57 +105,58 @@ def run_h1_alerts_job():
                         'open'
                     ))
                     
-                    # Format pesan Telegram
-                    entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
-                    tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>{t}</a>"
-                    
-                    readable_type = ""
-                    msg = ""
-                    
-                    if signal['type'] == 'BUY_PHASE1':
-                        readable_type = "SMC_Reversal_Fase1"
-                        msg = (
-                            f"🔹 <b>{tv_link}</b>\n"
-                            f"🏷️ <b>Current Price:</b> {entry}\n"
-                            f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
-                        )
-                    elif signal['type'] == 'BUY':
-                        readable_type = "SMC_Reversal_Fase2"
-                        tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
-                        sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                        msg = (
-                            f"🔹 <b>{tv_link}</b>\n"
-                            f"🏷️ <b>Current Price:</b> {entry}\n"
-                            f"💰 <b>Entry:</b> {entry}\n"
-                            f"🎯 <b>TP:</b> {tp}\n"
-                            f"🛑 <b>SL:</b> {sl}\n"
-                        )
-                    elif signal['type'] == 'BUY_TREND_PHASE1':
-                        readable_type = "SMC_Trend_Fase1"
-                        msg = (
-                            f"🔹 <b>{tv_link}</b>\n"
-                            f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
-                            f"🏷️ <b>Current Price:</b> {entry}\n"
-                            f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
-                        )
-                    elif signal['type'] == 'BUY_TREND':
-                        readable_type = "SMC_Trend_Fase2"
-                        tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
-                        sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                        msg = (
-                            f"🔹 <b>{tv_link}</b>\n"
-                            f"📈 <b>BUY - Trend Continuation</b>\n"
-                            f"🏷️ <b>Current Price:</b> {entry}\n"
-                            f"💰 <b>Entry:</b> {entry}\n"
-                            f"🎯 <b>TP:</b> {tp}\n"
-                            f"🛑 <b>SL:</b> {sl}\n"
-                        )
-                    
-                    if readable_type:
-                        group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
-                        if group_header not in grouped_alerts:
-                            grouped_alerts[group_header] = []
-                        grouped_alerts[group_header].append(msg)
+                    if not is_duplicate:
+                        # Format pesan Telegram
+                        entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
+                        tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>{t}</a>"
+                        
+                        readable_type = ""
+                        msg = ""
+                        
+                        if signal['type'] == 'BUY_PHASE1':
+                            readable_type = "SMC_Reversal_Fase1"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
+                            )
+                        elif signal['type'] == 'BUY':
+                            readable_type = "SMC_Reversal_Fase2"
+                            tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
+                            sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"💰 <b>Entry:</b> {entry}\n"
+                                f"🎯 <b>TP:</b> {tp}\n"
+                                f"🛑 <b>SL:</b> {sl}\n"
+                            )
+                        elif signal['type'] == 'BUY_TREND_PHASE1':
+                            readable_type = "SMC_Trend_Fase1"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
+                                f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
+                            )
+                        elif signal['type'] == 'BUY_TREND':
+                            readable_type = "SMC_Trend_Fase2"
+                            tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
+                            sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
+                            msg = (
+                                f"🔹 <b>{tv_link}</b>\n"
+                                f"📈 <b>BUY - Trend Continuation</b>\n"
+                                f"🏷️ <b>Current Price:</b> {entry}\n"
+                                f"💰 <b>Entry:</b> {entry}\n"
+                                f"🎯 <b>TP:</b> {tp}\n"
+                                f"🛑 <b>SL:</b> {sl}\n"
+                            )
+                        
+                        if readable_type:
+                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
+                            if group_header not in grouped_alerts:
+                                grouped_alerts[group_header] = []
+                            grouped_alerts[group_header].append(msg)
                 logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
         # 3. Update database h1_prices
@@ -175,17 +181,18 @@ def run_h1_alerts_job():
             conn.commit()
             logger.info(f"[SMC H1] Disimpan {len(alerts_to_insert)} alert ke database.")
             
-            # 5. Kirim notifikasi Telegram
-            for header_title, msgs in grouped_alerts.items():
-                telegram_lines.append(header_title)
-                telegram_lines.append("\n\n".join(msgs))
-                telegram_lines.append("────────────────────\n")
-                
-            run_time_str = datetime.now().strftime("%H:%M")
-            header = f"<b>⏱️ SMC H1 ALERTS ⏱️</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
-            footer = f"💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
-            msg = header + "\n".join(telegram_lines) + footer
-            broadcast_telegram_message(msg, category="saham")
+            # Kirim notifikasi Telegram hanya jika ada yang baru
+            if grouped_alerts:
+                for header_title, msgs in grouped_alerts.items():
+                    telegram_lines.append(header_title)
+                    telegram_lines.append("\n\n".join(msgs))
+                    telegram_lines.append("────────────────────\n")
+                    
+                run_time_str = datetime.now().strftime("%H:%M")
+                header = f"<b>🌍 SMC H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
+                footer = f"💡 <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+                msg = header + "\n".join(telegram_lines) + footer
+                broadcast_telegram_message(msg, category="saham")
         else:
             logger.info("[SMC H1] Tidak ada alert SMC H1 pada jam ini.")
             

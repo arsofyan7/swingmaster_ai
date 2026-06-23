@@ -95,8 +95,13 @@ def run_h1_forex_alerts_job():
                 buy_signals_list = get_smc_buy_signals(df_smc)
                 if buy_signals_list:
                     for buy_signal in buy_signals_list:
-                        candle_time_str = df_smc.index[-1].strftime("%H:%M")
+                        signal_time = buy_signal.get('signal_time', df_smc.index[-1])
+                        candle_time_str = signal_time.strftime("%H:%M")
                         strategy_label_buy = f"{buy_signal['strategy_name']}_Forex_Buy_{candle_time_str}"
+                        
+                        cursor.execute("SELECT 1 FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (current_date_str, db_ticker, strategy_label_buy))
+                        is_duplicate = cursor.fetchone() is not None
+                        
                         alerts_to_insert.append((
                             db_ticker,
                             strategy_label_buy,
@@ -109,60 +114,66 @@ def run_h1_forex_alerts_job():
                         entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
                         tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>{db_ticker}</a>"
                         
-                        readable_type = ""
-                        msg = ""
-                        
-                        if buy_signal['type'] == 'BUY_PHASE1':
-                            readable_type = "SMC_Reversal_Fase1 Forex BUY"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
-                            )
-                        elif buy_signal['type'] == 'BUY':
-                            readable_type = "SMC_Reversal_Fase2 Forex BUY"
-                            tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
-                            sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"🟢 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
-                        elif buy_signal['type'] == 'BUY_TREND_PHASE1':
-                            readable_type = "SMC_Trend_Fase1 Forex BUY"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
-                            )
-                        elif buy_signal['type'] == 'BUY_TREND':
-                            readable_type = "SMC_Trend_Fase2 Forex BUY"
-                            tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
-                            sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📈 <b>BUY - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"🟢 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
-                        
-                        if readable_type:
-                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
-                            if group_header not in grouped_alerts:
-                                grouped_alerts[group_header] = []
-                            grouped_alerts[group_header].append(msg)
+                        if not is_duplicate:
+                            readable_type = ""
+                            msg = ""
+                            
+                            if buy_signal['type'] == 'BUY_PHASE1':
+                                readable_type = "SMC_Reversal_Fase1 Forex BUY"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
+                                )
+                            elif buy_signal['type'] == 'BUY':
+                                readable_type = "SMC_Reversal_Fase2 Forex BUY"
+                                tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
+                                sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"🟢 <b>Entry:</b> {entry}\n"
+                                    f"🎯 <b>TP:</b> {tp}\n"
+                                    f"🛑 <b>SL:</b> {sl}\n"
+                                )
+                            elif buy_signal['type'] == 'BUY_TREND_PHASE1':
+                                readable_type = "SMC_Trend_Fase1 Forex BUY"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
+                                )
+                            elif buy_signal['type'] == 'BUY_TREND':
+                                readable_type = "SMC_Trend_Fase2 Forex BUY"
+                                tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
+                                sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"📈 <b>BUY - Trend Continuation</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"🟢 <b>Entry:</b> {entry}\n"
+                                    f"🎯 <b>TP:</b> {tp}\n"
+                                    f"🛑 <b>SL:</b> {sl}\n"
+                                )
+                            
+                            if readable_type:
+                                group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
+                                if group_header not in grouped_alerts:
+                                    grouped_alerts[group_header] = []
+                                grouped_alerts[group_header].append(msg)
                         logger.info(f"[SMC FOREX H1] BUY TRIGGERED: {db_ticker} at {buy_signal['price_at_signal']} ({candle_time_str})")
                     
                 sell_signals_list = get_smc_sell_signals(df_smc)
                 if sell_signals_list:
                     for sell_signal in sell_signals_list:
-                        candle_time_str = df_smc.index[-1].strftime("%H:%M")
+                        signal_time = sell_signal.get('signal_time', df_smc.index[-1])
+                        candle_time_str = signal_time.strftime("%H:%M")
                         strategy_label_sell = f"{sell_signal['strategy_name']}_Forex_Sell_{candle_time_str}"
+                        
+                        cursor.execute("SELECT 1 FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (current_date_str, db_ticker, strategy_label_sell))
+                        is_duplicate = cursor.fetchone() is not None
+
                         alerts_to_insert.append((
                             db_ticker,
                             strategy_label_sell,
@@ -175,53 +186,54 @@ def run_h1_forex_alerts_job():
                         entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
                         tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>{db_ticker}</a>"
                         
-                        readable_type = ""
-                        msg = ""
-                        
-                        if sell_signal['type'] == 'SELL_PHASE1':
-                            readable_type = "SMC_Reversal_Fase1 Forex SELL"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Sell Limit di Zona FVG atau Golden Fibo\n"
-                            )
-                        elif sell_signal['type'] == 'SELL':
-                            readable_type = "SMC_Reversal_Fase2 Forex SELL"
-                            tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
-                            sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"🔴 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
-                        elif sell_signal['type'] == 'SELL_TREND_PHASE1':
-                            readable_type = "SMC_Trend_Fase1 Forex SELL"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📉 <b>BOS Bearish - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Sell Limit\n"
-                            )
-                        elif sell_signal['type'] == 'SELL_TREND':
-                            readable_type = "SMC_Trend_Fase2 Forex SELL"
-                            tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
-                            sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📉 <b>SELL - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"🔴 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
-                        
-                        if readable_type:
-                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
-                            if group_header not in grouped_alerts:
-                                grouped_alerts[group_header] = []
-                            grouped_alerts[group_header].append(msg)
+                        if not is_duplicate:
+                            readable_type = ""
+                            msg = ""
+                            
+                            if sell_signal['type'] == 'SELL_PHASE1':
+                                readable_type = "SMC_Reversal_Fase1 Forex SELL"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Sell Limit di Zona FVG atau Golden Fibo\n"
+                                )
+                            elif sell_signal['type'] == 'SELL':
+                                readable_type = "SMC_Reversal_Fase2 Forex SELL"
+                                tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
+                                sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"🔴 <b>Entry:</b> {entry}\n"
+                                    f"🎯 <b>TP:</b> {tp}\n"
+                                    f"🛑 <b>SL:</b> {sl}\n"
+                                )
+                            elif sell_signal['type'] == 'SELL_TREND_PHASE1':
+                                readable_type = "SMC_Trend_Fase1 Forex SELL"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"📉 <b>BOS Bearish - Trend Continuation</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Sell Limit\n"
+                                )
+                            elif sell_signal['type'] == 'SELL_TREND':
+                                readable_type = "SMC_Trend_Fase2 Forex SELL"
+                                tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
+                                sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
+                                msg = (
+                                    f"🔹 <b>{tv_link}</b>\n"
+                                    f"📉 <b>SELL - Trend Continuation</b>\n"
+                                    f"🏷️ <b>Current Price:</b> {entry}\n"
+                                    f"🔴 <b>Entry:</b> {entry}\n"
+                                    f"🎯 <b>TP:</b> {tp}\n"
+                                    f"🛑 <b>SL:</b> {sl}\n"
+                                )
+                            
+                            if readable_type:
+                                group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
+                                if group_header not in grouped_alerts:
+                                    grouped_alerts[group_header] = []
+                                grouped_alerts[group_header].append(msg)
                         logger.info(f"[SMC FOREX H1] SELL TRIGGERED: {db_ticker} at {sell_signal['price_at_signal']} ({candle_time_str})")
                     
             except Exception as e:
@@ -241,17 +253,18 @@ def run_h1_forex_alerts_job():
             logger.info(f"[SMC FOREX H1] Disimpan {len(alerts_to_insert)} alert ke database.")
             
             # Kirim notifikasi Telegram
-            # Format pesan akhir
-            for header_title, msgs in grouped_alerts.items():
-                telegram_lines.append(header_title)
-                telegram_lines.append("\n\n".join(msgs))
-                telegram_lines.append("────────────────────\n")
-                
-            run_time_str = datetime.now().strftime("%H:%M")
-            header = f"<b>🌍 SMC FOREX H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
-            footer = f"💡 <i>Total Alerts: {len(alerts_to_insert)}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
-            msg = header + "\n".join(telegram_lines) + footer
-            broadcast_telegram_message(msg, category="forex")
+            # Kirim notifikasi Telegram jika ada alert baru
+            if grouped_alerts:
+                for header_title, msgs in grouped_alerts.items():
+                    telegram_lines.append(header_title)
+                    telegram_lines.append("\n\n".join(msgs))
+                    telegram_lines.append("────────────────────\n")
+                    
+                run_time_str = datetime.now().strftime("%H:%M")
+                header = f"<b>🌍 SMC FOREX H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
+                footer = f"💡 <i>Total New Alerts: {len([a for a in alerts_to_insert if not is_duplicate])}</i>\n⚠️ <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+                msg = header + "\n".join(telegram_lines) + footer
+                broadcast_telegram_message(msg, category="forex")
         else:
             logger.info("[SMC FOREX H1] Tidak ada alert SMC Forex H1 pada jam ini.")
             
