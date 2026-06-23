@@ -291,13 +291,18 @@ def sync_historical_data(tickers: list[str]):
         logger.info(f"[YFINANCE FALLBACK] Memulai batch download untuk {len(tickers_for_yf_fallback)} emiten...")
         try:
             import yfinance as yf
-            yf_tickers = [f"{t}.JK" for t in tickers_for_yf_fallback]
+            def get_yf_ticker(t):
+                if len(t) == 6 and t.endswith("USD"):
+                    return f"{t}=X"
+                return f"{t}.JK"
+
+            yf_tickers = [get_yf_ticker(t) for t in tickers_for_yf_fallback]
             
             df = yf.download(yf_tickers, period="1mo", group_by='ticker', progress=False)
             
             fallback_records = []
             for t in tickers_for_yf_fallback:
-                yf_t = f"{t}.JK"
+                yf_t = get_yf_ticker(t)
                 
                 if len(yf_tickers) == 1:
                     ticker_df = df
