@@ -108,27 +108,34 @@ def run_h1_alerts_job():
                     if not is_duplicate:
                         # Format pesan Telegram
                         entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
-                        tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>{t}</a>"
+                        t_padded = f"{t:<5}"
+                        tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>{t_padded}</a>"
                         
                         readable_type = ""
                         msg = ""
                         
                         if signal['type'] == 'BUY_PHASE1':
                             readable_type = "SMC_Reversal_Fase1"
-                            msg = f"{tv_link} | - | {entry} | Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo"
+                            alert_str = "-"
+                            status_str = "Tunggu Pullback"
+                            msg = f"{tv_link} | {alert_str:<9} | {entry:>6} | {status_str}"
                         elif signal['type'] == 'BUY':
                             readable_type = "SMC_Reversal_Fase2"
+                            alert_str = "-"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = f"{tv_link} | - | {entry} | {entry} | {tp} | {sl}"
+                            msg = f"{tv_link} | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}"
                         elif signal['type'] == 'BUY_TREND_PHASE1':
                             readable_type = "SMC_Trend_Fase1"
-                            msg = f"{tv_link} | BOS Bullish - Trend Continuation | {entry} | Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit"
+                            alert_str = "BOS"
+                            status_str = "Tunggu OB/FVG"
+                            msg = f"{tv_link} | {alert_str:<9} | {entry:>6} | {status_str}"
                         elif signal['type'] == 'BUY_TREND':
                             readable_type = "SMC_Trend_Fase2"
+                            alert_str = "Buy Trend"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = f"{tv_link} | BUY - Trend Continuation | {entry} | {entry} | {tp} | {sl}"
+                            msg = f"{tv_link} | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}"
                         
                         if readable_type:
                             if readable_type not in grouped_alerts:
@@ -166,12 +173,18 @@ def run_h1_alerts_job():
                     telegram_lines.append(f"🔥 <b>{readable_type}</b>")
                     for candle_time_str, msgs in times_dict.items():
                         telegram_lines.append(f"{candle_time_str}:")
+                        telegram_lines.append("<pre>")
                         if 'Fase1' in readable_type:
-                            telegram_lines.append("Ticker | Alert | Current | Status")
+                            header_str = f"{'Kode':<5} | {'Alert':<9} | {'Harga':<6} | Status"
+                            telegram_lines.append(header_str)
+                            telegram_lines.append("-" * len(header_str))
                         else:
-                            telegram_lines.append("Ticker | Alert | Current | Entry | TP | SL")
+                            header_str = f"{'Kode':<5} | {'Alert':<9} | {'Cur':<5} | {'Ent':<5} | {'TP':<5} | {'SL':<5}"
+                            telegram_lines.append(header_str)
+                            telegram_lines.append("-" * len(header_str))
                         for m in msgs:
                             telegram_lines.append(m)
+                        telegram_lines.append("</pre>")
                         telegram_lines.append("") # space between time blocks
                     telegram_lines.append("────────────────────\n")
                     
