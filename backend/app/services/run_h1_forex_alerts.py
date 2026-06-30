@@ -112,8 +112,7 @@ def run_h1_forex_alerts_job():
                             'open'
                         ))
                         entry = f"{buy_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['price_at_signal']:.3f}"
-                        t_padded = f"{db_ticker:<6}"
-                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'><code>{t_padded}</code></a>"
+                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>📊</a>"
                         
                         if not is_duplicate:
                             readable_type = ""
@@ -123,24 +122,24 @@ def run_h1_forex_alerts_job():
                                 readable_type = "SMC_Reversal_Fase1 Forex BUY"
                                 alert_str = "-"
                                 status_str = "Tunggu Pullback"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {status_str}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {status_str}</code> {tv_link}"
                             elif buy_signal['type'] == 'BUY':
                                 readable_type = "SMC_Reversal_Fase2 Forex BUY"
                                 alert_str = "-"
                                 tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
                                 sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code> {tv_link}"
                             elif buy_signal['type'] == 'BUY_TREND_PHASE1':
                                 readable_type = "SMC_Trend_Fase1 Forex BUY"
                                 alert_str = "BOS"
                                 status_str = "Tunggu OB/FVG"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {status_str}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {status_str}</code> {tv_link}"
                             elif buy_signal['type'] == 'BUY_TREND':
                                 readable_type = "SMC_Trend_Fase2 Forex BUY"
                                 alert_str = "Buy Trend"
                                 tp = f"{buy_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['target_price']:.3f}"
                                 sl = f"{buy_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{buy_signal['stop_loss']:.3f}"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code> {tv_link}"
                             
                             if readable_type:
                                 group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
@@ -169,8 +168,7 @@ def run_h1_forex_alerts_job():
                             'open'
                         ))
                         entry = f"{sell_signal['price_at_signal']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['price_at_signal']:.3f}"
-                        t_padded = f"{db_ticker:<6}"
-                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'><code>{t_padded}</code></a>"
+                        tv_link = f"<a href='https://www.tradingview.com/chart/?symbol={db_ticker}'>📊</a>"
                         
                         if not is_duplicate:
                             readable_type = ""
@@ -180,24 +178,24 @@ def run_h1_forex_alerts_job():
                                 readable_type = "SMC_Reversal_Fase1 Forex SELL"
                                 alert_str = "-"
                                 status_str = "Tunggu Pullback"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {status_str}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {status_str}</code> {tv_link}"
                             elif sell_signal['type'] == 'SELL':
                                 readable_type = "SMC_Reversal_Fase2 Forex SELL"
                                 alert_str = "-"
                                 tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
                                 sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code> {tv_link}"
                             elif sell_signal['type'] == 'SELL_TREND_PHASE1':
                                 readable_type = "SMC_Trend_Fase1 Forex SELL"
                                 alert_str = "BOS"
                                 status_str = "Tunggu OB/FVG"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {status_str}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {status_str}</code> {tv_link}"
                             elif sell_signal['type'] == 'SELL_TREND':
                                 readable_type = "SMC_Trend_Fase2 Forex SELL"
                                 alert_str = "Sell Trend"
                                 tp = f"{sell_signal['target_price']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['target_price']:.3f}"
                                 sl = f"{sell_signal['stop_loss']:.5f}" if db_ticker != 'USDJPY' and db_ticker != 'XAUUSD' else f"{sell_signal['stop_loss']:.3f}"
-                                msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code>"
+                                msg = f"<code>{db_ticker:<6} | {alert_str:<9} | {entry:>8} | {entry:>8} | {tp:>8} | {sl:>8}</code> {tv_link}"
                             
                             if readable_type:
                                 group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"

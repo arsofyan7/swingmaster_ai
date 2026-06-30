@@ -108,8 +108,7 @@ def run_h1_alerts_job():
                     if not is_duplicate:
                         # Format pesan Telegram
                         entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
-                        t_padded = f"{t:<5}"
-                        tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'><code>{t_padded}</code></a>"
+                        tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>📊</a>"
                         
                         readable_type = ""
                         msg = ""
@@ -118,24 +117,24 @@ def run_h1_alerts_job():
                             readable_type = "SMC_Reversal_Fase1"
                             alert_str = "-"
                             status_str = "Tunggu Pullback"
-                            msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>6} | {status_str}</code>"
+                            msg = f"<code>{t:<5} | {alert_str:<9} | {entry:>6} | {status_str}</code> {tv_link}"
                         elif signal['type'] == 'BUY':
                             readable_type = "SMC_Reversal_Fase2"
                             alert_str = "-"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}</code>"
+                            msg = f"<code>{t:<5} | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}</code> {tv_link}"
                         elif signal['type'] == 'BUY_TREND_PHASE1':
                             readable_type = "SMC_Trend_Fase1"
                             alert_str = "BOS"
                             status_str = "Tunggu OB/FVG"
-                            msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>6} | {status_str}</code>"
+                            msg = f"<code>{t:<5} | {alert_str:<9} | {entry:>6} | {status_str}</code> {tv_link}"
                         elif signal['type'] == 'BUY_TREND':
                             readable_type = "SMC_Trend_Fase2"
                             alert_str = "Buy Trend"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = f"{tv_link}<code> | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}</code>"
+                            msg = f"<code>{t:<5} | {alert_str:<9} | {entry:>5} | {entry:>5} | {tp:>5} | {sl:>5}</code> {tv_link}"
                         
                         if readable_type:
                             if readable_type not in grouped_alerts:
