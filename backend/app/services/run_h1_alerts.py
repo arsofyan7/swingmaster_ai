@@ -115,48 +115,27 @@ def run_h1_alerts_job():
                         
                         if signal['type'] == 'BUY_PHASE1':
                             readable_type = "SMC_Reversal_Fase1"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⚠️ <b>Status:</b> Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo\n"
-                            )
+                            msg = f"{tv_link} | - | {entry} | Persiapan nunggu Pullback, bisa aktifkan Buy Limit di Zona FVG atau Golden Fibo"
                         elif signal['type'] == 'BUY':
                             readable_type = "SMC_Reversal_Fase2"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"💰 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
+                            msg = f"{tv_link} | - | {entry} | {entry} | {tp} | {sl}"
                         elif signal['type'] == 'BUY_TREND_PHASE1':
                             readable_type = "SMC_Trend_Fase1"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📈 <b>BOS Bullish - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"⏳ <b>Status:</b> Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit\n"
-                            )
+                            msg = f"{tv_link} | BOS Bullish - Trend Continuation | {entry} | Persiapan nunggu Pullback ke OB/FVG, bisa aktifkan Buy Limit"
                         elif signal['type'] == 'BUY_TREND':
                             readable_type = "SMC_Trend_Fase2"
                             tp = f"{signal['target_price']:,.0f}" if signal['target_price'] >= 100 else f"{signal['target_price']:.2f}"
                             sl = f"{signal['stop_loss']:,.0f}" if signal['stop_loss'] >= 100 else f"{signal['stop_loss']:.2f}"
-                            msg = (
-                                f"🔹 <b>{tv_link}</b>\n"
-                                f"📈 <b>BUY - Trend Continuation</b>\n"
-                                f"🏷️ <b>Current Price:</b> {entry}\n"
-                                f"💰 <b>Entry:</b> {entry}\n"
-                                f"🎯 <b>TP:</b> {tp}\n"
-                                f"🛑 <b>SL:</b> {sl}\n"
-                            )
+                            msg = f"{tv_link} | BUY - Trend Continuation | {entry} | {entry} | {tp} | {sl}"
                         
                         if readable_type:
-                            group_header = f"🔥 <b>{readable_type} {candle_time_str}:</b>"
-                            if group_header not in grouped_alerts:
-                                grouped_alerts[group_header] = []
-                            grouped_alerts[group_header].append(msg)
+                            if readable_type not in grouped_alerts:
+                                grouped_alerts[readable_type] = {}
+                            if candle_time_str not in grouped_alerts[readable_type]:
+                                grouped_alerts[readable_type][candle_time_str] = []
+                            grouped_alerts[readable_type][candle_time_str].append(msg)
                 logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
         # 3. Update database h1_prices
@@ -183,9 +162,17 @@ def run_h1_alerts_job():
             
             # Kirim notifikasi Telegram hanya jika ada yang baru
             if grouped_alerts:
-                for header_title, msgs in grouped_alerts.items():
-                    telegram_lines.append(header_title)
-                    telegram_lines.append("\n\n".join(msgs))
+                for readable_type, times_dict in grouped_alerts.items():
+                    telegram_lines.append(f"🔥 <b>{readable_type}</b>")
+                    for candle_time_str, msgs in times_dict.items():
+                        telegram_lines.append(f"{candle_time_str}:")
+                        if 'Fase1' in readable_type:
+                            telegram_lines.append("Ticker | Alert | Current | Status")
+                        else:
+                            telegram_lines.append("Ticker | Alert | Current | Entry | TP | SL")
+                        for m in msgs:
+                            telegram_lines.append(m)
+                        telegram_lines.append("") # space between time blocks
                     telegram_lines.append("────────────────────\n")
                     
                 run_time_str = datetime.now().strftime("%H:%M")
