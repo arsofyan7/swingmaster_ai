@@ -24,43 +24,46 @@ else:
 user_states = {}
 
 def get_user_by_chat_id(chat_id):
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     try:
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE telegram_chat_id = ?", (chat_id,))
         user = cursor.fetchone()
-        conn.close()
         return user
     except Exception as e:
         logger.error(f"[TELEGRAM DB] Error get_user_by_chat_id: {e}")
         return None
+    finally:
+        conn.close()
 
 def get_user_by_email(email):
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     try:
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
         user = cursor.fetchone()
-        conn.close()
         return user
     except Exception as e:
         logger.error(f"[TELEGRAM DB] Error get_user_by_email: {e}")
         return None
+    finally:
+        conn.close()
 
 def get_user_portfolios(user_id):
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     try:
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM portfolios WHERE user_id = ?", (user_id,))
         portfolios = cursor.fetchall()
-        conn.close()
         return [dict(p) for p in portfolios]
     except Exception as e:
         logger.error(f"[TELEGRAM DB] Error get_user_portfolios: {e}")
         return []
+    finally:
+        conn.close()
 
 def create_portfolio(user_id, portfolio_type, initial_balance):
     conn = get_db_connection()

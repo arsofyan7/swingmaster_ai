@@ -1,4 +1,3 @@
-import sqlite3
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
@@ -9,6 +8,7 @@ import sys
 # Add parent path so we can import from app.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+from app.core.database import get_db_connection
 from app.services.SMCEngine import get_smc_buy_signals
 from app.services.telegram_service import broadcast_telegram_message
 
@@ -17,29 +17,36 @@ logger = logging.getLogger(__name__)
 def run_h1_alerts_job():
     logger.info("[SMC H1] Memulai proses fetch data H1 dan scanning SMC...")
     try:
-        conn = sqlite3.connect('market_data.db')
-        cursor = conn.cursor()
-        
         # 1. Cari saham dengan harga 150 - 5000 (berdasarkan daily_prices terakhir)
-        cursor.execute("""
-            SELECT ticker, close 
-            FROM daily_prices 
-            WHERE date = (SELECT MAX(date) FROM daily_prices)
-        """)
-        rows = cursor.fetchall()
-        
-        valid_tickers = []
-        for t, c in rows:
-            if 150 <= c <= 5000 and t != 'COMPOSITE':
-                valid_tickers.append(t)
-                
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT ticker, close 
+                FROM daily_prices 
+                WHERE date = (SELECT MAX(date) FROM daily_prices)
+            """)
+            rows = cursor.fetchall()
+            
+            valid_tickers = []
+            for t, c in rows:
+                if 150 <= c <= 5000 and t != 'COMPOSITE':
+                    valid_tickers.append(t)
+            
+            # Ambil alert hari ini untuk deduplikasi in-memory
+            today_date_str = datetime.now().strftime("%Y-%m-%d")
+            cursor.execute("SELECT ticker, strategy_name, signal_date FROM daily_alerts WHERE signal_date >= date('now', '-2 days')")
+            existing_alert_set = {(r[0], r[1], r[2]) for r in cursor.fetchall()}
+        finally:
+            conn.close()
+            
         if not valid_tickers:
             logger.info("[SMC H1] Tidak ada saham di range harga 150-5000.")
             return
             
         logger.info(f"[SMC H1] Menemukan {len(valid_tickers)} saham dalam range harga.")
         
-        # 2. Fetch H1 data via yfinance (Ambil 1 bulan data hourly)
+        # 2. Fetch H1 data via yfinance (Ambil 1 bulan data hourly) - Tanpa memegang lock database
         yf_tickers = [f"{t}.JK" for t in valid_tickers]
         
         logger.info("[SMC H1] Mendownload data H1 dari yfinance...")
@@ -48,7 +55,6 @@ def run_h1_alerts_job():
         alerts_to_insert = []
         grouped_alerts = {}
         telegram_lines = []
-        
         h1_records = []
         
         for t in valid_tickers:
@@ -79,21 +85,17 @@ def run_h1_alerts_job():
                 ))
             
             # SMC Scanning
-            # SMCEngine expects standard columns
             ticker_df.columns = [c.capitalize() for c in ticker_df.columns]
             
             signals_list = get_smc_buy_signals(ticker_df)
             if signals_list:
                 for signal in signals_list:
-                    # Extrak waktu signal yang sebenarnya
                     signal_time = signal.get('signal_time', ticker_df.index[-1])
                     candle_date_str = signal_time.strftime("%Y-%m-%d")
                     candle_time_str = signal_time.strftime("%H:%M")
                     strategy_label = f"{signal['strategy_name']}_{candle_time_str}"
                     
-                    # Cek duplikat di database sebelum alert
-                    cursor.execute("SELECT 1 FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (candle_date_str, t, strategy_label))
-                    is_duplicate = cursor.fetchone() is not None
+                    is_duplicate = (t, strategy_label, candle_date_str) in existing_alert_set
 
                     alerts_to_insert.append((
                         t,
@@ -106,7 +108,6 @@ def run_h1_alerts_job():
                     ))
                     
                     if not is_duplicate:
-                        # Format pesan Telegram
                         entry = f"{signal['price_at_signal']:,.0f}" if signal['price_at_signal'] >= 100 else f"{signal['price_at_signal']:.2f}"
                         tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{t}'>📊</a>"
                         
@@ -142,58 +143,60 @@ def run_h1_alerts_job():
                             if candle_time_str not in grouped_alerts[readable_type]:
                                 grouped_alerts[readable_type][candle_time_str] = []
                             grouped_alerts[readable_type][candle_time_str].append(msg)
-                logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
+                    logger.info(f"[SMC H1] ALERT TRIGGERED: {t} at {signal['price_at_signal']} ({candle_time_str})")
                 
-        # 3. Update database h1_prices
-        if h1_records:
-            cursor.executemany("""
-            INSERT OR REPLACE INTO h1_prices 
-            (ticker, datetime, open, high, low, close, volume) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, h1_records)
-            conn.commit()
-
-        # 4. Simpan ke database daily_alerts
-        if alerts_to_insert:
-            # Delete old alerts with exact same time/date (idempotent)
-            for alert in alerts_to_insert:
-                cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (alert[2], alert[0], alert[1]))
-            
-            cursor.executemany('''
-                INSERT INTO daily_alerts (ticker, strategy_name, signal_date, price_at_signal, target_price, stop_loss, status)
+        # 3. Batch insert ke database
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            if h1_records:
+                cursor.executemany("""
+                INSERT OR REPLACE INTO h1_prices 
+                (ticker, datetime, open, high, low, close, volume) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', alerts_to_insert)
-            conn.commit()
-            logger.info(f"[SMC H1] Disimpan {len(alerts_to_insert)} alert ke database.")
+                """, h1_records)
+
+            if alerts_to_insert:
+                for alert in alerts_to_insert:
+                    cursor.execute("DELETE FROM daily_alerts WHERE signal_date = ? AND ticker = ? AND strategy_name = ?", (alert[2], alert[0], alert[1]))
+                
+                cursor.executemany('''
+                    INSERT INTO daily_alerts (ticker, strategy_name, signal_date, price_at_signal, target_price, stop_loss, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', alerts_to_insert)
+                logger.info(f"[SMC H1] Disimpan {len(alerts_to_insert)} alert ke database.")
             
-            # Kirim notifikasi Telegram hanya jika ada yang baru
-            if grouped_alerts:
-                for readable_type, times_dict in grouped_alerts.items():
-                    telegram_lines.append(f"🔥 <b>{readable_type}</b>")
-                    for candle_time_str, msgs in times_dict.items():
-                        telegram_lines.append(f"{candle_time_str}:")
-                        if 'Fase1' in readable_type:
-                            header_str = f"{'Kode':<5} | {'Alert':<9} | {'Harga':<6} | Status"
-                            telegram_lines.append(f"<code>{header_str}</code>")
-                            telegram_lines.append(f"<code>{'-' * len(header_str)}</code>")
-                        else:
-                            header_str = f"{'Kode':<5} | {'Alert':<9} | {'Cur':<5} | {'Ent':<5} | {'TP':<5} | {'SL':<5}"
-                            telegram_lines.append(f"<code>{header_str}</code>")
-                            telegram_lines.append(f"<code>{'-' * len(header_str)}</code>")
-                        for m in msgs:
-                            telegram_lines.append(m)
-                        telegram_lines.append("") # space between time blocks
-                    telegram_lines.append("────────────────────\n")
-                    
-                run_time_str = datetime.now().strftime("%H:%M")
-                header = f"<b>🌍 SMC H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
-                footer = f"💡 <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
-                msg = header + "\n".join(telegram_lines) + footer
-                broadcast_telegram_message(msg, category="saham")
+            conn.commit()
+        finally:
+            conn.close()
+
+        # 4. Kirim notifikasi Telegram
+        if grouped_alerts:
+            for readable_type, times_dict in grouped_alerts.items():
+                telegram_lines.append(f"🔥 <b>{readable_type}</b>")
+                for candle_time_str, msgs in times_dict.items():
+                    telegram_lines.append(f"{candle_time_str}:")
+                    if 'Fase1' in readable_type:
+                        header_str = f"{'Kode':<5} | {'Alert':<9} | {'Harga':<6} | Status"
+                        telegram_lines.append(f"<code>{header_str}</code>")
+                        telegram_lines.append(f"<code>{'-' * len(header_str)}</code>")
+                    else:
+                        header_str = f"{'Kode':<5} | {'Alert':<9} | {'Cur':<5} | {'Ent':<5} | {'TP':<5} | {'SL':<5}"
+                        telegram_lines.append(f"<code>{header_str}</code>")
+                        telegram_lines.append(f"<code>{'-' * len(header_str)}</code>")
+                    for m in msgs:
+                        telegram_lines.append(m)
+                    telegram_lines.append("")
+                telegram_lines.append("────────────────────\n")
+                
+            run_time_str = datetime.now().strftime("%H:%M")
+            header = f"<b>🌍 SMC H1 ALERTS 🌍</b>\n<i>⏰ Waktu: {run_time_str}</i>\n\n"
+            footer = f"💡 <i>Disclaimer: Always do your own research (DYOR). Trading carries risks!</i>"
+            msg = header + "\n".join(telegram_lines) + footer
+            broadcast_telegram_message(msg, category="saham")
         else:
             logger.info("[SMC H1] Tidak ada alert SMC H1 pada jam ini.")
             
-        conn.close()
     except Exception as e:
         logger.error(f"[SMC H1] Terjadi kesalahan: {e}")
 

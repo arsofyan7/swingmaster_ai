@@ -4,6 +4,7 @@ import json
 import asyncio
 from datetime import datetime
 from app.core.logger import logger
+from app.core.database import get_db_connection
 from app.services.telegram_service import broadcast_telegram_message
 
 def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
@@ -154,12 +155,13 @@ def check_strategies(df: pd.DataFrame, ticker: str, matrix: dict) -> dict:
 
 async def run_daily_alerts(target_date: str = None):
     logger.info(f"[ALERT ENGINE] Starting daily alert generation for {target_date or 'today'}...")
+    conn = None
     try:
         # Load Matrix
         with open('matrix_saham.json', 'r') as f:
             matrix = json.load(f)
 
-        conn = sqlite3.connect('market_data.db')
+        conn = get_db_connection()
         
         # Get all unique tickers from daily_prices
         cursor = conn.cursor()
@@ -186,22 +188,23 @@ async def run_daily_alerts(target_date: str = None):
 
             # Fetch last 250 days for accurate EMA200
             if target_date:
-                query = f"""
+                query = """
                 SELECT date, open, high, low, close, volume 
                 FROM daily_prices 
-                WHERE ticker = '{ticker}' AND date <= '{target_date}'
+                WHERE ticker = ? AND date <= ?
                 ORDER BY date DESC 
                 LIMIT 250
                 """
+                df = pd.read_sql_query(query, conn, params=(ticker, target_date))
             else:
-                query = f"""
+                query = """
                 SELECT date, open, high, low, close, volume 
                 FROM daily_prices 
-                WHERE ticker = '{ticker}' 
+                WHERE ticker = ? 
                 ORDER BY date DESC 
                 LIMIT 250
                 """
-            df = pd.read_sql_query(query, conn)
+                df = pd.read_sql_query(query, conn, params=(ticker,))
             
             if len(df) < 30:
                 continue
@@ -226,8 +229,8 @@ async def run_daily_alerts(target_date: str = None):
                 ))
                 logger.info(f"[ALERT ENGINE] Ticker {ticker} triggered {signal['strategy_name']}")
 
-            # Sleep to prevent high CPU load on batch processing
-            await asyncio.sleep(0.01)
+            # Yield control to prevent event loop blocking
+            await asyncio.sleep(0.005)
             
         # ─── Run Sniper MTF Scan (D1 CHoCH + FVG Retest + H1 Trigger) ───
         try:
@@ -317,7 +320,13 @@ async def run_daily_alerts(target_date: str = None):
         else:
             logger.info("[ALERT ENGINE] No alerts triggered today.")
             
-        conn.close()
     except Exception as e:
         logger.error(f"[ALERT ENGINE] Error running daily alerts: {e}")
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
 

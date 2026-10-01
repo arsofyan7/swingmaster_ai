@@ -71,147 +71,8 @@ def calculate_accumulation_indicators(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
-def get_db_connection():
-    conn = sqlite3.connect('market_data.db')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS company_fundamentals (
-            ticker TEXT PRIMARY KEY,
-            company_name TEXT,
-            raw_info_json TEXT,
-            updated_at DATE
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS daily_prices (
-            date DATE,
-            ticker TEXT,
-            open REAL,
-            high REAL,
-            low REAL,
-            close REAL,
-            volume INTEGER,
-            UNIQUE(date, ticker)
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS ai_analyses (
-            date DATE,
-            ticker TEXT,
-            skor_akumulasi REAL,
-            skor_sentimen INTEGER,
-            matriks_strategi TEXT,
-            konfirmasi_tren_mingguan TEXT,
-            rekomendasi_buy TEXT,
-            take_profit INTEGER,
-            stop_loss INTEGER,
-            risk_reward_ratio TEXT,
-            alasan_analisis TEXT,
-            UNIQUE(date, ticker)
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS portfolios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            portfolio_type TEXT DEFAULT 'saham',
-            initial_balance REAL DEFAULT 100000000,
-            current_balance REAL DEFAULT 100000000,
-            risk_per_trade_pct REAL DEFAULT 10.0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS active_positions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            portfolio_id INTEGER NOT NULL,
-            ticker TEXT NOT NULL,
-            sector TEXT,
-            buy_price REAL NOT NULL,
-            total_lot INTEGER NOT NULL,
-            target_tp REAL,
-            target_sl REAL,
-            buy_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS trade_journals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            portfolio_id INTEGER NOT NULL,
-            ticker TEXT NOT NULL,
-            buy_price REAL NOT NULL,
-            sell_price REAL NOT NULL,
-            total_lot INTEGER NOT NULL,
-            pnl_amount REAL NOT NULL,
-            pnl_percentage REAL NOT NULL,
-            close_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            status TEXT NOT NULL,
-            r_multiple REAL,
-            tag TEXT,
-            notes TEXT,
-            FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
-        )
-    ''')
-    
-    # Backward compatibility for existing DB
-    try:
-        conn.execute("ALTER TABLE trade_journals ADD COLUMN r_multiple REAL")
-        conn.execute("ALTER TABLE trade_journals ADD COLUMN tag TEXT")
-        conn.execute("ALTER TABLE trade_journals ADD COLUMN notes TEXT")
-    except sqlite3.OperationalError:
-        pass # Columns already exist
-        
-    try:
-        conn.execute("ALTER TABLE portfolios ADD COLUMN portfolio_type TEXT DEFAULT 'saham'")
-    except sqlite3.OperationalError:
-        pass # Column already exists
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS equity_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            portfolio_id INTEGER NOT NULL,
-            date DATE NOT NULL,
-            total_equity REAL NOT NULL,
-            FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS watchlists (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            portfolio_id INTEGER NOT NULL,
-            ticker TEXT NOT NULL,
-            ai_recom_price TEXT,
-            ai_tp REAL,
-            ai_sl REAL,
-            ai_rr TEXT,
-            added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
-        )
-    ''')
-    
-    # Seeder
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM users")
-    if cursor.fetchone()[0] == 0:
-        hashed_pw = pwd_context.hash("admin123")
-        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", ("admin", "admin@swing.com", hashed_pw))
-        user_id = cursor.lastrowid
-        cursor.execute("INSERT INTO portfolios (user_id, name) VALUES (?, ?)", (user_id, "Default Portfolio"))
-        conn.commit()
-        
-    return conn
+from app.core.database import get_db_connection, get_db
+
 
 def sync_historical_data(tickers: list[str]):
     conn = get_db_connection()
@@ -292,6 +153,8 @@ def sync_historical_data(tickers: list[str]):
         try:
             import yfinance as yf
             def get_yf_ticker(t):
+                if t == 'COMPOSITE':
+                    return "^JKSE"
                 if len(t) == 6 and t.endswith("USD"):
                     return f"{t}=X"
                 return f"{t}.JK"
@@ -347,7 +210,7 @@ def sync_historical_data(tickers: list[str]):
 
 def analyze_stock(ticker: str) -> dict:
     ticker = ticker.upper().replace(".JK", "")
-    
+    conn = None
     try:
         conn = get_db_connection()
         
@@ -399,8 +262,6 @@ def analyze_stock(ticker: str) -> dict:
             quant_score = 85 - round(macd_value)
             if quant_score > 99: quant_score = 99
             elif quant_score < 10: quant_score = 10
-            
-        conn.close()
 
         return {
             "status": "success",
@@ -435,131 +296,122 @@ def analyze_stock(ticker: str) -> dict:
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    finally:
+        if conn:
+            conn.close()
 
 def smart_pre_filter(tickers: list[str]) -> list[dict]:
     if not tickers:
         return []
         
     conn = get_db_connection()
-    cursor = conn.cursor()
-    finalists = []
-    
-    # Clean up tickers
-    clean_tickers = [t.upper().replace(".JK", "") for t in tickers]
-    
-    # Phase 1: Fundamental Filter (SQLite Local)
-    phase1_tickers = []
-    for ticker in clean_tickers:
-        cursor.execute("SELECT raw_info_json FROM company_fundamentals WHERE ticker = ?", (ticker,))
-        funda_row = cursor.fetchone()
+    try:
+        cursor = conn.cursor()
+        finalists = []
         
-        # Based on user instruction: assume it meets criteria if fundamental is missing (just use existing)
-        # But we also parse EPS and PER as instructed
-        if funda_row:
-            info = json.loads(funda_row[0])
-            eps = info.get("earningsPerShare", 0)
-            per = info.get("trailingPE", 0)
-            roe = info.get("returnOnEquity")
-            
-            # Additional Phase 1 filters from prompt
-            eps_val = eps if eps is not None else 0
-            per_val = per if per is not None else 0
-            roe_val = roe if roe is not None else 0
-            
-            # MUST be profitable (EPS > 0) and MUST be undervalued (0 < PER <= 15)
-            # The prompt says: Phase 1 filter logic: EPS > 0, 0 < PER <= 15
-            if (eps_val > 0) and (0 < per_val <= 15):
-                phase1_tickers.append((ticker, info))
-        else:
-            # Assume it meets the criteria if not in DB, but with mock fundamental
-            phase1_tickers.append((ticker, {"longName": ticker, "currency": "IDR", "earningsPerShare": 1, "trailingPE": 10, "returnOnEquity": 0.1}))
-            
-    # Phase 2: Price Data & Freshness Check (Hybrid)
-    tickers_to_sync = [t[0] for t in phase1_tickers]
-    if tickers_to_sync:
-        sync_historical_data(tickers_to_sync)
+        # Clean up tickers
+        clean_tickers = [t.upper().replace(".JK", "") for t in tickers]
         
-    for ticker, info in phase1_tickers:
-        try:
-            # Local Cache Price Check
-            query = "SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = ? ORDER BY date ASC"
-            df = pd.read_sql_query(query, conn, params=(ticker,))
+        # Phase 1: Fundamental Filter (SQLite Local)
+        phase1_tickers = []
+        for ticker in clean_tickers:
+            cursor.execute("SELECT raw_info_json FROM company_fundamentals WHERE ticker = ?", (ticker,))
+            funda_row = cursor.fetchone()
             
-            if df.empty or len(df) < 26:
+            if funda_row:
+                info = json.loads(funda_row[0])
+                eps = info.get("earningsPerShare", 0)
+                per = info.get("trailingPE", 0)
+                roe = info.get("returnOnEquity")
+                
+                eps_val = eps if eps is not None else 0
+                per_val = per if per is not None else 0
+                roe_val = roe if roe is not None else 0
+                
+                if (eps_val > 0) and (0 < per_val <= 15):
+                    phase1_tickers.append((ticker, info))
+            else:
+                phase1_tickers.append((ticker, {"longName": ticker, "currency": "IDR", "earningsPerShare": 1, "trailingPE": 10, "returnOnEquity": 0.1}))
+                
+        # Phase 2: Price Data & Freshness Check (Hybrid)
+        tickers_to_sync = [t[0] for t in phase1_tickers]
+        if tickers_to_sync:
+            sync_historical_data(tickers_to_sync)
+            
+        for ticker, info in phase1_tickers:
+            try:
+                # Local Cache Price Check
+                query = "SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = ? ORDER BY date ASC"
+                df = pd.read_sql_query(query, conn, params=(ticker,))
+                
+                if df.empty or len(df) < 26:
+                    continue
+                    
+                df = calculate_accumulation_indicators(df)
+                
+                close_prices = df['close']
+                current_price = float(df['close'].iloc[-1])
+                
+                # Phase 3: Tech & Quant Score Processing
+                if not (150 <= current_price <= 2000):
+                    continue
+                    
+                ema12 = close_prices.ewm(span=12, adjust=False).mean()
+                ema26 = close_prices.ewm(span=26, adjust=False).mean()
+                macd_line = ema12 - ema26
+                
+                latest_macd = macd_line.iloc[-1]
+                if latest_macd >= 0:
+                    continue
+                    
+                signal_line = macd_line.ewm(span=9, adjust=False).mean()
+                latest_signal = signal_line.iloc[-1]
+                
+                roe = info.get("returnOnEquity", 0)
+                roe_percentage = round(roe * 100, 2) if roe is not None else 0
+                
+                company_name = info.get("longName", "Unknown")
+                eps = info.get("earningsPerShare", 0)
+                per = info.get("trailingPE", 0)
+                
+                real_quant_score = float(df['Skor_Indikator_Lokal'].iloc[-1])
+                quant_score = real_quant_score
+                
+                finalists.append({
+                    "status": "success",
+                    "ticker": ticker,
+                    "company_name": company_name,
+                    "filters": {
+                        "price": {
+                            "value": round(float(current_price), 2),
+                            "status": "Lolos"
+                        },
+                        "fundamental_roe": {
+                            "value": roe_percentage,
+                            "status": "Lolos"
+                        },
+                        "fundamental_eps": {
+                            "value": eps,
+                            "status": "Lolos"
+                        },
+                        "fundamental_per": {
+                            "value": per,
+                            "status": "Lolos"
+                        },
+                        "technical_macd": {
+                            "macd_line": round(float(latest_macd), 2),
+                            "signal_line": round(float(latest_signal), 2),
+                            "status": "Lolos (Di bawah 0)"
+                        },
+                        "quant_score": quant_score
+                    },
+                    "currency": info.get("currency", "IDR"),
+                    "history_ohlcv": df.to_dict(orient='records')
+                })
+            except Exception as e:
+                logger.error(f"Error filtering {ticker}: {e}")
                 continue
                 
-            df = calculate_accumulation_indicators(df)
-            
-            close_prices = df['close']
-            current_price = float(df['close'].iloc[-1])
-            
-            # Phase 3: Tech & Quant Score Processing
-            # Filter harga lokal (200 - 1500 as per prompt)
-            if not (150 <= current_price <= 2000):
-                continue
-                
-            # Hitung EMA dan MACD lokal
-            ema12 = close_prices.ewm(span=12, adjust=False).mean()
-            ema26 = close_prices.ewm(span=26, adjust=False).mean()
-            macd_line = ema12 - ema26
-            
-            latest_macd = macd_line.iloc[-1]
-            if latest_macd >= 0: # MACD harus < 0
-                continue
-                
-            signal_line = macd_line.ewm(span=9, adjust=False).mean()
-            latest_signal = signal_line.iloc[-1]
-            
-            roe = info.get("returnOnEquity", 0)
-            roe_percentage = round(roe * 100, 2) if roe is not None else 0
-            
-            company_name = info.get("longName", "Unknown")
-            eps = info.get("earningsPerShare", 0)
-            per = info.get("trailingPE", 0)
-            
-            # Simple quant score mock based on MACD distance for now, or just dummy 85 since prompt said "calculated 'Accumulation Score / 100'"
-            # I will just set a dummy score of 85 or derive it from macd line if there is no formal quant_score
-            # GANTI DENGAN EKSTRAKSI DATA ASLI:
-            # Ambil nilai Skor Indikator Lokal dari hari terakhir (index -1) di DataFrame
-            real_quant_score = float(df['Skor_Indikator_Lokal'].iloc[-1])
-            
-            # Masukkan ke variabel untuk JSON payload
-            quant_score = real_quant_score
-            
-            finalists.append({
-                "status": "success",
-                "ticker": ticker,
-                "company_name": company_name,
-                "filters": {
-                    "price": {
-                        "value": round(float(current_price), 2),
-                        "status": "Lolos"
-                    },
-                    "fundamental_roe": {
-                        "value": roe_percentage,
-                        "status": "Lolos"
-                    },
-                    "fundamental_eps": {
-                        "value": eps,
-                        "status": "Lolos"
-                    },
-                    "fundamental_per": {
-                        "value": per,
-                        "status": "Lolos"
-                    },
-                    "technical_macd": {
-                        "macd_line": round(float(latest_macd), 2),
-                        "signal_line": round(float(latest_signal), 2),
-                        "status": "Lolos (Di bawah 0)"
-                    },
-                    "quant_score": quant_score
-                },
-                "currency": info.get("currency", "IDR"),
-                "history_ohlcv": df.to_dict(orient='records')
-            })
-        except Exception as e:
-            print(f"Error filtering {ticker}: {e}")
-            continue
-            
-    conn.close()
-    return finalists
+        return finalists
+    finally:
+        conn.close()

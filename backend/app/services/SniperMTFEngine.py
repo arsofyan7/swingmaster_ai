@@ -282,11 +282,12 @@ def scan_sniper_mtf_alerts(conn: sqlite3.Connection, target_date: str = None) ->
     candidates = {}
     for ticker in valid_tickers:
         if target_date:
-            q = f"SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = '{ticker}' AND date <= '{target_date}' ORDER BY date DESC LIMIT 60"
+            q = "SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = ? AND date <= ? ORDER BY date DESC LIMIT 60"
+            df_d1 = pd.read_sql_query(q, conn, params=(ticker, target_date))
         else:
-            q = f"SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = '{ticker}' ORDER BY date DESC LIMIT 60"
+            q = "SELECT date, open, high, low, close, volume FROM daily_prices WHERE ticker = ? ORDER BY date DESC LIMIT 60"
+            df_d1 = pd.read_sql_query(q, conn, params=(ticker,))
         
-        df_d1 = pd.read_sql_query(q, conn)
         if len(df_d1) < 25:
             continue
             

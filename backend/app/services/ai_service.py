@@ -23,25 +23,27 @@ class AIAnalysisSchema(BaseModel):
 class BatchAIAnalysisSchema(BaseModel):
     results: list[AIAnalysisSchema]
 
+from app.core.database import get_db_connection
+
 def get_cached_ai_analysis(ticker: str, date_str: str) -> dict | None:
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     try:
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM ai_analyses WHERE ticker = ? AND date = ?", (ticker, date_str))
         row = cursor.fetchone()
-        conn.close()
-        
         if row:
-            return dict(row) # Mengembalikan dictionary dari Row SQLite
+            return dict(row)
         return None
     except Exception as e:
-        print(f"Error reading AI cache for {ticker}: {e}")
+        logger.error(f"Error reading AI cache for {ticker}: {e}")
         return None
+    finally:
+        conn.close()
 
 def save_ai_analysis_to_cache(analysis_result: dict, date_str: str):
+    conn = get_db_connection()
     try:
-        conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('''
             INSERT OR REPLACE INTO ai_analyses (
@@ -63,9 +65,10 @@ def save_ai_analysis_to_cache(analysis_result: dict, date_str: str):
             analysis_result.get("alasan_analisis")
         ))
         conn.commit()
-        conn.close()
     except Exception as e:
-        print(f"Error saving AI cache for {analysis_result.get('ticker')}: {e}")
+        logger.error(f"Error saving AI cache for {analysis_result.get('ticker')}: {e}")
+    finally:
+        conn.close()
 
 def _call_ai_with_fallback(prompt: str, config: types.GenerateContentConfig) -> str:
     """Fungsi internal untuk memanggil AI dengan strategi fallback multi-model"""

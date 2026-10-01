@@ -25,6 +25,8 @@ scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 
 from app.core.rate_limit import limiter
 
+from app.core.database import get_db_connection, init_db_schema
+
 async def scheduled_eod_price_sync():
     logger.info("[CORE SCHEDULER] Syncing End-Of-Day prices...")
     try:
@@ -47,15 +49,17 @@ async def scheduled_eod_price_sync():
                     records.append((today_str, ticker, open_price, high_price, low_price, price, volume))
                 
                 if records:
-                    conn = sqlite3.connect('market_data.db')
-                    cursor = conn.cursor()
-                    cursor.executemany('''
-                        INSERT OR REPLACE INTO daily_prices (date, ticker, open, high, low, close, volume)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ''', records)
-                    conn.commit()
-                    conn.close()
-                    logger.info(f"[CORE SCHEDULER] Successfully locked EOD prices for {len(records)} tickers.")
+                    conn = get_db_connection()
+                    try:
+                        cursor = conn.cursor()
+                        cursor.executemany('''
+                            INSERT OR REPLACE INTO daily_prices (date, ticker, open, high, low, close, volume)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ''', records)
+                        conn.commit()
+                        logger.info(f"[CORE SCHEDULER] Successfully locked EOD prices for {len(records)} tickers.")
+                    finally:
+                        conn.close()
                     
             # --- UPDATE COMPOSITE (IHSG) ---
             import asyncio
@@ -88,43 +92,23 @@ async def scheduled_live_price_tick():
                     records.append((ticker, price, now_str))
                 
                 if records:
-                    conn = sqlite3.connect('market_data.db')
-                    cursor = conn.cursor()
-                    cursor.executemany('''
-                        INSERT OR REPLACE INTO live_prices (ticker, price, updated_at)
-                        VALUES (?, ?, ?)
-                    ''', records)
-                    conn.commit()
-                    conn.close()
-                    logger.info(f"[CORE SCHEDULER] Successfully refreshed live prices for {len(records)} tickers.")
+                    conn = get_db_connection()
+                    try:
+                        cursor = conn.cursor()
+                        cursor.executemany('''
+                            INSERT OR REPLACE INTO live_prices (ticker, price, updated_at)
+                            VALUES (?, ?, ?)
+                        ''', records)
+                        conn.commit()
+                        logger.info(f"[CORE SCHEDULER] Successfully refreshed live prices for {len(records)} tickers.")
+                    finally:
+                        conn.close()
     except Exception as e:
         logger.error(f"[CORE SCHEDULER] Error during live price tick: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("[CORE SCHEDULER] Initializing database for live prices...")
-    conn = sqlite3.connect('market_data.db')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS live_prices (
-            ticker TEXT PRIMARY KEY,
-            price REAL,
-            updated_at TIMESTAMP
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS daily_alerts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ticker TEXT NOT NULL,
-            strategy_name TEXT NOT NULL,
-            signal_date DATE NOT NULL,
-            price_at_signal REAL NOT NULL,
-            target_price REAL,
-            stop_loss REAL,
-            status TEXT DEFAULT 'open'
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    init_db_schema()
     
     from app.services.AlertEngine import run_daily_alerts
     from app.services.run_h1_alerts import run_h1_alerts_job

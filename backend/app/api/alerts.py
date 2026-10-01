@@ -61,13 +61,16 @@ async def test_telegram_alert():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from app.core.database import get_db_connection
+
 @router.get("/dates")
 def get_alert_dates():
     """
     Get all unique dates where alerts were generated.
     """
+    conn = None
     try:
-        conn = sqlite3.connect('market_data.db')
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -78,20 +81,22 @@ def get_alert_dates():
         ''')
         
         rows = cursor.fetchall()
-        conn.close()
-        
         dates = [row['signal_date'] for row in rows]
         return {"status": "success", "data": dates}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
 
 @router.get("/")
 def get_daily_alerts(date: Optional[str] = None):
     """
     Get all daily alerts generated for the current day or a specific date.
     """
+    conn = None
     try:
-        conn = sqlite3.connect('market_data.db')
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -116,8 +121,6 @@ def get_daily_alerts(date: Optional[str] = None):
             ''', (latest_alert_date,))
             
         rows = cursor.fetchall()
-        conn.close()
-        
         alerts = [dict(row) for row in rows]
         
         # Calculate potency for each
@@ -130,3 +133,7 @@ def get_daily_alerts(date: Optional[str] = None):
         return {"status": "success", "data": alerts}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
+

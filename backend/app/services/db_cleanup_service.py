@@ -1,6 +1,6 @@
-import sqlite3
 import logging
 from app.core.logger import logger
+from app.core.database import get_db_connection
 
 def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_forex_h1_bars: int = 700, max_alert_days: int = 90):
     """
@@ -9,8 +9,9 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
     number of historical candles needed for indicators, SMC, AI, and chart visualization.
     """
     logger.info("[DB CLEANUP] Memulai pembersihan berkala dan optimasi database...")
+    conn = None
     try:
-        conn = sqlite3.connect('market_data.db')
+        conn = get_db_connection(timeout=60.0)
         cursor = conn.cursor()
 
         # 1. Pruning D1 daily_prices (Simpan max 300 candle per ticker)
@@ -20,7 +21,7 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
                 SELECT rowid FROM (
                     SELECT rowid, ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY date DESC) as rn
                     FROM daily_prices
-                ) WHERE rn > {max_d1_bars}
+                ) WHERE rn > {int(max_d1_bars)}
             )
         """)
         d1_deleted = cursor.rowcount
@@ -33,7 +34,7 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
                     SELECT rowid FROM (
                         SELECT rowid, ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY datetime DESC) as rn
                         FROM h1_prices
-                    ) WHERE rn > {max_h1_bars}
+                    ) WHERE rn > {int(max_h1_bars)}
                 )
             """)
             h1_deleted = cursor.rowcount
@@ -48,7 +49,7 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
                     SELECT rowid FROM (
                         SELECT rowid, ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY datetime DESC) as rn
                         FROM h1_Forex_prices
-                    ) WHERE rn > {max_forex_h1_bars}
+                    ) WHERE rn > {int(max_forex_h1_bars)}
                 )
             """)
             forex_h1_deleted = cursor.rowcount
@@ -57,7 +58,7 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
 
         # 4. Pruning History Daily Alerts Lama (> 90 hari)
         try:
-            cursor.execute(f"DELETE FROM daily_alerts WHERE signal_date < date('now', '-{max_alert_days} days')")
+            cursor.execute(f"DELETE FROM daily_alerts WHERE signal_date < date('now', '-{int(max_alert_days)} days')")
             alerts_deleted = cursor.rowcount
         except Exception:
             alerts_deleted = 0
@@ -74,7 +75,12 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
         # 6. Jalankan VACUUM untuk mereclaim disk space fisik
         logger.info("[DB CLEANUP] Menjalankan VACUUM untuk mereclaim storage...")
         cursor.execute("VACUUM")
-        conn.close()
+        
+        # Checkpoint WAL log
+        try:
+            cursor.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+        except Exception:
+            pass
 
         logger.info(
             f"[DB CLEANUP] Sukses! Terhapus: {d1_deleted} baris D1 lama, "
@@ -93,6 +99,12 @@ def cleanup_old_market_data(max_d1_bars: int = 300, max_h1_bars: int = 200, max_
     except Exception as e:
         logger.error(f"[DB CLEANUP] Gagal membersihkan database: {e}")
         return {"status": "error", "message": str(e)}
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     cleanup_old_market_data()
