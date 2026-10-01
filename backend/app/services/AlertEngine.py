@@ -229,6 +229,23 @@ async def run_daily_alerts(target_date: str = None):
             # Sleep to prevent high CPU load on batch processing
             await asyncio.sleep(0.01)
             
+        # ─── Run Sniper MTF Scan (D1 CHoCH + FVG Retest + H1 Trigger) ───
+        try:
+            from app.services.SniperMTFEngine import scan_sniper_mtf_alerts
+            sniper_results = scan_sniper_mtf_alerts(conn, target_date=today_str)
+            for s in sniper_results:
+                alerts_to_insert.append((
+                    s['ticker'],
+                    s['strategy_name'],
+                    today_str,
+                    s['price_at_signal'],
+                    s['target_price'],
+                    s['stop_loss'],
+                    'open'
+                ))
+        except Exception as e:
+            logger.error(f"[ALERT ENGINE] Error running Sniper MTF scan: {e}")
+
         # Insert into daily_alerts
         if alerts_to_insert:
             cursor.executemany('''
@@ -249,15 +266,26 @@ async def run_daily_alerts(target_date: str = None):
                 
                 tv_link = f"<a href='https://id.tradingview.com/chart/?symbol=IDX%3A{ticker}'>{ticker}</a>"
                 
-                msg = (
-                    f"🔹 <b>{tv_link}</b>\n"
-                    f"🏷️ <b>Current Price:</b> {entry}\n"
-                    f"💰 <b>Entry:</b> {entry}\n"
-                    f"🎯 <b>TP:</b> {tp}\n"
-                    f"🛑 <b>SL:</b> {sl}"
-                )
+                if "Sniper_MTF" in strategy:
+                    trigger_label = "⚡ Bullish Engulfing" if "Engulfing" in strategy else "🔨 Hammer Rejection"
+                    group_header = "🎯 <b>[SNIPER MTF - D1 FVG + H1 TRIGGER]:</b>"
+                    msg = (
+                        f"🔹 <b>{tv_link}</b> <i>({trigger_label})</i>\n"
+                        f"🏷️ <b>Current Price:</b> {entry}\n"
+                        f"💰 <b>Entry:</b> {entry}\n"
+                        f"🎯 <b>TP:</b> {tp}\n"
+                        f"🛑 <b>SL:</b> {sl}"
+                    )
+                else:
+                    group_header = f"🔥 <b>{strategy}:</b>"
+                    msg = (
+                        f"🔹 <b>{tv_link}</b>\n"
+                        f"🏷️ <b>Current Price:</b> {entry}\n"
+                        f"💰 <b>Entry:</b> {entry}\n"
+                        f"🎯 <b>TP:</b> {tp}\n"
+                        f"🛑 <b>SL:</b> {sl}"
+                    )
                 
-                group_header = f"🔥 <b>{strategy}:</b>"
                 if group_header not in grouped_alerts:
                     grouped_alerts[group_header] = []
                 grouped_alerts[group_header].append(msg)
@@ -267,7 +295,16 @@ async def run_daily_alerts(target_date: str = None):
                 f"<i>📅 Date: {today_str}</i>\n"
             ]
             
+            # Place SNIPER MTF at the top of the report if present
+            sniper_key = "🎯 <b>[SNIPER MTF - D1 FVG + H1 TRIGGER]:</b>"
+            if sniper_key in grouped_alerts:
+                msg_lines.append(sniper_key)
+                msg_lines.append("\n\n".join(grouped_alerts[sniper_key]))
+                msg_lines.append("────────────────────\n")
+            
             for header_title, msgs in grouped_alerts.items():
+                if header_title == sniper_key:
+                    continue
                 msg_lines.append(header_title)
                 msg_lines.append("\n\n".join(msgs))
                 msg_lines.append("────────────────────\n")
@@ -283,3 +320,4 @@ async def run_daily_alerts(target_date: str = None):
         conn.close()
     except Exception as e:
         logger.error(f"[ALERT ENGINE] Error running daily alerts: {e}")
+

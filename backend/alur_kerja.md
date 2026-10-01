@@ -34,6 +34,11 @@ Data yang sudah matang dilempar ke fungsi `check_strategies()`. Di sini, baris t
 - **V8_Pullback**: Syarat `Close > EMA 200`, candle menyentuh support `EMA 20` (`Low <= EMA 20` dan `Close >= EMA 20`), harga koreksi (`Close < Close_prev`), dan volume sepi (`Volume < VMA 20`).
 - **V3_Breakout**: Syarat lonjakan volume (`Volume >= 2 * VMA 20`), harga menembus resistance (`Close > EMA 20` padahal kemarin di bawahnya), dan MACD yang menanjak.
 - **V6_Bandar**: Syarat harga di atas `EMA 200`, menempel `EMA 20`, serta indikator akumulasi solid (`OBV > OBV EMA 20` dan `ADL > ADL EMA 20`).
+- **Swing_Reversal**: Syarat Pivot Low 8 bar lookback, konfirmasi harga tembus High candle sebelumnya (`Close > High_prev`), dan filter RSI.
+- **🎯 Sniper_MTF (D1 + H1)**: 
+  1. **D1 Setup**: Mendeteksi struktur *Bullish CHoCH* yang meninggalkan *Bullish FVG* aktif (belum tembus bawah) yang sedang di-retest/tap oleh harga harian.
+  2. **H1 Trigger**: Memeriksa candle intraday H1 di hari tersebut pada zona D1 FVG untuk mendeteksi *Bullish Engulfing* (body $\ge 50\%$, volume naik) atau *Hammer Rejection* (lower wick $\ge 60\%$, upper wick $\le 15\%$, body $\le 30\%$).
+  3. **Stop Loss & Target**: Stop loss ketat di bawah Low H1 trigger ($\pm 1.5\% - 2.5\%$), Target Price di D1 Swing High / minimal RRR $1:3+$.
 
 **Logic Penentuan Sinyal (Ranking System):**
 Jika satu saham memenuhi lebih dari satu strategi (misal tembus V8 dan V6 secara bersamaan), engine **TIDAK** akan menghasilkan dua buah alert untuk saham yang sama. 
@@ -41,11 +46,12 @@ Sistem akan mengecek peringkat strategi pada `matrix_saham.json` untuk ticker te
 
 Jika lolos, engine mencatat:
 - **Entry Price**: `Close` hari ini
-- **Target Price**: Entry + 5%
-- **Stop Loss**: Entry - 5%
+- **Target Price**: Entry + 5% (atau D1 Swing High untuk Sniper MTF)
+- **Stop Loss**: Entry - 5% (atau Low H1 untuk Sniper MTF)
 
-### Tahap 5: Simpan ke Database
-Setelah semua ticker selesai dilooping, seluruh sinyal yang ditemukan dikumpulkan dan di-insert sekaligus (menggunakan `executemany` untuk mengefisiensi koneksi I/O DB) ke tabel `daily_alerts` dengan `signal_date` menggunakan tanggal hari ini, lalu status di-set menjadi `"open"`.
+### Tahap 5: Simpan ke Database & Broadcast Telegram
+Setelah semua ticker dan modul Sniper MTF selesai diproses, seluruh sinyal dikumpulkan dan di-insert sekaligus ke tabel `daily_alerts` dengan `signal_date` tanggal hari ini dan status `"open"`.
+Rekapan lengkap kemudian dibroadcast ke Telegram pada pukul 17:30 WIB dengan format badge khusus untuk **🎯 [SNIPER MTF]**.
 
 ---
 

@@ -14,6 +14,7 @@
 ## 🚀 Key Features
 
 * **🤖 AI-Powered Technical Analysis:** Integrates with Google Gemini to automatically generate comprehensive technical analysis, summaries, and risk/reward calculations based on historical OHLCV data.
+* **🎯 Multi-Timeframe (MTF) Sniper Engine:** Advanced dual-timeframe strategy combining Daily (D1) macro setups with Hourly (H1) precision entries. Identifies D1 Bullish CHoCH + FVG zones and triggers on H1 Bullish Engulfing or Hammer/Rejection Pinbars with ultra-tight Stop Losses and high RRR (1:3+).
 * **🧠 Smart Money Concepts (SMC) Engine:** Built-in algorithmic engine to detect advanced price action patterns. Features dual-mode alerts: **Reversal Signals** based on Change of Character (CHoCH) and **Trend Continuation Signals** based on Break of Structure (BOS), combined with Fair Value Gaps (FVG) and Order Blocks (OB).
 * **🌍 Multi-Market Support:** Dedicated support for both **Saham Lokal (IDX)** and **Forex/Gold (XAUUSD, EURUSD, GBPUSD, etc.)**, with separate dashboards and widgets.
 * **📱 Telegram Bot Integration:** Get instant notifications pushed directly to your Telegram! Features Daily End-of-Day (EOD) alerts and **Hourly (H1) SMC Alerts** for both Stocks and Forex.
@@ -77,8 +78,14 @@ TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 TELEGRAM_CHAT_ID=your_telegram_chat_id
 ```
 
-### 5. Run the Server
-Use the custom runner script which handles database migrations and starts background schedulers (for Telegram hourly alerts) alongside the web server:
+### 5. Database Migration (Optional / First Run)
+Run the automated non-destructive database migration script to ensure all tables, indexes, and columns are up-to-date:
+```bash
+python migrate_db.py
+```
+
+### 6. Run the Server
+Use the custom runner script which handles database initialization and starts background schedulers (for Telegram hourly & daily alerts) alongside the web server:
 ```bash
 python run.py
 ```
