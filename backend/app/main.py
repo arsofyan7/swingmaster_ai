@@ -129,12 +129,14 @@ async def lifespan(app: FastAPI):
     from app.services.AlertEngine import run_daily_alerts
     from app.services.run_h1_alerts import run_h1_alerts_job
     from app.services.run_h1_forex_alerts import run_h1_forex_alerts_job
+    from app.services.db_cleanup_service import cleanup_old_market_data
     logger.info("[CORE SCHEDULER] Starting APScheduler...")
     scheduler.add_job(scheduled_eod_price_sync, 'cron', day_of_week='mon-fri', hour=17, minute=0)
     scheduler.add_job(run_daily_alerts, 'cron', day_of_week='mon-fri', hour=17, minute=30)
     scheduler.add_job(scheduled_live_price_tick, 'cron', day_of_week='mon-fri', hour='8-16', minute='*/15')
     scheduler.add_job(run_h1_alerts_job, 'cron', day_of_week='mon-fri', hour='10-16', minute=20)
     scheduler.add_job(run_h1_forex_alerts_job, 'cron', day_of_week='mon-fri', minute=5)
+    scheduler.add_job(cleanup_old_market_data, 'cron', hour=23, minute=0) # Auto-pruning & vacuum harian
     scheduler.start()
     
     import asyncio

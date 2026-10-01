@@ -224,8 +224,16 @@ def run_migration():
     conn.commit()
     conn.close()
 
+    # 6. Jalankan Optimasi & Pruning Data Kadaluarsa
+    print("\n🧹 Membersihkan Data Kadaluarsa & Merampingkan Ukuran Database...")
+    try:
+        from app.services.db_cleanup_service import cleanup_old_market_data
+        cleanup_old_market_data()
+    except Exception as e:
+        print(f"  ⚠️ Skip auto-pruning: {e}")
+
     print("\n" + "=" * 60)
-    print("🎉 MIGRASI SUKSES! Database VPS sudah 100% up-to-date & aman.")
+    print("🎉 MIGRASI & OPTIMASI SUKSES! Database VPS sudah 100% up-to-date & ramping.")
     print("=" * 60)
 
 if __name__ == "__main__":
