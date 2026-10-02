@@ -128,8 +128,8 @@ def init_db_schema():
                 username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE,
                 password TEXT,
-                hashed_password TEXT,
                 telegram_chat_id TEXT,
+                telegram_username TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
